@@ -24,9 +24,6 @@ const LandingPage = () => {
         navigate('/login');
     };
 
-    const handleGetStarted = () => {
-        navigate('/login');
-    };
 
     const features = [
         {
@@ -63,13 +60,13 @@ const LandingPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-white">
+        <div className="min-h-screen bg-white ">
             {/* Header */}
             <header
                 className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
                     }`}
             >
-                <div className="container mx-auto px-4 lg:px-8">
+                <div className="container mx-auto px-4 lg:px-8 ">
                     <div className="flex justify-between items-center">
                         <img
                             src={logoImage}
@@ -87,7 +84,7 @@ const LandingPage = () => {
             </header>
 
             {/* Hero Section */}
-            <section className="pt-32 lg:pt-40 pb-16 lg:pb-24 bg-gradient-to-br from-gray-50 to-white">
+            <section className="pt-32 lg:pt-48 pb-16 lg:pb-48 bg-gradient-to-br from-gray-50 to-white">
                 <div className="container mx-auto px-4 lg:px-8 text-center">
                     <h1 className="text-4xl lg:text-6xl font-medium text-[#1f2937] mb-4">
                         <span className="block">Experience more.</span>
@@ -97,7 +94,7 @@ const LandingPage = () => {
                         Craft Your Perfect Journey: Tailored Itineraries for Every Adventure.
                     </p>
                     <button
-                        onClick={handleGetStarted}
+                        onClick={handleSignIn}
                         className="bg-[#7dcb80] text-white px-6 py-3 lg:px-8 lg:py-4 rounded-md hover:bg-[#fdd744] transition-all duration-300 transform hover:scale-105 text-lg"
                     >
                         Get started
@@ -144,13 +141,7 @@ const LandingPage = () => {
 
                     {/* Feel Every Moment */}
                     <div className="grid lg:grid-cols-2 gap-16 items-center">
-                        <div className="flex justify-center">
-                            <img
-                                src={Undraw1Svg}
-                                alt="Feel Every Moment"
-                                className="w-48 h-48 lg:w-64 lg:h-64"
-                            />
-                        </div>
+
                         <div>
                             <h3 className="text-3xl lg:text-4xl font-extrabold text-[#1f2937] mb-4">
                                 <span className="bg-[#7dcb80] text-white px-2 py-1">Feel</span> Every Moment
@@ -158,6 +149,13 @@ const LandingPage = () => {
                             <p className="text-[#6b7280] text-lg">
                                 It's not about where you go, but how it makes you feel. Travel with meaning.
                             </p>
+                        </div>
+                        <div className="flex justify-center">
+                            <img
+                                src={Undraw1Svg}
+                                alt="Feel Every Moment"
+                                className="w-48 h-48 lg:w-64 lg:h-64"
+                            />
                         </div>
                     </div>
                 </div>
