@@ -61,133 +61,141 @@ function Login() {
     };
 
     return (
-        <div className="min-h-screen bg-white flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Logo */}
-                <div className="flex justify-center mb-8">
-                    <img
-                        src={logoImage}
-                        alt="Itinera Logo"
-                        className="w-48 h-28 lg:w-64 lg:h-36 object-contain"
-                    />
-                </div>
+        <>
+            {/* Logo */}
+            <div className=" justifty-start ">
+                <img
+                    src={logoImage}
+                    alt="Itinera Logo"
+                    className="w-48 h-28 lg:w-64 lg:h-36 object-contain"
+                />
+            </div>
 
-                {/* Form Container */}
-                <form onSubmit={handleLogin} className="space-y-4">
-                    {/* Email Input */}
-                    <div>
-                        <div className="flex items-center bg-gray-100 rounded-md px-4 py-3 h-12">
-                            <Mail className="text-gray-400" size={20} />
-                            <input
-                                type="email"
-                                placeholder="Email"
-                                className="flex-1 ml-3 text-lg bg-transparent outline-none placeholder-gray-400"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                autoCapitalize="none"
-                            />
+            <div className="min-h-screen flex items-start justify-center p-4">
+
+                <div className="w-full max-w-md p-8 bg-white rounded-lg border border-gray-200 space-y-6 ">
+                    <p className='text-center text-2xl  '>Login to Itinera</p>
+                    {/* Form Container */}
+                    <form onSubmit={handleLogin} className="space-y-4">
+                        {/* Email Input */}
+                        <div className='px-6'>
+                            <div className="flex items-center border border-gray-500 focus-within:border-2  rounded-md px-4 py-3 h-10">
+                                <Mail className="text-gray-400" size={20} />
+                                <input
+                                    type="email"
+                                    placeholder="Email"
+                                    className="flex-1 ml-3 text-sm bg-transparent outline-none placeholder-gray-400 "
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    autoCapitalize="none"
+                                />
+                            </div>
+                            {errors.email && (
+                                <p className="text-red-500 text-sm ml-1 mt-1">{errors.email}</p>
+                            )}
                         </div>
-                        {errors.email && (
-                            <p className="text-red-500 text-sm ml-1 mt-1">{errors.email}</p>
-                        )}
-                    </div>
 
-                    {/* Password Input */}
-                    <div>
-                        <div className="flex items-center bg-gray-100 rounded-md px-4 py-3 h-12">
-                            <Lock className="text-gray-400" size={20} />
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                placeholder="Password"
-                                className="flex-1 ml-3 text-lg bg-transparent outline-none placeholder-gray-400"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
+                        {/* Password Input */}
+                        <div className='px-6'>
+                            <div className="flex items-center border border-gray-500 rounded-md px-4 py-3 h-10">
+                                <Lock className="text-gray-400" size={20} />
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    placeholder="Password"
+                                    className="flex-1 ml-3 text-sm bg-transparent outline-none placeholder-gray-400"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="ml-2 focus:outline-none"
+                                >
+                                    {showPassword ? (
+                                        <Eye className="text-gray-400" size={20} />
+                                    ) : (
+                                        <EyeOff className="text-gray-400" size={20} />
+                                    )}
+                                </button>
+                            </div>
+                            {errors.password && (
+                                <p className="text-red-500 text-sm ml-1 mt-1">{errors.password}</p>
+                            )}
+                        </div>
+
+                        {/* Forgot Password */}
+                        <div className="flex px-6 justify-end">
                             <button
                                 type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="ml-2 focus:outline-none"
+                                className="text-blue-400 text-sm font-medium hover:text-blue-500 transition-colors"
                             >
-                                {showPassword ? (
-                                    <Eye className="text-gray-400" size={20} />
+                                Forgot Password?
+                            </button>
+                        </div>
+
+                        {/* Login Button */}
+                        <div className='px-6'>
+                            <button
+                                type="submit"
+                                disabled={isSubmitting}
+                                className="w-full bg-[#274b46] text-white flex justify-center items-center h-10 py-3 rounded-md  text-base cursor-pointer hover:bg-[#1d3733] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                {isSubmitting ? (
+                                    <div className="flex justify-center">
+                                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                                    </div>
                                 ) : (
-                                    <EyeOff className="text-gray-400" size={20} />
+                                    'Log in'
                                 )}
                             </button>
                         </div>
-                        {errors.password && (
-                            <p className="text-red-500 text-sm ml-1 mt-1">{errors.password}</p>
-                        )}
-                    </div>
 
-                    {/* Forgot Password */}
-                    <div className="flex justify-end">
-                        <button
-                            type="button"
-                            className="text-blue-400 font-medium hover:text-blue-500 transition-colors"
-                        >
-                            Forgot Password?
-                        </button>
-                    </div>
-
-                    {/* Login Button */}
-                    <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full bg-[#274b46] text-white py-4 rounded-md font-bold text-lg cursor-pointer hover:bg-[#1d3733] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                        {isSubmitting ? (
-                            <div className="flex justify-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+                        {/* Or Divider */}
+                        <div className="relative my-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <div className="w-full border-t border-gray-200"></div>
                             </div>
-                        ) : (
-                            'Log in'
-                        )}
-                    </button>
-
-                    {/* Or Divider */}
-                    <div className="relative my-6">
-                        <div className="absolute inset-0 flex items-center">
-                            <div className="w-full border-t border-gray-200"></div>
+                            <div className="relative flex justify-center text-sm">
+                                <span className="px-2 bg-white text-gray-400">Or</span>
+                            </div>
                         </div>
-                        <div className="relative flex justify-center text-sm">
-                            <span className="px-2 bg-white text-gray-400">Or</span>
-                        </div>
-                    </div>
 
-                    {/* Google Sign In */}
-                    <button
-                        type="button"
-                        className="w-full bg-white border border-gray-200 py-4 rounded-md hover:bg-gray-50 transition-colors shadow-sm"
-                    >
-                        <div className="flex items-center justify-center">
-                            <img
-                                src={googleIcon}
-                                alt="Google"
-                                className="w-5 h-5"
-                            />
-                            <span className="ml-2 text-lg font-medium">
-                                Continue with Google
-                            </span>
-                        </div>
-                    </button>
-
-                    {/* Sign Up Link */}
-                    <div className="text-center pt-4">
-                        <p className="font-medium">
-                            Don't have an account?{' '}
+                        {/* Google Sign In */}
+                        <div className='px-6'>
                             <button
                                 type="button"
-                                onClick={() => navigate('/signup')}
-                                className="text-blue-400 hover:text-blue-500 transition-colors"
+                                className="w-full  border border-gray-500 flex justify-center items-center border-gray-200 py-4 h-10 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
                             >
-                                Sign Up
+                                <div className="flex items-center justify-center">
+                                    <img
+                                        src={googleIcon}
+                                        alt="Google"
+                                        className="w-5 h-5"
+                                    />
+                                    <span className="ml-2 text-base ">
+                                        Continue with Google
+                                    </span>
+                                </div>
                             </button>
-                        </p>
-                    </div>
-                </form>
+                        </div>
+
+                        {/* Sign Up Link */}
+                        <div className="text-center pt-4">
+                            <p className="text-sm text-gray-600">
+                                Don't have an account?{' '}
+                                <button
+                                    type="button"
+                                    onClick={() => navigate('/signup')}
+                                    className="text-blue-400 font-medium hover:text-blue-500 transition-colors"
+                                >
+                                    Sign Up
+                                </button>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
+        </>
     );
 };
 
