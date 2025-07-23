@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // Import your images here
-import logoImage from '../assets/images/logo.png';
-import UndrawSvg from '../assets/images/undraw.svg';
-import Undraw1Svg from '../assets/images/undraw1.svg';
-import Undraw2Svg from '../assets/images/undraw2.svg';
+import logoImage from '../../assets/images/logo.png';
+import UndrawSvg from '../../assets/images/undraw.svg';
+import Undraw1Svg from '../../assets/images/undraw1.svg';
+import Undraw2Svg from '../../assets/images/undraw2.svg';
 
 const LandingPage = () => {
     const [scrolled, setScrolled] = useState(false);

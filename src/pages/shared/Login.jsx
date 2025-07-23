@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import logoImage from '../assets/images/logo.png';
-import googleIcon from '../assets/images/google.png';
+import { useAuth } from '../../contexts/AuthContext';
+import logoImage from '../../assets/images/logo.png';
+import googleIcon from '../../assets/images/google.png';
 
 function Login() {
     const navigate = useNavigate();
