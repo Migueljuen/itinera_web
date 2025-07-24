@@ -67,7 +67,7 @@ const CreatorDashboard = () => {
     );
 
     return (
-        <div>
+        <div className=''>
             {/* Performance Chart Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
                 <div className="flex items-center justify-between mb-6">
@@ -110,7 +110,7 @@ const CreatorDashboard = () => {
 
             {/* Experience Overview */}
             <section className="mb-8">
-                <h2 className="text-xl lg:text-2xl font-medium mb-4">My Experiences</h2>
+                <h2 className="text-xl lg:text-2xl font-medium mb-4">My Activities</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-6">
                     <ExperienceCard
                         color="bg-green-600"
@@ -149,30 +149,7 @@ const CreatorDashboard = () => {
                 </div>
             </section>
 
-            {/* Quick Actions */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                <button
-                    onClick={() => navigate('/creator/create-experience')}
-                    className="bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
-                >
-                    Create Experience
-                </button>
-                <button
-                    onClick={() => navigate('/creator/bookings')}
-                    className="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                    View Bookings
-                </button>
-                <button className="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors">
-                    Analytics
-                </button>
-                <button
-                    onClick={() => navigate('/creator/settings')}
-                    className="bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                    Settings
-                </button>
-            </div>
+
         </div>
     );
 };

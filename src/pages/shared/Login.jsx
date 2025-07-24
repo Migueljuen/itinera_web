@@ -45,7 +45,7 @@ function Login() {
                 if (result.user.role === 'Traveler') {
                     navigate('/traveler');
                 } else if (result.user.role === 'Creator') {
-                    navigate('/creator');
+                    navigate('/owner');
                 } else {
                     alert('Invalid user role.');
                 }

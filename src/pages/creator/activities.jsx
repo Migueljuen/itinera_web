@@ -174,8 +174,8 @@ const CreatorExperiences = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h1 className="text-2xl lg:text-3xl font-semibold text-gray-800">Your Experiences</h1>
-                        <p className="text-gray-400 mt-1">Manage your experiences</p>
+                        <h1 className="text-2xl lg:text-3xl font-semibold text-gray-800">Your Activities</h1>
+                        <p className="text-gray-400 mt-1">Manage your Activities</p>
                     </div>
                     <div className="flex items-center gap-4">
                         {user?.profile_pic ? (

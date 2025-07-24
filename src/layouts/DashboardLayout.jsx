@@ -13,21 +13,17 @@ import {
     ChevronDown,
     Plus
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const DashboardLayout = () => {
     const navigate = useNavigate();
+    const { user, logout } = useAuth();
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
     const [isTasksExpanded, setIsTasksExpanded] = useState(true);
 
-    // Mock data instead of using auth
-    const mockUser = {
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'john@example.com'
-    };
-
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        await logout();
         navigate('/login');
     };
 
@@ -40,29 +36,30 @@ const DashboardLayout = () => {
             expandable: false
         },
         {
-            id: 'projects',
-            label: 'Projects',
+            id: 'activities',
+            label: 'Activities',
             icon: LayoutGrid,
-            path: '/creator/experiences',
+            path: '/owner/activities',
             expandable: true,
             isExpanded: isProjectsExpanded,
             setExpanded: setIsProjectsExpanded,
             subItems: [
-                { label: 'All Experiences', path: '/creator/experiences' },
-                { label: 'Create New', path: '/creator/create-experience' }
+                { label: 'All Activities', path: '/owner/activities' },
+                { label: 'Add New', path: '/owner/create' }
             ]
         },
         {
             id: 'tasks',
             label: 'Tasks',
             icon: Calendar,
-            path: '/creator/bookings',
+            path: '/owner/bookings',
             expandable: true,
             isExpanded: isTasksExpanded,
             setExpanded: setIsTasksExpanded,
             subItems: [
-                { label: 'Active Bookings', path: '/creator/bookings/active' },
-                { label: 'Completed', path: '/creator/bookings/completed' }
+                { label: 'Active Bookings', path: '/owner/bookings/active' },
+                { label: 'Completed', path: '/owner/bookings/completed' },
+
             ]
         },
         {
@@ -153,12 +150,12 @@ const DashboardLayout = () => {
 
             {/* Sidebar */}
             <aside
-                className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-200 z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300 z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
                     }`}
             >
                 <div className="flex flex-col h-full">
                     {/* Logo Section */}
-                    <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                    <div className="flex items-center justify-between p-6">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
                                 <span className="text-white font-bold text-xl">I</span>
@@ -181,11 +178,11 @@ const DashboardLayout = () => {
                     </nav>
 
                     {/* Upgrade Section */}
-                    <div className="p-4 border-t border-gray-100">
-                        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg p-4 text-white">
-                            <h3 className="font-semibold mb-1">Upgrade to Pro</h3>
-                            <p className="text-sm opacity-90 mb-3">Get 1 month free and unlock</p>
-                            <button className="bg-white text-indigo-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50 transition-colors w-full">
+                    <div className="p-4 border-t border-gray-200">
+                        <div className=" rounded-lg p-4  text-center text-[#212121]">
+                            <h3 className="font-bold mb-1">Upgrade Plan</h3>
+                            <p className="text-sm opacity-90 mb-3">Showcase more activities</p>
+                            <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-gray-50 transition-colors w-3/4">
                                 Upgrade
                             </button>
                         </div>
@@ -211,7 +208,7 @@ const DashboardLayout = () => {
             {/* Main Content */}
             <div className="lg:ml-64 min-h-screen">
                 {/* Top Header */}
-                <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+                <header className="bg-white border-b border-gray-300 sticky top-0 z-30">
                     <div className="flex items-center justify-between px-4 lg:px-8 py-4">
                         {/* Mobile Menu Button */}
                         <button
@@ -224,10 +221,10 @@ const DashboardLayout = () => {
                         {/* Page Title */}
                         <div className="flex-1 lg:flex-none">
                             <h1 className="text-2xl font-semibold text-gray-900">
-                                Hello, {mockUser.first_name}
+                                Hello, {user?.first_name || 'Creator'}
                             </h1>
                             <p className="text-sm text-gray-500 mt-1">
-                                Track your progress here. You almost reach a goal!
+                                Welcome back, track your progress here.
                             </p>
                         </div>
 
@@ -247,13 +244,13 @@ const DashboardLayout = () => {
                             <div className="flex items-center gap-3">
                                 <div className="text-right hidden sm:block">
                                     <p className="text-sm font-medium text-gray-900">
-                                        {mockUser.first_name} {mockUser.last_name}
+                                        {user?.first_name} {user?.last_name}
                                     </p>
-                                    <p className="text-xs text-gray-500">@{mockUser.email.split('@')[0]}</p>
+                                    <p className="text-xs text-gray-500">@{user?.email?.split('@')[0]}</p>
                                 </div>
                                 <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
                                     <span className="text-indigo-600 font-medium">
-                                        {mockUser.first_name[0]}
+                                        {user?.first_name?.[0] || 'U'}
                                     </span>
                                 </div>
                             </div>
