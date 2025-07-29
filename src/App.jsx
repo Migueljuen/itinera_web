@@ -7,7 +7,7 @@ import CreatorDashboard from './pages/creator/index';
 import CreatorExperiences from './pages/creator/activities';
 import ProtectedRoute from './components/ProtectedRoute';
 import PublicRoute from './components/PublicRoute';
-
+import ExperienceCreationForm from './pages/creator/createExperience/createExperience';
 export default function App() {
   return (
     <Router>
@@ -38,6 +38,7 @@ export default function App() {
           <Route index element={<CreatorDashboard />} />
           <Route path="dashboard" element={<CreatorDashboard />} />
           <Route path="activities" element={<CreatorExperiences />} />
+          <Route path="create" element={<ExperienceCreationForm />} />
         </Route>
 
         {/* Catch all - redirect to home */}
