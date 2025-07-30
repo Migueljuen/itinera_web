@@ -1,53 +1,42 @@
 import React from 'react';
 
 const ProgressBar = ({ currentStep, totalSteps, labels = [] }) => {
+    const progressPercentage = (currentStep / totalSteps) * 100;
+
     return (
         <div className="px-6 my-4">
-            <div className="flex items-center">
-                {Array.from({ length: totalSteps }, (_, index) => {
-                    const stepNumber = index + 1;
-                    const isCompleted = stepNumber < currentStep;
-                    const isCurrent = stepNumber === currentStep;
-
-                    return (
-                        <React.Fragment key={stepNumber}>
-                            {/* Step Circle */}
-                            <div className="flex items-center">
-                                <div
-                                    className={`
-                    w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
-                    ${isCompleted
-                                            ? 'bg-green-500 text-white'
-                                            : isCurrent
-                                                ? 'bg-blue-500 text-white'
-                                                : 'bg-gray-200 text-gray-600'
-                                        }
-                  `}
-                                >
-                                    {isCompleted ? '✓' : stepNumber}
-                                </div>
-
-                                {/* Step Label */}
-                                {labels[index] && (
-                                    <span className="ml-2 text-sm text-gray-600 hidden sm:block">
-                                        {labels[index]}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* Separator Line */}
-                            {stepNumber < totalSteps && (
-                                <div
-                                    className={`
-                    flex-1 h-1 mx-4
-                    ${isCompleted ? 'bg-green-500' : 'bg-gray-200'}
-                  `}
-                                />
-                            )}
-                        </React.Fragment>
-                    );
-                })}
+            {/* Progress Bar */}
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+                <div
+                    className="bg-[#376a63] h-2 rounded-full transition-all duration-300 ease-out"
+                    style={{ width: `${progressPercentage}%` }}
+                />
             </div>
+
+            {/* Step Labels - Optional */}
+            {labels.length > 0 && (
+                <div className="flex justify-between text-sm text-gray-600">
+                    {labels.map((label, index) => {
+                        const stepNumber = index + 1;
+                        const isCompleted = stepNumber < currentStep;
+                        const isCurrent = stepNumber === currentStep;
+
+                        return (
+                            <span
+                                key={index}
+                                className={`
+                                    transition-colors duration-200
+                                    ${isCompleted ? 'text-[#376a63] font-medium' : ''}
+                                    ${isCurrent ? 'text-[#376a63] font-semibold' : ''}
+                                    ${!isCompleted && !isCurrent ? 'text-gray-400' : ''}
+                                `}
+                            >
+                                {label}
+                            </span>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 };

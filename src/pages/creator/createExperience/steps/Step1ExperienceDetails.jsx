@@ -1,4 +1,5 @@
 import React from 'react';
+import { ArrowRight } from 'lucide-react'; // Make sure this is installed via lucide-react
 
 const units = ['Entry', 'Hour', 'Day', 'Package'];
 
@@ -12,7 +13,7 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
     };
 
     return (
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto pb-28">
             <div className="p-4 max-w-2xl mx-auto">
                 <div className="text-center py-2">
                     <h2 className="text-center text-xl font-semibold mb-2">Let's get started</h2>
@@ -22,11 +23,11 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
 
                     <div className="flex flex-col gap-4 border-t pt-12 border-gray-200">
                         {/* Title Input */}
-                        <div className="bg-white pb-4">
-                            <label className="block font-medium py-2 text-left">Experience Title</label>
+                        <div className="pb-4">
+                            <label className="block font-medium py-2 text-left">Activity Title</label>
                             <input
                                 type="text"
-                                placeholder="Sunset in the mountains"
+                                placeholder="E.g. Sunset in the mountains"
                                 value={formData.title}
                                 onChange={(e) => handleChange('title', e.target.value)}
                                 className="w-full p-4 text-base text-gray-600 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -34,10 +35,10 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
                         </div>
 
                         {/* Description Input */}
-                        <div className="bg-white pb-4">
+                        <div className="pb-4">
                             <label className="block font-medium py-2 text-left">Description</label>
                             <textarea
-                                placeholder="Description of the experience"
+                                placeholder="Short description of the activity"
                                 value={formData.description}
                                 onChange={(e) => handleChange('description', e.target.value)}
                                 className="w-full p-4 text-base text-gray-800 h-32 rounded-xl border border-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -46,7 +47,7 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
                         </div>
 
                         {/* Price Input */}
-                        <div className="bg-white pb-4">
+                        <div className="e pb-4">
                             <label className="block font-medium py-2 text-left">Price ₱</label>
                             <input
                                 type="number"
@@ -60,7 +61,7 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
                         </div>
 
                         {/* Units Selection */}
-                        <div className="bg-white mt-6">
+                        <div className=" mt-6">
                             <label className="block text-base font-medium py-2 text-left">Select Unit</label>
                             <div className="flex flex-wrap gap-3 mb-2">
                                 {units.map((unit) => (
@@ -69,8 +70,8 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
                                         type="button"
                                         onClick={() => handleChange('unit', unit)}
                                         className={`px-6 py-2 rounded-full transition-colors duration-200 ${formData.unit === unit
-                                                ? 'bg-gray-800 text-white'
-                                                : 'bg-white border border-gray-200 text-gray-400 hover:bg-gray-50'
+                                            ? 'bg-[#376a63] text-white'
+                                            : 'bg-white border border-gray-200 text-gray-400 hover:bg-gray-50'
                                             }`}
                                     >
                                         <span className="text-base font-medium">{unit}</span>
@@ -79,18 +80,20 @@ const Step1ExperienceDetails = ({ formData, setFormData, onNext }) => {
                             </div>
                         </div>
 
-                        {/* Submit Button */}
-                        <button
-                            type="button"
-                            onClick={isValid() ? onNext : undefined}
-                            disabled={!isValid()}
-                            className={`mt-4 p-4 rounded-xl transition-colors duration-200 ${isValid()
-                                    ? 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer'
+                        <div className="fixed bottom-16 right-8 z-20">
+                            <button
+                                type="button"
+                                onClick={isValid() ? onNext : undefined}
+                                disabled={!isValid()}
+                                className={`flex items-center gap-2 p-6 cursor-pointer rounded-full shadow-lg transition-colors font-medium ${isValid()
+                                    ? 'bg-[#376a63] text-white hover:bg-[#2e5954]'
                                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                }`}
-                        >
-                            <span className="text-center font-medium text-base">Next step</span>
-                        </button>
+                                    }`}
+                            >
+                                <ArrowRight />
+                            </button>
+                        </div>
+
                     </div>
                 </div>
             </div>

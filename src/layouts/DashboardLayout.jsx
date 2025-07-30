@@ -14,7 +14,7 @@ import {
     Plus
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-
+import API_URL from '../constants/api';
 const DashboardLayout = () => {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
@@ -49,8 +49,8 @@ const DashboardLayout = () => {
             ]
         },
         {
-            id: 'tasks',
-            label: 'Tasks',
+            id: 'bookings',
+            label: 'Bookings',
             icon: Calendar,
             path: '/owner/bookings',
             expandable: true,
@@ -89,7 +89,7 @@ const DashboardLayout = () => {
                         className="w-full flex items-center justify-between px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors group"
                     >
                         <div className="flex items-center gap-3">
-                            <Icon size={20} className="text-gray-500 group-hover:text-gray-700" />
+                            <Icon size={20} className="text-gray-500 group-hover:text-gray-700 " />
                             <span className="font-medium">{item.label}</span>
                         </div>
                         <div className="flex items-center gap-2">
@@ -108,7 +108,7 @@ const DashboardLayout = () => {
                                     to={subItem.path}
                                     className={({ isActive }) =>
                                         `block px-4 py-2 text-sm rounded-lg transition-colors ${isActive
-                                            ? 'bg-indigo-50 text-indigo-600 font-medium'
+                                            ? 'bg-green-50 text-green-600 font-medium'
                                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                         }`
                                     }
@@ -127,7 +127,7 @@ const DashboardLayout = () => {
                 to={item.path}
                 className={({ isActive }) =>
                     `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group ${isActive
-                        ? 'bg-indigo-50 text-indigo-600'
+                        ? 'bg-green-50 text-green-600'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`
                 }
@@ -182,7 +182,7 @@ const DashboardLayout = () => {
                         <div className=" rounded-lg p-4  text-center text-[#212121]">
                             <h3 className="font-bold mb-1">Upgrade Plan</h3>
                             <p className="text-sm opacity-90 mb-3">Showcase more activities</p>
-                            <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-gray-50 transition-colors w-3/4">
+                            <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-[#376a63]/80 cursor-pointer transition-colors w-3/4">
                                 Upgrade
                             </button>
                         </div>
@@ -224,7 +224,7 @@ const DashboardLayout = () => {
                                 Hello, {user?.first_name || 'Creator'}
                             </h1>
                             <p className="text-sm text-gray-500 mt-1">
-                                Welcome back, track your progress here.
+                                Welcome back to Itinera!
                             </p>
                         </div>
 
@@ -248,10 +248,18 @@ const DashboardLayout = () => {
                                     </p>
                                     <p className="text-xs text-gray-500">@{user?.email?.split('@')[0]}</p>
                                 </div>
-                                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                                    <span className="text-indigo-600 font-medium">
-                                        {user?.first_name?.[0] || 'U'}
-                                    </span>
+                                <div className="flex items-center gap-4">
+                                    {user?.profile_pic ? (
+                                        <img
+                                            src={`${API_URL}/${user.profile_pic}`}
+                                            alt="Profile"
+                                            className="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <span className="text-gray-500 text-lg">{user?.first_name?.[0] || 'U'}</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -177,19 +177,7 @@ const CreatorExperiences = () => {
                         <h1 className="text-2xl lg:text-3xl font-semibold text-gray-800">Your Activities</h1>
                         <p className="text-gray-400 mt-1">Manage your Activities</p>
                     </div>
-                    <div className="flex items-center gap-4">
-                        {user?.profile_pic ? (
-                            <img
-                                src={`${API_URL}/${user.profile_pic}`}
-                                alt="Profile"
-                                className="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover"
-                            />
-                        ) : (
-                            <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gray-200 flex items-center justify-center">
-                                <span className="text-gray-500 text-lg">{user?.first_name?.[0] || 'U'}</span>
-                            </div>
-                        )}
-                    </div>
+
                 </div>
 
                 {/* Search Bar */}
