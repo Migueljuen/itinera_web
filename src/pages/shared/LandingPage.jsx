@@ -71,7 +71,7 @@ const LandingPage = () => {
                         <img
                             src={logoImage}
                             alt="Itinera Logo"
-                            className="w-20 h-20 lg:w-24 lg:h-24 cursor-pointer transition-transform hover:scale-105"
+                            className="w-24 h-24 lg:w-32 lg:h-32 cursor-pointer transition-transform hover:scale-105"
                         />
                         <button
                             onClick={handleSignIn}
@@ -84,13 +84,13 @@ const LandingPage = () => {
             </header>
 
             {/* Hero Section */}
-            <section className="pt-32 lg:pt-48 pb-16 lg:pb-48 bg-gradient-to-br from-gray-50 to-white">
-                <div className="container mx-auto px-4 lg:px-8 text-center">
-                    <h1 className="text-4xl lg:text-6xl font-medium text-[#1f2937] mb-4">
+            <section className=" h-[36rem] lg:h-[56rem] pt-24 lg:pt-0  bg-gradient-to-br from-gray-50 to-white">
+                <div className=" mx-auto flex  flex-col items-center  justify-center h-full font-display text-center ">
+                    <h1 className="text-5xl lg:text-7xl font-medium  text-[#1f2937]  ">
                         <span className="block">Experience more.</span>
                         <span className="block">Plan less.</span>
                     </h1>
-                    <p className="text-[#6b7280] text-lg lg:text-xl max-w-2xl mx-auto mb-8">
+                    <p className="text-[#6b7280] text-lg lg:text-2xl max-w-[80%] mx-auto my-12">
                         Craft Your Perfect Journey: Tailored Itineraries for Every Adventure.
                     </p>
                     <button
@@ -105,11 +105,11 @@ const LandingPage = () => {
             {/* Uncover Section */}
             <section className="bg-[#376a63] py-16 lg:py-24">
                 <div className="container mx-auto px-4 lg:px-8">
-                    <div className="max-w-4xl mx-auto lg:mx-0">
-                        <h2 className="text-3xl lg:text-5xl font-extrabold text-white mb-4">
+                    <div className="max-w-[70%] mx-4  flex flex-col justify-start lg:mx-0">
+                        <h2 className="text-4xl lg:text-6xl font-bold text-white mb-4 font-display ">
                             <span className="text-[#fdd744]">Uncover</span> Real Experiences
                         </h2>
-                        <p className="text-gray-300 text-lg lg:text-xl max-w-2xl">
+                        <p className="text-gray-200 text-lg lg:text-2xl max-w-2xl mt-4 lg:mt-8">
                             Go beyond the itinerary—discover unique moments that make every trip unforgettable.
                         </p>
                     </div>
@@ -118,39 +118,40 @@ const LandingPage = () => {
 
             {/* Features Grid */}
             <section className="py-16 lg:py-24">
-                <div className="container mx-auto px-4 lg:px-8">
+                <div className="container mx-auto px-4 lg:px-8 lg:py-24">
                     {/* Personalized Recommendations */}
-                    <div className="grid lg:grid-cols-2 gap-16 mb-16 items-center">
-                        <div className="order-2 lg:order-1 flex justify-center">
+                    <div className="grid place-items-end lg:place-items-center lg:grid-cols-2 gap-16 mb-16 items-center">
+
+                        <div className="order-2  text-right flex flex-col items-end ">
+                            <h3 className="text-3xl lg:text-4xl font-extrabold text-[#1f2937] mb-4">
+                                Personalized{' '}
+                                <span className="bg-[#54a056eb] block w-fit ">Recommendations</span>
+                            </h3>
+                            <p className="text-[#6b7280] text-lg w-[70%] lg:w-full">
+                                Plan, customize, and optimize your trips. Whether it's for vacations or everyday adventures.
+                            </p>
+                        </div>
+                        <div className="order-1  flex justify-center">
                             <img
                                 src={UndrawSvg}
                                 alt="Personalized Recommendations"
                                 className="w-48 h-48 lg:w-64 lg:h-64"
                             />
                         </div>
-                        <div className="order-1 lg:order-2 text-left lg:text-right">
-                            <h3 className="text-3xl lg:text-4xl font-extrabold text-[#1f2937] mb-4">
-                                Personalized{' '}
-                                <span className="bg-[#7dcb80] text-white px-2 py-1">Recommendations</span>
-                            </h3>
-                            <p className="text-[#6b7280] text-lg">
-                                Plan, customize, and optimize your trips. Whether it's for vacations or everyday adventures.
-                            </p>
-                        </div>
                     </div>
 
                     {/* Feel Every Moment */}
-                    <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    <div className="grid place-items-start lg:place-items-center lg:grid-cols-2 gap-16 items-center">
 
-                        <div>
+                        <div className='order-2 lg:order-1'>
                             <h3 className="text-3xl lg:text-4xl font-extrabold text-[#1f2937] mb-4">
-                                <span className="bg-[#7dcb80] text-white px-2 py-1">Feel</span> Every Moment
+                                <span className="bg-[#54a056eb]  ">Feel</span> Every Moment
                             </h3>
                             <p className="text-[#6b7280] text-lg">
                                 It's not about where you go, but how it makes you feel. Travel with meaning.
                             </p>
                         </div>
-                        <div className="flex justify-center">
+                        <div className="flex justify-center order-1">
                             <img
                                 src={Undraw1Svg}
                                 alt="Feel Every Moment"

@@ -5,3 +5,7 @@
   src: url('/src/assets/fonts/Onest-Regular.ttf') format('truetype');
   font-weight: 400;
 }
+
+@theme inline {
+  --font-display: "Onest", sans-serif;
+}

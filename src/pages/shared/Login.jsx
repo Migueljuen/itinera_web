@@ -164,7 +164,7 @@ function Login() {
                         <div className='px-6'>
                             <button
                                 type="button"
-                                className="w-full  border border-gray-500 flex justify-center items-center border-gray-200 py-4 h-10 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
+                                className="w-full  border border-gray-500 flex justify-center items-center  py-4 h-10 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
                             >
                                 <div className="flex items-center justify-center">
                                     <img
