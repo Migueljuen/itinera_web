@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Star, Activity, Circle } from 'lucide-react';
+import { Calendar, Star, Activity, Circle , Menu } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import API_URL from '../../constants/api';
 
@@ -68,6 +68,56 @@ const CreatorDashboard = () => {
 
     return (
         <div className=''>
+                   {/* Top Header */}
+                <header className="">
+                    <div className="flex items-center justify-between pb-4">
+                        {/* Mobile Menu Button */}
+                        <button
+                          
+                            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+                        >
+                            <Menu size={24} />
+                        </button>
+
+                        {/* Page Title */}
+                        <div className="flex-1 lg:flex-none">
+                            <h1 className="text-2xl font-semibold text-gray-900">
+                                Hello, {user?.first_name || 'Creator'}
+                            </h1>
+                            <p className="text-sm text-gray-500 mt-1">
+                                Welcome back to Itinera!
+                            </p>
+                        </div>
+
+                        {/* Right Section */}
+                        <div className="flex items-center gap-4">
+              
+
+                            {/* User Profile */}
+                            <div className="flex items-center gap-3">
+                                <div className="text-right hidden sm:block">
+                                    <p className="text-sm font-medium text-gray-900">
+                                        {user?.first_name} {user?.last_name}
+                                    </p>
+                                    <p className="text-xs text-gray-500">@{user?.email?.split('@')[0]}</p>
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    {user?.profile_pic ? (
+                                        <img
+                                            src={`${API_URL}/${user.profile_pic}`}
+                                            alt="Profile"
+                                            className="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover"
+                                        />
+                                    ) : (
+                                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gray-200 flex items-center justify-center">
+                                            <span className="text-gray-500 text-lg">{user?.first_name?.[0] || 'U'}</span>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
             {/* Performance Chart Section */}
             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
                 <div className="flex items-center justify-between mb-6">

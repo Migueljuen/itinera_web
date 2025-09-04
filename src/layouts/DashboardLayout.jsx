@@ -207,64 +207,7 @@ const DashboardLayout = () => {
 
             {/* Main Content */}
             <div className="lg:ml-64 min-h-screen">
-                {/* Top Header */}
-                <header className="bg-white border-b border-gray-300 sticky top-0 z-30">
-                    <div className="flex items-center justify-between px-4 lg:px-8 py-4">
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setIsSidebarOpen(true)}
-                            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
-                        >
-                            <Menu size={24} />
-                        </button>
-
-                        {/* Page Title */}
-                        <div className="flex-1 lg:flex-none">
-                            <h1 className="text-2xl font-semibold text-gray-900">
-                                Hello, {user?.first_name || 'Creator'}
-                            </h1>
-                            <p className="text-sm text-gray-500 mt-1">
-                                Welcome back to Itinera!
-                            </p>
-                        </div>
-
-                        {/* Right Section */}
-                        <div className="flex items-center gap-4">
-                            {/* Date */}
-                            <div className="hidden sm:flex items-center gap-2 text-sm text-gray-600">
-                                <Calendar size={16} />
-                                <span>{new Date().toLocaleDateString('en-US', {
-                                    day: 'numeric',
-                                    month: 'long',
-                                    year: 'numeric'
-                                })}</span>
-                            </div>
-
-                            {/* User Profile */}
-                            <div className="flex items-center gap-3">
-                                <div className="text-right hidden sm:block">
-                                    <p className="text-sm font-medium text-gray-900">
-                                        {user?.first_name} {user?.last_name}
-                                    </p>
-                                    <p className="text-xs text-gray-500">@{user?.email?.split('@')[0]}</p>
-                                </div>
-                                <div className="flex items-center gap-4">
-                                    {user?.profile_pic ? (
-                                        <img
-                                            src={`${API_URL}/${user.profile_pic}`}
-                                            alt="Profile"
-                                            className="w-12 h-12 lg:w-14 lg:h-14 rounded-full object-cover"
-                                        />
-                                    ) : (
-                                        <div className="w-12 h-12 lg:w-14 lg:h-14 rounded-full bg-gray-200 flex items-center justify-center">
-                                            <span className="text-gray-500 text-lg">{user?.first_name?.[0] || 'U'}</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+       
 
                 {/* Page Content */}
                 <main className="p-4 lg:p-8">

@@ -6,7 +6,7 @@ import logoImage from '../../assets/images/logo.png';
 import UndrawSvg from '../../assets/images/undraw.svg';
 import Undraw1Svg from '../../assets/images/undraw1.svg';
 import Undraw2Svg from '../../assets/images/undraw2.svg';
-
+import Button from '../../components/Button'
 const LandingPage = () => {
     const [scrolled, setScrolled] = useState(false);
     const navigate = useNavigate();
@@ -60,56 +60,72 @@ const LandingPage = () => {
     ];
 
     return (
-        <div className="min-h-screen bg-white ">
+        <div className="min-h-screen bg-white font-display">
             {/* Header */}
             <header
-                className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
-                    }`}
+                className={`fixed top-5 w-full z-50 transition-all duration-300'
+                    `}
             >
-                <div className="container mx-auto px-4 lg:px-8 ">
-                    <div className="flex justify-between items-center">
-                        <img
-                            src={logoImage}
-                            alt="Itinera Logo"
-                            className="w-24 h-24 lg:w-32 lg:h-32 cursor-pointer transition-transform hover:scale-105"
-                        />
-                        <button
-                            onClick={handleSignIn}
-                            className="bg-[#274b46] text-white px-4 py-2 lg:px-6 lg:py-3 rounded-md hover:bg-[#376a63] transition-all duration-300 transform hover:scale-105"
-                        >
-                            Sign In
-                        </button>
-                    </div>
-                </div>
+<div className="container bg-white w-4/5 mx-auto rounded-full p-4">
+  <div className="grid grid-cols-3 items-center ">
+    {/* Logo */}
+    <div className='ml-4 mb-2'>
+      <img
+        src={logoImage}
+        alt="Itinera Logo"
+        className="w-24 cursor-pointer transition-transform"
+      />
+    </div>
+
+    {/* Nav Links (center column) */}
+    <div className="flex justify-center space-x-8 text-base font-medium text-gray-700">
+      <a href="#features" className="hover:text-[#274b46] transition-colors">Features</a>
+      <a href="#why" className="hover:text-[#274b46] transition-colors">Why Itinera</a>
+      <a href="#pricing" className="hover:text-[#274b46] transition-colors">Pricing</a>
+      <a href="#about" className="hover:text-[#274b46] transition-colors">About</a>
+    </div>
+
+    {/* Buttons */}
+    <div className="flex justify-end space-x-4">
+      <Button bgColor="#f3f4f6" textColor="#000000" onClick={handleSignIn} hoverColor="#ffffff">
+        Login
+      </Button>
+      <Button onClick={handleSignIn} />
+    </div>
+  </div>
+</div>
+
+
             </header>
 
             {/* Hero Section */}
-            <section className=" h-[36rem] lg:h-[56rem] pt-24 lg:pt-0  bg-gradient-to-br from-gray-50 to-white">
-                <div className=" mx-auto flex  flex-col items-center  justify-center h-full font-display text-center ">
-                    <h1 className="text-5xl lg:text-7xl font-medium  text-[#1f2937]  ">
-                        <span className="block">Experience more.</span>
-                        <span className="block">Plan less.</span>
+            <section className="z-10 h-[36rem] lg:h-[52rem] pt-24 lg:pt-0  bg-gradient-to-b from-[#54a056eb]/15 to-gray-50  relative">
+                <div className="z-10 mx-auto flex  flex-col items-center  justify-center h-full font-display text-center ">
+                    <h1 className="text-5xl font-medium  text-[#1f2937]  ">
+                   
+                        <span className="block">Smart itinerary planning for travelers</span>
+                        <span className="block">who want more.</span>
                     </h1>
-                    <p className="text-[#6b7280] text-lg lg:text-2xl max-w-[80%] mx-auto my-12">
-                        Craft Your Perfect Journey: Tailored Itineraries for Every Adventure.
+                    <p className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-12">
+                       Travel smarter. Stress less. Your journey, your way.
                     </p>
-                    <button
-                        onClick={handleSignIn}
-                        className="bg-[#7dcb80] text-white px-6 py-3 lg:px-8 lg:py-4 rounded-md hover:bg-[#fdd744] transition-all duration-300 transform hover:scale-105 text-lg"
-                    >
-                        Get started
-                    </button>
+                    {/* move to see how it works section later */}
+              <Button  onClick={handleSignIn}>See How It Works</Button>
+                    <div className="shits  w-full h-full absolute blur-[8rem] hidden  ">
+                        <div className="size-3/4 bg-yellow-400/10 absolute -left-24 -bottom-24 rounded-tr-full rounded-tl-full"></div>
+                        <div className="size-3/4 bg-green-400/10 absolute -right-24 -bottom-24 rounded-tl-full "></div>
+                    </div>
                 </div>
             </section>
 
             {/* Uncover Section */}
             <section className="bg-[#376a63] py-16 lg:py-24">
                 <div className="container mx-auto px-4 lg:px-8">
-                    <div className="max-w-[70%] mx-4  flex flex-col justify-start lg:mx-0">
-                        <h2 className="text-4xl lg:text-6xl font-bold text-white mb-4 font-display ">
+                    <div className="max-w-[70%] mx-4  flex flex-col justify-start lg:mx-0 font-display">
+                        <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-4  ">
                             <span className="text-[#fdd744]">Uncover</span> Real Experiences
                         </h2>
-                        <p className="text-gray-200 text-lg lg:text-2xl max-w-2xl mt-4 lg:mt-8">
+                        <p className="text-gray-200 text-lg mt-4 lg:mt-8">
                             Go beyond the itinerary—discover unique moments that make every trip unforgettable.
                         </p>
                     </div>
@@ -163,7 +179,7 @@ const LandingPage = () => {
             </section>
 
             {/* What We Offer */}
-            <section className="bg-gray-50 py-16 lg:py-24">
+            <section className=" py-16 lg:pb-42">
                 <div className="container mx-auto px-4 lg:px-8">
                     <div className="text-center mb-12">
                         <img
@@ -180,11 +196,11 @@ const LandingPage = () => {
                     </div>
 
                     {/* Feature Cards */}
-                    <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+                    <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
                         {features.map((feature, index) => (
                             <div
                                 key={index}
-                                className="bg-white border border-gray-200 rounded-lg p-8 hover:shadow-lg transition-shadow duration-300 transform hover:scale-105"
+                                className="border border-gray-200 rounded-lg p-10  transition-shadow duration-300 transform "
                             >
                                 <div className="flex items-center mb-4">
                                     <img
@@ -201,7 +217,6 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Footer */}
             <footer className="bg-white border-t border-gray-200 py-16">
                 <div className="container mx-auto px-4 lg:px-8">
                     <div className="text-center mb-8">
@@ -215,7 +230,7 @@ const LandingPage = () => {
                         </p>
                     </div>
 
-                    <div className="grid md:grid-cols-4 gap-8 mb-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
                         {footerSections.map((section, index) => (
                             <div key={index} className="text-center md:text-left">
                                 <h5 className="font-semibold mb-3 text-[#1f2937]">{section.title}</h5>
