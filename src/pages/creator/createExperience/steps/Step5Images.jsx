@@ -133,8 +133,8 @@ const Step5ImageUpload = ({ formData, setFormData, onNext, onBack }) => {
                             onDrop={handleDrop}
                             onClick={pickImage}
                             className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${dragOver
-                                    ? 'border-blue-400 bg-blue-50'
-                                    : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
+                                ? 'border-blue-400 bg-blue-50'
+                                : 'border-gray-300 hover:border-gray-400 hover:bg-gray-50'
                                 } ${isLoading ? 'pointer-events-none opacity-50' : ''}`}
                         >
                             {isLoading ? (
@@ -198,7 +198,7 @@ const Step5ImageUpload = ({ formData, setFormData, onNext, onBack }) => {
                                                         }}
                                                     />
                                                     {/* Fallback if image fails to load */}
-                                                    <div className="w-full h-full flex items-center justify-center text-gray-400 hidden">
+                                                    <div className="w-full h-full flex items-center justify-center text-gray-400 ">
                                                         <FileImage size={32} />
                                                     </div>
                                                 </div>
@@ -251,8 +251,8 @@ const Step5ImageUpload = ({ formData, setFormData, onNext, onBack }) => {
                             onClick={isValid() ? onNext : undefined}
                             disabled={!isValid()}
                             className={`flex-1 p-4 px-6 rounded-xl font-medium transition-colors ${isValid()
-                                    ? 'bg-blue-600 text-white hover:bg-blue-700'
-                                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                                ? 'bg-blue-600 text-white hover:bg-blue-700'
+                                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                                 }`}
                         >
                             Next step
