@@ -7,6 +7,7 @@ import UndrawSvg from "../../assets/images/undraw.svg";
 import Undraw1Svg from "../../assets/images/undraw1.svg";
 import Undraw2Svg from "../../assets/images/undraw2.svg";
 import Button from "../../components/Button";
+import mockup from "../../assets/images/test2.png";
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
@@ -123,23 +124,31 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="z-10 h-[36rem] lg:h-[52rem] pt-24 lg:pt-0  bg-gradient-to-b from-[#54a056eb]/15 to-gray-50  relative">
-        <div className="z-10 mx-auto flex  flex-col items-center  justify-center h-full font-display text-center ">
-          <h1 className="text-5xl font-medium  text-[#1f2937]  ">
-            <span className="block">
-              Smart itinerary planning for travelers
-            </span>
-            <span className="block">who want more.</span>
-          </h1>
-          <p className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-12">
-            Travel smarter. Stress less. Your journey, your way.
-          </p>
-          {/* move to see how it works section later */}
-          <Button onClick={handleSignIn}>See How It Works</Button>
-          <div className="shits  w-full h-full absolute blur-[8rem] hidden  ">
-            <div className="size-3/4 bg-yellow-400/10 absolute -left-24 -bottom-24 rounded-tr-full rounded-tl-full"></div>
-            <div className="size-3/4 bg-green-400/10 absolute -right-24 -bottom-24 rounded-tl-full "></div>
+      <section className="z-10 h-[48rem] lg:h-[80rem] pt-24 lg:pt-0  bg-gradient-to-b from-[#54a056eb]/15 to-gray-50  relative">
+        <div className="z-10 mx-auto flex  flex-col items-center  justify-end  h-full font-display text-center ">
+          <div>
+            <h1 className="text-5xl font-medium  text-[#1f2937]  ">
+              <span className="block">
+                Smart itinerary planning for travelers
+              </span>
+              <span className="block">who want more.</span>
+            </h1>
+            <p className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-12">
+              Travel smarter. Stress less. Your journey, your way.
+            </p>
+
+            <Button onClick={handleSignIn}>See How It Works</Button>
           </div>
+
+          <div className="grid place-items-center mt-16">
+            <img
+              src={mockup}
+              alt="Itinera Logo"
+              className="w-4/6 cursor-pointer transition-transform"
+            />
+          </div>
+
+          <div>asdasd</div>
         </div>
       </section>
 

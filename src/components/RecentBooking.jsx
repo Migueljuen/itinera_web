@@ -52,7 +52,7 @@ export default function RecentBooking() {
             <div>
               <p className="font-medium text-primary">Lenuelito Betita</p>
               <p className="text-sm text-black/60">
-                Booked: Sunset Photography Tour
+                Booked: Bird Watching At Balaring
               </p>
             </div>
           </div>
