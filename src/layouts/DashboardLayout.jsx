@@ -85,11 +85,8 @@ const DashboardLayout = () => {
               className="w-full flex items-center justify-between px-4 py-3  hover:bg-gray-100 rounded-lg transition-colors group"
             >
               <div className="flex items-center gap-3">
-                <Icon
-                  size={20}
-                  className="text-gray-500 group-hover:text-gray-700 "
-                />
-                <span className="font-medium">{item.label}</span>
+                <Icon size={20} className="text-[#212121]  " />
+                <span className="text-[#212121]">{item.label}</span>
               </div>
               <div className="flex items-center gap-2">
                 <ChevronDown
@@ -109,7 +106,7 @@ const DashboardLayout = () => {
                     className={({ isActive }) =>
                       `block px-4 py-2 text-sm rounded-lg transition-colors ${
                         isActive
-                          ? "bg-green-50 text-green-600 font-medium"
+                          ? "bg-gray-100 text-[#212121] "
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`
                     }
@@ -129,14 +126,12 @@ const DashboardLayout = () => {
         to={item.path}
         className={({ isActive }) =>
           `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group ${
-            isActive
-              ? "bg-green-50 text-green-600"
-              : "text-gray-700 hover:bg-gray-100"
+            isActive ? "bg-green-50 text-green-600" : " hover:bg-gray-100"
           }`
         }
       >
-        <Icon size={20} className={`group-hover:text-gray-700`} />
-        <span className="font-medium">{item.label}</span>
+        <Icon size={20} className={`text-[#212121]`} />
+        <span className="text-[#212121]">{item.label}</span>
       </NavLink>
     );
   };
@@ -160,13 +155,13 @@ const DashboardLayout = () => {
         <div className="flex flex-col h-full">
           {/* Logo Section */}
           <div className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <img
                 src={logoImage}
                 alt="Itinera Logo"
-                className="w-12 cursor-pointer transition-transform"
+                className="w-8 cursor-pointer transition-transform"
               />
-              <span className="text-2xl mt-2 font-medium">Itinera</span>
+              <span className="text-2xl pt-1  font-medium">Itinera</span>
             </div>
             <button
               onClick={() => setIsSidebarOpen(false)}

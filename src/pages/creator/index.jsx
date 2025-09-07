@@ -5,12 +5,13 @@ import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import envelope from "../../assets/icons/envelope.svg";
 import bell from "../../assets/icons/bell.svg";
-
+import Button from "../../components/Button";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 const CreatorDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-
+  const isSubscribed = 0;
   const [stats, setStats] = useState({
     totalBookings: 85,
     avgRating: 4.8,
@@ -73,7 +74,7 @@ const CreatorDashboard = () => {
   return (
     <div className="">
       {/* Top Header */}
-      <header className="px-4">
+      <header className="px-8">
         <div className="flex items-center justify-between pb-4">
           {/* Mobile Menu Button */}
           <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
@@ -139,90 +140,105 @@ const CreatorDashboard = () => {
           </div>
         </div>
       </header>
-      {/* Performance Chart Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold">Performance</h2>
-          <select className="text-sm border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <option>01-07 May</option>
-            <option>08-14 May</option>
-            <option>15-21 May</option>
-            <option>22-28 May</option>
-          </select>
+
+      {/* GRID */}
+      <div class="mt-4 flex w-full h-screen gap-4">
+        {/* BANNER IF NO SUBSCRIPTION */}
+        <div className="w-full flex flex-col gap-4">
+          {!isSubscribed ? (
+            <div class="bg-[url('assets/images/blob.svg')] h-80 bg-cover bg-center rounded-4xl flex flex-col items-start justify-around py-12 ">
+              <p className=" text-white/90 text-sm tracking-widest pl-8">
+                SUBSCRIPTION
+              </p>
+              <p className="text-white text-4xl pl-8">
+                Unlock More Bookings.<br></br>
+                Grow with Premium Tools.
+              </p>
+              <div className="pl-8 ">
+                <button className="cursor-pointer flex items-center bg-black/90 hover:bg-[#2a2a2a] py-2 px-2 rounded-4xl transition-all duration-300 transform text-base">
+                  <p className="text-white/90 px-4 ">Upgrade Now</p>{" "}
+                  <div className="py-3 px-3 rounded-full bg-white">
+                    <ChevronRightIcon className="h-5 text-black/90 " />
+                  </div>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+          <div className="bg-blue-200 w-full h-72 rounded-4xl"> </div>
         </div>
 
-        {/* Placeholder for chart */}
-        <div className="h-64 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg flex items-center justify-center">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-gray-800 mb-2">
-              Performance Chart
-            </div>
-            <p className="text-gray-500">Analytics visualization coming soon</p>
-          </div>
+        <div class="bg-green-300 flex items-center h-full rounded-4xl justify-center w-3/6 ">
+          30%
         </div>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-6 mb-8">
-        <StatCard
-          icon={<Calendar className="text-blue-500" />}
-          value={stats.totalBookings}
-          label="Total Bookings"
-        />
-        <StatCard
-          icon={<Star className="text-yellow-500" />}
-          value={stats.avgRating}
-          label="Avg. Rating"
-        />
-        <StatCard
-          icon={<div className="w-5 h-5 rounded-full bg-green-600"></div>}
-          value={stats.activeBooking}
-          label="Active Bookings"
-        />
+      <div className="hidden">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-6 mb-8">
+          <StatCard
+            icon={<Calendar className="text-blue-500" />}
+            value={stats.totalBookings}
+            label="Total Bookings"
+          />
+          <StatCard
+            icon={<Star className="text-yellow-500" />}
+            value={stats.avgRating}
+            label="Avg. Rating"
+          />
+          <StatCard
+            icon={<div className="w-5 h-5 rounded-full bg-green-600"></div>}
+            value={stats.activeBooking}
+            label="Active Bookings"
+          />
+        </div>
+
+        {/* Experience Overview */}
+        <section className="mb-8">
+          <h2 className="text-xl lg:text-2xl font-medium mb-4">
+            My Activities
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-6">
+            <ExperienceCard
+              color="bg-green-600"
+              value={expStats.active}
+              label="Active"
+            />
+            <ExperienceCard
+              color="bg-yellow-400"
+              value={expStats.draft}
+              label="Draft"
+            />
+            <ExperienceCard
+              color="bg-gray-300"
+              value={expStats.inactive}
+              label="Inactive"
+            />
+          </div>
+        </section>
+
+        {/* Recent Feedbacks */}
+        <section className="mb-8">
+          <h2 className="text-xl lg:text-2xl font-medium mb-4">
+            Recent Feedbacks
+          </h2>
+          <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+            <FeedbackCard
+              name="Miguel"
+              date="March 11, 2025"
+              rating={1}
+              avatar="https://ui-avatars.com/api/?name=Miguel&background=random"
+            />
+            <FeedbackCard
+              name="Jonathan"
+              date="May 01, 2025"
+              rating={3}
+              avatar="https://ui-avatars.com/api/?name=Jonathan&background=random"
+            />
+          </div>
+        </section>
       </div>
-
-      {/* Experience Overview */}
-      <section className="mb-8">
-        <h2 className="text-xl lg:text-2xl font-medium mb-4">My Activities</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 lg:gap-6">
-          <ExperienceCard
-            color="bg-green-600"
-            value={expStats.active}
-            label="Active"
-          />
-          <ExperienceCard
-            color="bg-yellow-400"
-            value={expStats.draft}
-            label="Draft"
-          />
-          <ExperienceCard
-            color="bg-gray-300"
-            value={expStats.inactive}
-            label="Inactive"
-          />
-        </div>
-      </section>
-
-      {/* Recent Feedbacks */}
-      <section className="mb-8">
-        <h2 className="text-xl lg:text-2xl font-medium mb-4">
-          Recent Feedbacks
-        </h2>
-        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
-          <FeedbackCard
-            name="Miguel"
-            date="March 11, 2025"
-            rating={1}
-            avatar="https://ui-avatars.com/api/?name=Miguel&background=random"
-          />
-          <FeedbackCard
-            name="Jonathan"
-            date="May 01, 2025"
-            rating={3}
-            avatar="https://ui-avatars.com/api/?name=Jonathan&background=random"
-          />
-        </div>
-      </section>
     </div>
   );
 };
