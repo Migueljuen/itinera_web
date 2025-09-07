@@ -85,8 +85,8 @@ const DashboardLayout = () => {
               className="w-full flex items-center justify-between px-4 py-3  hover:bg-gray-100 rounded-lg transition-colors group"
             >
               <div className="flex items-center gap-3">
-                <Icon size={20} className="text-[#212121]  " />
-                <span className="text-[#212121]">{item.label}</span>
+                <Icon size={20} className="text-primary  " />
+                <span className="text-primary">{item.label}</span>
               </div>
               <div className="flex items-center gap-2">
                 <ChevronDown
@@ -106,7 +106,7 @@ const DashboardLayout = () => {
                     className={({ isActive }) =>
                       `block px-4 py-2 text-sm rounded-lg transition-colors ${
                         isActive
-                          ? "bg-gray-100 text-[#212121] "
+                          ? "bg-gray-100 text-primary "
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`
                     }
@@ -130,8 +130,8 @@ const DashboardLayout = () => {
           }`
         }
       >
-        <Icon size={20} className={`text-[#212121]`} />
-        <span className="text-[#212121]">{item.label}</span>
+        <Icon size={20} className={`text-primary`} />
+        <span className="text-primary">{item.label}</span>
       </NavLink>
     );
   };
@@ -181,7 +181,7 @@ const DashboardLayout = () => {
 
           {/* Upgrade Section */}
           <div className="p-4 border-t border-gray-200">
-            <div className=" rounded-lg p-4  text-center text-[#212121]">
+            <div className=" rounded-lg p-4  text-center text-primary">
               <h3 className="font-bold mb-1">Upgrade Plan</h3>
               <p className="text-sm opacity-90 mb-3">
                 Showcase more activities
@@ -211,9 +211,9 @@ const DashboardLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <div className="lg:ml-64 min-h-screen">
+      <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Page Content */}
-        <main className="p-4 lg:p-8">
+        <main className="p-4 lg:p-8 flex-1 flex flex-col">
           <Outlet />
         </main>
       </div>

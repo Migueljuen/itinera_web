@@ -1,11 +1,69 @@
 @import "tailwindcss";
 
 @font-face {
-  font-family: 'Onest';
-  src: url('/src/assets/fonts/Onest-Regular.ttf') format('truetype');
+  font-family: "Onest";
+  src: url("/src/assets/fonts/Onest-Regular.ttf") format("truetype");
   font-weight: 400;
 }
 
 @theme inline {
   --font-display: "Onest", sans-serif;
+  --color-primary: #212121;
+}
+
+/* Toolbar (navigation + view buttons) */
+.calendar .rbc-toolbar {
+  @apply flex items-center justify-between p-4  mb-4;
+}
+
+.calendar .rbc-toolbar button {
+  @apply border-none text-gray-700 px-3 py-1 rounded-full bg-white  hover:bg-white
+            transition;
+}
+
+.calendar .rbc-toolbar .rbc-btn-group button.rbc-active,
+.calendar .rbc-toolbar .rbc-btn-group button.rbc-active:hover,
+.calendar .rbc-toolbar .rbc-btn-group button.rbc-active:focus,
+.calendar .rbc-toolbar .rbc-btn-group button.rbc-active:focus-visible,
+.calendar .rbc-toolbar .rbc-btn-group button.rbc-active:active,
+.calendar .rbc-toolbar .rbc-btn-group button.rbc-active:focus:active {
+  background-color: white !important;
+  background-image: none !important;
+  background: white !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+  @apply font-semibold;
+}
+
+.calendar .rbc-toolbar .rbc-toolbar-label {
+  @apply font-semibold text-primary;
+}
+
+/* Weekday headers */
+.calendar .rbc-header {
+  @apply font-medium border-none text-gray-600 text-sm tracking-wide pb-2;
+}
+
+/* Events */
+.calendar .rbc-event {
+  @apply bg-[#376a63] text-white rounded-md px-2 py-1 text-xs shadow-sm;
+}
+
+/* Today highlight */
+.calendar .rbc-today {
+  @apply bg-blue-50;
+}
+
+/* Month grid cells */
+.calendar .rbc-month-view {
+  @apply border border-gray-200 rounded-lg overflow-hidden;
+}
+
+.calendar .rbc-date-cell {
+  @apply text-gray-500 text-xs p-1;
+}
+
+/* Selected/active slot */
+.calendar .rbc-selected {
+  @apply bg-blue-100;
 }
