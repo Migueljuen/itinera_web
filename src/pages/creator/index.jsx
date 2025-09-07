@@ -6,10 +6,10 @@ import API_URL from "../../constants/api";
 import envelope from "../../assets/icons/envelope.svg";
 import bell from "../../assets/icons/bell.svg";
 import Button from "../../components/Button";
-
+import BarChartTest from "../../components/BarChart";
 import SubscriptionBanner from "../../components/SubscriptionBanner";
 import CalendarView from "../../components/Calendar";
-
+import RecentBooking from "../../components/RecentBooking";
 const CreatorDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -19,13 +19,13 @@ const CreatorDashboard = () => {
   const demoEvents = [
     {
       id: 1,
-      title: "Team Meeting",
+      title: "2 Upcoming",
       start: new Date(2025, 8, 10, 9, 0), // Sept 10, 9 AM
       end: new Date(2025, 8, 10, 11, 0), // Sept 10, 11 AM
     },
     {
       id: 2,
-      title: "Lunch with Client",
+      title: "1 Upcoming",
       start: new Date(2025, 8, 12, 12, 0),
       end: new Date(2025, 8, 12, 13, 0),
     },
@@ -76,7 +76,7 @@ const CreatorDashboard = () => {
                 </div>
               )}
               <div className="text-right hidden sm:block">
-                <p className="text-base font-medium text-gray-900 capitalize">
+                <p className="text-base font-medium text-primary capitalize">
                   {user?.first_name} {user?.last_name}
                 </p>
               </div>
@@ -102,8 +102,15 @@ const CreatorDashboard = () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="w-3/6 bg-white rounded-4xl flex flex-[0.3] items-center justify-center flex-shrink-0">
-          30%
+        <div className=" bg-white rounded-4xl box-border  flex flex-col flex-[0.3] items-start justify-start">
+          <h1 className="text-xl font-semibold  p-8 text-gray-900 ">
+            Statistic
+          </h1>
+          <BarChartTest />
+          <h1 className="text-xl font-semibold p-8 text-gray-900 ">
+            Recent Bookings
+          </h1>
+          <RecentBooking />
         </div>
       </div>
     </div>
