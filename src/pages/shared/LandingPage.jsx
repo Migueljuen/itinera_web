@@ -130,41 +130,40 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="z-10  md:h-[90rem] xl:h-[96rem] pt-24 lg:pt-0 bg-gradient-to-b from-[#54a056eb]/15 to-gray-50 relative">
-        <div className="z-10 mx-auto grid grid-rows-[1fr_auto_auto] h-full font-display text-center gap-y-24 place-items-center">
+      <section className="z-10 min-h-screen lg:min-h-[120vh] pt-24 pb-24 lg:pt-0 bg-gradient-to-b from-[#54a056eb]/15 to-gray-50 relative">
+        <div className="z-10 mx-auto flex flex-col justify-center min-h-screen lg:min-h-[120vh] font-display text-center px-4">
           {/* Main text and CTA*/}
-          <div className="self-end">
-            <h1 className="text-5xl font-medium text-[#1f2937]">
+          <div className="flex-1 flex flex-col justify-center items-center pt-8 lg:pt-60 pb-4 lg:pb-8">
+            <h1 className="text-4xl lg:text-5xl font-medium text-[#1f2937]">
               <span className="block">
                 Smart itinerary planning for travelers
               </span>
               <span className="block">who want more.</span>
             </h1>
-            <p className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-12">
+            <p className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-8 lg:my-12">
               Travel smarter. Stress less. Your journey, your way.
             </p>
-
             <Button onClick={handleSignIn}>See How It Works</Button>
           </div>
 
           {/* Mockup Section */}
-          <div className="grid place-items-center mt-8 mb-8">
+          <div className="flex-1 flex items-center justify-center py-8">
             <img
               src={mockup}
               alt="mockup"
-              className="w-4/6 cursor-pointer transition-transform"
+              className="w-4/6 max-w-4xl cursor-pointer transition-transform"
             />
           </div>
 
           {/* Bottom hero */}
-          <div className="grid grid-cols-3 gap-y-6 gap-x-12 place-items-center my-16 text-primary">
+          <div className="text-base lg:text-lg max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 mt-24 gap-y-6 gap-x-12 place-items-center text-black/60">
             {/* Top row (3 items) */}
             <p className="flex gap-2">
               <MapIcon className="h-5 text-[#7dcb80]" />
               Personalized Itineraries
             </p>
-            <p className="flex gap-2">
-              <SparklesIcon className="h-5 text-[#7dcb80]" />
+            <p className="flex gap-2 ">
+              <SparklesIcon className="h-5 text-[#7dcb80] " />
               Authentic Local Experiences
             </p>
             <p className="flex gap-2">
@@ -173,7 +172,7 @@ const LandingPage = () => {
             </p>
 
             {/* Bottom row (2 items centered) */}
-            <div className="col-span-3 flex justify-center gap-12">
+            <div className="col-span-full flex justify-center gap-12">
               <p className="flex gap-2">
                 <UsersIcon className="h-5 text-[#7dcb80]" />
                 Traveler & Creator Modes
