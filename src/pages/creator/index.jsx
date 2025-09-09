@@ -86,7 +86,7 @@ const CreatorDashboard = () => {
       </header>
 
       {/* MAIN GRID */}
-      <div className="flex flex-1 w-full gap-8 px-8 ">
+      <div className="flex flex-1 w-full  gap-8  ">
         {/* LEFT COLUMN */}
         <div className="flex flex-col flex-[0.7]  gap-8 ">
           {/* Subscription Banner */}
@@ -102,7 +102,7 @@ const CreatorDashboard = () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className=" bg-white rounded-4xl box-border  flex flex-col flex-[0.3] items-start justify-start">
+        <div className=" bg-white rounded-4xl box-border border border-gray-300  flex flex-col flex-[0.3] items-start justify-start ">
           <h1 className="text-xl font-semibold  p-8 text-gray-900 ">
             Statistic
           </h1>

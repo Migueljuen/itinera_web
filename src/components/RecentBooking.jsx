@@ -1,66 +1,61 @@
-import React from "react";
-
 export default function RecentBooking() {
+  const bookings = [
+    {
+      name: "Jane Doe",
+      activity: "Booked: Kayaking Adventure",
+      date: "9/11/25",
+      avatar: "J",
+      bgColor: "bg-blue-200",
+      textColor: "text-blue-500"
+    },
+    {
+      name: "Dan Smith",
+      activity: "Booked: Sunset Photography Tour",
+      date: "8/25/25",
+      avatar: "D",
+      bgColor: "bg-purple-200",
+      textColor: "text-purple-500"
+    },
+    {
+      name: "Lenuelito Betita",
+      activity: "Booked: Bird Watching At Balaring",
+      date: "7/13/25",
+      avatar: "L",
+      bgColor: "bg-yellow-100",
+      textColor: "text-yellow-500"
+    }
+  ];
+
   return (
-    <>
-      {/* Container for all bookings */}
-      <div className="w-11/12 mx-auto flex flex-col gap-4 ">
-        {/* -------------------- Single Booking Item -------------------- */}
-        <div className="flex w-full items-center cursor-pointer justify-between bg-gray-50 p-4 rounded-4xl hover:bg-gray-100 transition">
-          {/* User Info (Avatar + Name + Activity Booked) */}
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-blue-200 flex items-center justify-center">
-              <span className="text-blue-500 text-lg">J</span>
-            </div>
-            <div>
-              <p className="font-medium text-primary">Jane Doe</p>
-              <p className="text-sm text-black/60">
-                Booked: Kayaking Adventure
-              </p>
-            </div>
+    <div className="w-full px-4 flex flex-col gap-3">
+      {bookings.map((booking, index) => (
+        <div key={index} className="flex w-full items-start cursor-pointer bg-gray-50 p-3 rounded-3xl hover:bg-gray-100 transition">
+          {/* Avatar - Fixed size */}
+          <div className={`w-10 h-10 rounded-full ${booking.bgColor} flex items-center justify-center flex-shrink-0`}>
+            <span className={`${booking.textColor} text-base leading-none font-semibold`}>
+              {booking.avatar}
+            </span>
           </div>
 
-          {/* Booking Date */}
-          <div className="text-sm text-gray-400 mb-8">Sept 5, 2025</div>
-        </div>
-
-        {/* -------------------- Another Booking Item -------------------- */}
-        <div className="flex w-full items-center justify-between cursor-pointer bg-gray-50 p-4 rounded-4xl hover:bg-gray-100 transition">
-          {/* User Info */}
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-purple-200 flex items-center justify-center">
-              <span className="text-purple-500 text-lg">D</span>
-            </div>
-            <div>
-              <p className="font-medium text-primary">Dan Smith</p>
-              <p className="text-sm text-black/60">
-                Booked: Sunset Photography Tour
+          {/* Content Container */}
+          <div className="flex-1 ml-3 min-w-0">
+            {/* Top row: Name and Date */}
+            <div className="flex items-center justify-between mb-1">
+              <p className="font-medium text-gray-800 truncate text-sm">
+                {booking.name}
               </p>
+              <span className="text-xs text-gray-400 font-mono ml-2 flex-shrink-0">
+                {booking.date}
+              </span>
             </div>
+
+            {/* Bottom row: Activity */}
+            <p className="text-xs text-black/60 truncate leading-tight">
+              {booking.activity}
+            </p>
           </div>
-
-          {/* Booking Date */}
-          <div className="text-sm text-gray-400 mb-8">Sept 4, 2025</div>
         </div>
-
-        <div className="flex w-full items-center justify-between cursor-pointer bg-gray-50 p-4 rounded-4xl hover:bg-gray-100 transition">
-          {/* User Info */}
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full  bg-yellow-100 flex items-center justify-center">
-              <span className="text-yellow-500 text-lg">L</span>
-            </div>
-            <div>
-              <p className="font-medium text-primary">Lenuelito Betita</p>
-              <p className="text-sm text-black/60">
-                Booked: Bird Watching At Balaring
-              </p>
-            </div>
-          </div>
-
-          {/* Booking Date */}
-          <div className="text-sm text-gray-400 mb-8">Sept 4, 2025</div>
-        </div>
-      </div>
-    </>
+      ))}
+    </div>
   );
 }

@@ -11,7 +11,7 @@ export default function CalendarView({ events }) {
   const [date, setDate] = useState(new Date());
 
   return (
-    <div className="bg-white rounded-4xl p-8 relative z-10 flex flex-col h-full">
+    <div className="bg-white rounded-4xl p-8 relative z-10 flex flex-col h-full border border-gray-300">
       {/* Calendar fills remaining space */}
       <div className="flex-1">
         <Calendar

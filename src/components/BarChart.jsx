@@ -19,7 +19,7 @@ export default function BarChartTest() {
   ];
 
   return (
-    <div className="w-11/12 h-80 p-4 mx-auto rounded-4xl bg-[#f8f8f8] text-gray-100  ">
+    <div className="w-11/12 h-72 p-4 mx-auto rounded-4xl bg-[#f8f8f8] text-gray-100  ">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={data}

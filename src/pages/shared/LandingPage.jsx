@@ -74,8 +74,8 @@ const LandingPage = () => {
       <header
         className={`fixed top-5 w-full z-50 transition-all duration-300 ' `}
       >
-        <div className="container bg-white w-4/5 mx-auto rounded-full p-4 drop-shadow-xl/5 ">
-          <div className="grid grid-cols-3 items-center ">
+        <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px]  mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm  ">
+          <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
             {/* Logo */}
             <div className="ml-4 mb-2">
               <img
@@ -130,7 +130,7 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="z-10  lg:h-[102rem] pt-24 lg:pt-0 bg-gradient-to-b from-[#54a056eb]/15 to-gray-50 relative">
+      <section className="z-10  md:h-[90rem] xl:h-[96rem] pt-24 lg:pt-0 bg-gradient-to-b from-[#54a056eb]/15 to-gray-50 relative">
         <div className="z-10 mx-auto grid grid-rows-[1fr_auto_auto] h-full font-display text-center gap-y-24 place-items-center">
           {/* Main text and CTA*/}
           <div className="self-end">
