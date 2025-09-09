@@ -8,6 +8,12 @@ import Undraw1Svg from "../../assets/images/undraw1.svg";
 import Undraw2Svg from "../../assets/images/undraw2.svg";
 import Button from "../../components/Button";
 import mockup from "../../assets/images/test2.png";
+import { MapIcon } from "@heroicons/react/24/solid";
+import { SparklesIcon } from "@heroicons/react/24/solid";
+import { CalendarDaysIcon } from "@heroicons/react/24/solid";
+import { UsersIcon } from "@heroicons/react/24/solid";
+import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/solid";
+
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
@@ -124,10 +130,11 @@ const LandingPage = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="z-10 h-[48rem] lg:h-[80rem] pt-24 lg:pt-0  bg-gradient-to-b from-[#54a056eb]/15 to-gray-50  relative">
-        <div className="z-10 mx-auto flex  flex-col items-center  justify-end  h-full font-display text-center ">
-          <div>
-            <h1 className="text-5xl font-medium  text-[#1f2937]  ">
+      <section className="z-10  lg:h-[102rem] pt-24 lg:pt-0 bg-gradient-to-b from-[#54a056eb]/15 to-gray-50 relative">
+        <div className="z-10 mx-auto grid grid-rows-[1fr_auto_auto] h-full font-display text-center gap-y-24 place-items-center">
+          {/* Main text and CTA*/}
+          <div className="self-end">
+            <h1 className="text-5xl font-medium text-[#1f2937]">
               <span className="block">
                 Smart itinerary planning for travelers
               </span>
@@ -140,15 +147,43 @@ const LandingPage = () => {
             <Button onClick={handleSignIn}>See How It Works</Button>
           </div>
 
-          <div className="grid place-items-center mt-16">
+          {/* Mockup Section */}
+          <div className="grid place-items-center mt-8 mb-8">
             <img
               src={mockup}
-              alt="Itinera Logo"
+              alt="mockup"
               className="w-4/6 cursor-pointer transition-transform"
             />
           </div>
 
-          <div>asdasd</div>
+          {/* Bottom hero */}
+          <div className="grid grid-cols-3 gap-y-6 gap-x-12 place-items-center my-16 text-primary">
+            {/* Top row (3 items) */}
+            <p className="flex gap-2">
+              <MapIcon className="h-5 text-[#7dcb80]" />
+              Personalized Itineraries
+            </p>
+            <p className="flex gap-2">
+              <SparklesIcon className="h-5 text-[#7dcb80]" />
+              Authentic Local Experiences
+            </p>
+            <p className="flex gap-2">
+              <CalendarDaysIcon className="h-5 text-[#7dcb80]" />
+              Easy Trip Planning
+            </p>
+
+            {/* Bottom row (2 items centered) */}
+            <div className="col-span-3 flex justify-center gap-12">
+              <p className="flex gap-2">
+                <UsersIcon className="h-5 text-[#7dcb80]" />
+                Traveler & Creator Modes
+              </p>
+              <p className="flex gap-2">
+                <AdjustmentsHorizontalIcon className="h-5 text-[#7dcb80]" />
+                Flexible Itinerary Editing
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
