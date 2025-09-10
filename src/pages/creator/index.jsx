@@ -102,9 +102,9 @@ const CreatorDashboard = () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className=" bg-white rounded-4xl box-border border border-gray-300  flex flex-col flex-[0.3] items-start justify-start ">
+        <div className=" bg-white flex-[0.3] min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300  flex flex-col  items-start justify-start ">
           <h1 className="text-xl font-semibold  p-8 text-gray-900 ">
-            Statistic
+            Booking Statistic
           </h1>
           <BarChartTest />
           <h1 className="text-xl font-semibold p-8 text-gray-900 ">

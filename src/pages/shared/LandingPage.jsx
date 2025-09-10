@@ -7,7 +7,7 @@ import UndrawSvg from "../../assets/images/undraw.svg";
 import Undraw1Svg from "../../assets/images/undraw1.svg";
 import Undraw2Svg from "../../assets/images/undraw2.svg";
 import Button from "../../components/Button";
-import mockup from "../../assets/images/local.jpg";
+import mockup from "../../assets/images/test2.png";
 import { MapIcon } from "@heroicons/react/24/solid";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";

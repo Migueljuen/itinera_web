@@ -6,15 +6,16 @@ export default function RecentBooking() {
       date: "9/11/25",
       avatar: "J",
       bgColor: "bg-blue-200",
-      textColor: "text-blue-500"
+      textColor: "text-blue-500",
     },
+
     {
       name: "Dan Smith",
       activity: "Booked: Sunset Photography Tour",
       date: "8/25/25",
       avatar: "D",
       bgColor: "bg-purple-200",
-      textColor: "text-purple-500"
+      textColor: "text-purple-500",
     },
     {
       name: "Lenuelito Betita",
@@ -22,17 +23,24 @@ export default function RecentBooking() {
       date: "7/13/25",
       avatar: "L",
       bgColor: "bg-yellow-100",
-      textColor: "text-yellow-500"
-    }
+      textColor: "text-yellow-500",
+    },
   ];
 
   return (
     <div className="w-full px-4 flex flex-col gap-3">
       {bookings.map((booking, index) => (
-        <div key={index} className="flex w-full items-start cursor-pointer bg-gray-50 p-3 rounded-3xl hover:bg-gray-100 transition">
+        <div
+          key={index}
+          className="flex w-full items-start cursor-pointer bg-gray-50 p-3 rounded-3xl hover:bg-gray-100 transition"
+        >
           {/* Avatar - Fixed size */}
-          <div className={`w-10 h-10 rounded-full ${booking.bgColor} flex items-center justify-center flex-shrink-0`}>
-            <span className={`${booking.textColor} text-base leading-none font-semibold`}>
+          <div
+            className={`w-10 h-10 rounded-full ${booking.bgColor} flex items-center justify-center flex-shrink-0`}
+          >
+            <span
+              className={`${booking.textColor} text-base leading-none font-semibold`}
+            >
               {booking.avatar}
             </span>
           </div>
