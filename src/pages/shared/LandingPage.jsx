@@ -7,7 +7,7 @@ import UndrawSvg from "../../assets/images/undraw.svg";
 import Undraw1Svg from "../../assets/images/undraw1.svg";
 import Undraw2Svg from "../../assets/images/undraw2.svg";
 import Button from "../../components/Button";
-import mockup from "../../assets/images/test2.png";
+import mockup from "../../assets/images/local.jpg";
 import { MapIcon } from "@heroicons/react/24/solid";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { CalendarDaysIcon } from "@heroicons/react/24/solid";
@@ -156,7 +156,7 @@ const LandingPage = () => {
           </div>
 
           {/* Bottom hero */}
-          <div className="text-base lg:text-lg max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 mt-24 gap-y-6 gap-x-12 place-items-center text-black/60">
+          <div className=" lg:text-lg max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 mt-24 gap-y-6 gap-x-12 place-items-center text-black/60">
             {/* Top row (3 items) */}
             <p className="flex gap-2">
               <MapIcon className="h-5 text-[#7dcb80]" />
@@ -298,7 +298,7 @@ const LandingPage = () => {
             <img
               src={logoImage}
               alt="Itinera Logo"
-              className="w-24 h-24 mx-auto mb-4"
+              className="w-24  mx-auto mb-4"
             />
             <p className="text-gray-500 max-w-md mx-auto">
               Turn your next trip into a hassle-free experience with Itinera.
