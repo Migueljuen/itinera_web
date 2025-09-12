@@ -8,11 +8,18 @@ import Undraw1Svg from "../../assets/images/undraw1.svg";
 import Undraw2Svg from "../../assets/images/undraw2.svg";
 import Button from "../../components/Button";
 import mockup from "../../assets/images/test2.png";
-import { MapIcon } from "@heroicons/react/24/solid";
-import { SparklesIcon } from "@heroicons/react/24/solid";
-import { CalendarDaysIcon } from "@heroicons/react/24/solid";
-import { UsersIcon } from "@heroicons/react/24/solid";
-import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/solid";
+import mockup1 from "../../assets/images/mockup1.png";
+import mockup2 from "../../assets/images/mockup2.png";
+import {
+  MapIcon,
+  SparklesIcon,
+  CalendarDaysIcon,
+  UsersIcon,
+  AdjustmentsHorizontalIcon,
+  EyeIcon,
+  GlobeAltIcon,
+  Cog6ToothIcon,
+} from "@heroicons/react/24/solid";
 
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -156,95 +163,129 @@ const LandingPage = () => {
           </div>
 
           {/* Bottom hero */}
-          <div className=" lg:text-lg max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 mt-24 gap-y-6 gap-x-12 place-items-center text-black/60">
-            {/* Top row (3 items) */}
-            <p className="flex gap-2">
-              <MapIcon className="h-5 text-[#7dcb80]" />
-              Personalized Itineraries
-            </p>
-            <p className="flex gap-2 ">
-              <SparklesIcon className="h-5 text-[#7dcb80] " />
-              Authentic Local Experiences
-            </p>
-            <p className="flex gap-2">
-              <CalendarDaysIcon className="h-5 text-[#7dcb80]" />
-              Easy Trip Planning
-            </p>
-
-            {/* Bottom row (2 items centered) */}
-            <div className="col-span-full flex justify-center gap-12">
-              <p className="flex gap-2">
-                <UsersIcon className="h-5 text-[#7dcb80]" />
-                Traveler & Creator Modes
-              </p>
-              <p className="flex gap-2">
-                <AdjustmentsHorizontalIcon className="h-5 text-[#7dcb80]" />
-                Flexible Itinerary Editing
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
-      {/* Uncover Section */}
-      <section className="bg-[#376a63] py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="max-w-[70%] mx-4  flex flex-col justify-start lg:mx-0 font-display">
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-white mb-4  ">
-              <span className="text-[#fdd744]">Uncover</span> Real Experiences
-            </h2>
-            <p className="text-gray-200 text-lg mt-4 lg:mt-8">
-              Go beyond the itinerary—discover unique moments that make every
-              trip unforgettable.
+      {/* Section 2 */}
+      <section className=" h-dvh flex flex-row justify-center w-11/12 mx-auto ">
+        {/* Left content */}
+        <div className=" flex-[0.5] flex flex-col justify-center  items-center  ">
+          {/* Upper texts */}
+          <div className=" h-2/6 flex flex-col justify-end ">
+            <h2 className="text-[#397ff1] font-semibold">Discover more</h2>
+            <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold ">
+              Personalized journeys.
+            </h1>
+            <p className="w-5/6 text-black/80 text-lg">
+              Plan stress-free trips with tailor-made itineraries, cultural
+              gems, and flexible options designed just for your style of travel.
+            </p>
+          </div>
+          {/* Lower texts */}
+          <div className="h-3/6  pt-12 flex flex-col gap-8 w-full">
+            <p className="flex gap-3">
+              <AdjustmentsHorizontalIcon className="h-7 text-[#397ff1]" />
+              <span className="text-black/80 w-5/6">
+                <span className="text-[#1f2937] font-semibold">
+                  Personalized itineraries
+                </span>{" "}
+                — Get curated travel plans based on your interests: food,
+                adventure, culture, or relaxation.
+              </span>
+            </p>
+
+            <p className="flex gap-3">
+              <EyeIcon className="h-7 text-[#397ff1]" />
+              <span className=" text-black/80 w-5/6">
+                <span className="text-[#1f2937] font-semibold">
+                  Hidden gems
+                </span>{" "}
+                — Discover local experiences beyond mainstream tours,
+                recommended by community creators.
+              </span>
+            </p>
+
+            <p className="flex gap-3">
+              <MapIcon className="h-7 text-[#397ff1]" />
+              <span className="text-black/80 w-5/6">
+                <span className="font-semibold text-[#1f2937]">
+                  Flexible plans
+                </span>{" "}
+                — Rearrange, adapt, and customize your schedule anytime during
+                your trip.
+              </span>
             </p>
           </div>
         </div>
+
+        {/* Mockup */}
+        <div className=" flex-[0.5] flex justify-center items-center">
+          <img
+            src={mockup1}
+            alt="mockup1"
+            className="h-5/6  cursor-pointer transition-transform drop-shadow-2xl"
+          />
+        </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-4 lg:px-8 lg:py-24">
-          {/* Personalized Recommendations */}
-          <div className="grid place-items-end lg:place-items-center lg:grid-cols-2 gap-16 mb-16 items-center">
-            <div className="order-2  text-right flex flex-col items-end ">
-              <h3 className="text-3xl lg:text-4xl font-extrabold text-[#1f2937] mb-4">
-                Personalized{" "}
-                <span className="bg-[#54a056eb] block w-fit ">
-                  Recommendations
-                </span>
-              </h3>
-              <p className="text-[#6b7280] text-lg w-[70%] lg:w-full">
-                Plan, customize, and optimize your trips. Whether it's for
-                vacations or everyday adventures.
-              </p>
-            </div>
-            <div className="order-1  flex justify-center">
-              <img
-                src={UndrawSvg}
-                alt="Personalized Recommendations"
-                className="w-48 h-48 lg:w-64 lg:h-64"
-              />
-            </div>
+      {/* Section 3*/}
+      <section className=" h-dvh flex flex-row justify-center   w-11/12 mx-auto ">
+        {/* Mockup */}
+        <div className="flex-[0.6] flex justify-center items-center relative">
+          <img
+            src={mockup2}
+            alt="Mockup"
+            className="absolute object-contain cursor-pointer transition-transform drop-shadow-2xl -left-[25%] scale-115"
+            // Options: scale-110, scale-125, scale-150, scale-[1.3], etc.
+          />
+        </div>
+        {/* Right content */}
+        <div className=" flex-[0.5] flex flex-col justify-center  items-center  ">
+          {/* Upper texts */}
+          <div className=" h-2/6 flex flex-col justify-end ">
+            <h2 className="text-[#397ff1] font-semibold">For storytellers</h2>
+            <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold ">
+              Share authentic activities.
+            </h1>
+            <p className="w-11/12 text-black/80 text-lg">
+              Bring your knowledge of local culture, food, and traditions to
+              life by listing activities on Itinera. Manage your offerings with
+              ease and connect with travelers who value authenticity.
+            </p>
           </div>
+          {/* Lower texts */}
+          <div className="h-3/6  pt-12 flex flex-col gap-8">
+            <p className="flex gap-3">
+              <GlobeAltIcon className="h-7 text-[#397ff1]" />
+              <span className="text-black/80 w-5/6">
+                <span className="text-[#1f2937] font-semibold">
+                  Share your activities.
+                </span>{" "}
+                — Showcase unique activities and cultural insights that
+                travelers can’t find in mainstream tours.
+              </span>
+            </p>
 
-          {/* Feel Every Moment */}
-          <div className="grid place-items-start lg:place-items-center lg:grid-cols-2 gap-16 items-center">
-            <div className="order-2 lg:order-1">
-              <h3 className="text-3xl lg:text-4xl font-extrabold text-[#1f2937] mb-4">
-                <span className="bg-[#54a056eb]  ">Feel</span> Every Moment
-              </h3>
-              <p className="text-[#6b7280] text-lg">
-                It's not about where you go, but how it makes you feel. Travel
-                with meaning.
-              </p>
-            </div>
-            <div className="flex justify-center order-1">
-              <img
-                src={Undraw1Svg}
-                alt="Feel Every Moment"
-                className="w-48 h-48 lg:w-64 lg:h-64"
-              />
-            </div>
+            <p className="flex gap-3">
+              <Cog6ToothIcon className="h-7 text-[#397ff1]" />
+              <span className=" text-black/80 w-5/6">
+                <span className="text-[#1f2937] font-semibold">
+                  Manage with ease
+                </span>{" "}
+                — Add, update, and organize your offerings in a simple,
+                streamlined dashboard.
+              </span>
+            </p>
+
+            <p className="flex gap-3">
+              <UsersIcon className="h-7 text-[#397ff1]" />
+              <span className="text-black/80 w-5/6">
+                <span className="font-semibold text-[#1f2937]">
+                  Reach the right audience.
+                </span>{" "}
+                — Connect directly with travelers seeking authentic activities.
+              </span>
+            </p>
           </div>
         </div>
       </section>

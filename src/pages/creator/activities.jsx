@@ -318,7 +318,12 @@ const ExperienceManagement = () => {
                   {/* Activity Name */}
                   <div className="flex items-center gap-3 justify-self-start">
                     <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                      <ImageIcon size={24} className="text-gray-400" />
+                      {/* <ImageIcon size={24} className="text-gray-400" /> */}
+                      <img
+                        src={`${API_URL}/${item.images[0]}`}
+                        size={24}
+                        className="object-cover w-full h-full rounded-lg"
+                      />
                     </div>
                     <div>
                       <h3 className="font-base text-sm text-black/80">
@@ -340,7 +345,7 @@ const ExperienceManagement = () => {
 
                   {/* Price */}
                   <div className="font-normal text-sm text-black/60 justify-self-center">
-                    ₱{item.price.toLocaleString()}
+                    ₱{item.price.toLocaleString()}/{item.unit}
                   </div>
 
                   {/* Status */}
@@ -365,12 +370,6 @@ const ExperienceManagement = () => {
                             </span>
                           </div>
                         )}
-                        <div className="flex items-center gap-1">
-                          <Users size={14} className="text-gray-400" />
-                          <span className="text-sm text-gray-600">
-                            {item.bookings} bookings
-                          </span>
-                        </div>
                       </div>
                     </div>
                   </div>
