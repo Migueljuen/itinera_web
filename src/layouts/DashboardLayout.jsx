@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+//DashboardLayout.tsx
+import React, { useState, useEffect } from "react";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   Home,
   LayoutGrid,
@@ -22,8 +23,16 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const location = useLocation();
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
   const [isTasksExpanded, setIsTasksExpanded] = useState(true);
+
+  // Only redirect if the user is a first-login creator and on /owner root
+  useEffect(() => {
+    if (user?.is_first_login) {
+      navigate("/owner/create", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleLogout = async () => {
     await logout();
@@ -72,6 +81,11 @@ const DashboardLayout = () => {
       expandable: false,
     },
   ];
+  useEffect(() => {
+    console.log("DashboardLayout mounted");
+    console.log("Current user:", user);
+    console.log("Current location:", location.pathname);
+  }, [user, location]);
 
   const NavItem = ({ item }) => {
     const Icon = item.icon;

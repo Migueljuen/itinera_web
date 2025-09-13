@@ -58,7 +58,7 @@ export default function RecentBooking() {
             </div>
 
             {/* Bottom row: Activity */}
-            <p className="text-xs text-black/60 truncate leading-tight">
+            <p className="text-sm text-black/60 truncate leading-tight">
               {booking.activity}
             </p>
           </div>

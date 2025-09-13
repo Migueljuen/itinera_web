@@ -4,10 +4,13 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import logoImage from "../../assets/images/logo.png";
 import googleIcon from "../../assets/images/google.png";
+import toast, { Toaster } from "react-hot-toast";
+import API_URL from "../../constants/api";
+import axios from "axios";
 
 function Login() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, updateUser } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,6 +35,50 @@ function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // const handleLogin = async (e) => {
+  //   e.preventDefault();
+  //   if (!validate()) return;
+
+  //   setIsSubmitting(true);
+
+  //   try {
+  //     const result = await login(email, password); // your login API call
+
+  //     if (result.success) {
+  //       if (result.user.role === "Creator") {
+  //         if (result.user.is_first_login) {
+  //           // Update DB so it won’t redirect again
+  //           await axios.put(`${API_URL}/api/login/${result.user.user_id}`);
+
+  //           // Update both local state + storage with new value
+  //           // const updatedUser = { ...result.user, is_first_login: 0 };
+  //           // updateUser(updatedUser);
+
+  //           toast.success("Welcome! Let's set up your first activity 🎉");
+  //           navigate("/owner/create", { replace: true });
+
+  //           setTimeout(() => {
+  //             const updatedUser = { ...result.user, is_first_login: 0 };
+  //             updateUser(updatedUser);
+  //           }, 100);
+  //         } else {
+  //           toast.success("Login successful! Redirecting...");
+  //           navigate("/owner");
+  //         }
+  //       } else {
+  //         toast.error("Access denied! Invalid user role.");
+  //       }
+  //     } else {
+  //       toast.error(result.error || "Login failed. Please try again.");
+  //     }
+  //   } catch (error) {
+  //     toast.error("An unexpected error occurred. Please try again.");
+  //     console.error(error);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!validate()) return;
@@ -40,43 +87,60 @@ function Login() {
 
     try {
       const result = await login(email, password);
+      console.log("Login result:", result);
 
       if (result.success) {
-        if (result.user.role === "Traveler") {
-          navigate("/traveler");
-        } else if (result.user.role === "Creator") {
-          navigate("/owner");
+        if (result.user.role === "Creator") {
+          // Use the wasFirstLogin flag from backend
+          if (result.wasFirstLogin) {
+            toast.success("Welcome! Let's set up your first activity 🎉");
+            navigate("/owner/create", { replace: true });
+          } else {
+            toast.success("Login successful! Redirecting...");
+            navigate("/owner");
+          }
         } else {
-          alert("Invalid user role.");
+          toast.error("Access denied! Invalid user role.");
         }
       } else {
-        alert(result.error || "Login failed");
+        toast.error(result.error || "Login failed. Please try again.");
       }
     } catch (error) {
-      alert("An unexpected error occurred. Please try again.");
+      toast.error("An unexpected error occurred. Please try again.");
       console.error(error);
     } finally {
       setIsSubmitting(false);
     }
   };
-
   return (
     <>
-      {/* Logo */}
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
+      />
 
       <div className="min-h-screen grid place-items-center p-4">
-        <div className="w-full max-w-md p-8 bg-white rounded-lg border border-gray-200 space-y-6 ">
+        <div className="w-full max-w-md p-8 bg-white rounded-lg border border-gray-300 space-y-6 ">
           <p className="text-center text-2xl  ">Login to Itinera</p>
           {/* Form Container */}
           <form onSubmit={handleLogin} className="space-y-4">
             {/* Email Input */}
             <div className="px-6">
-              <div className="flex items-center border border-gray-500 focus-within:border-2  rounded-md px-4 py-3 h-10">
+              <div
+                className="flex items-center border border-gray-400 rounded-md px-4 py-3 h-10 
+                  focus-within:ring-1 focus-within:ring-blue-400"
+              >
                 <Mail className="text-gray-400" size={20} />
                 <input
                   type="email"
                   placeholder="Email"
-                  className="flex-1 ml-3 text-sm bg-transparent outline-none placeholder-gray-400 "
+                  className="flex-1 ml-3 bg-transparent outline-none placeholder-gray-400"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoCapitalize="none"
@@ -89,12 +153,15 @@ function Login() {
 
             {/* Password Input */}
             <div className="px-6">
-              <div className="flex items-center border border-gray-500 rounded-md px-4 py-3 h-10">
+              <div
+                className="flex items-center border border-gray-400  rounded-md px-4 py-3 h-10 focus-within:ring-1 focus-within:ring-blue-400
+"
+              >
                 <Lock className="text-gray-400" size={20} />
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="flex-1 ml-3 text-sm bg-transparent outline-none placeholder-gray-400"
+                  className="flex-1 ml-3  bg-transparent outline-none placeholder-gray-400"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -174,7 +241,7 @@ function Login() {
                 <button
                   type="button"
                   onClick={() => navigate("/signup")}
-                  className="text-blue-400 font-medium hover:text-blue-500 transition-colors"
+                  className="text-blue-400 font-medium hover:text-blue-500 transition-colors cursor-pointer"
                 >
                   Sign Up
                 </button>
