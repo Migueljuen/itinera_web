@@ -2,8 +2,9 @@ import React, { useState } from "react";
 import ProgressBar from "../../../components/ProgressBar";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 // Step components (web versions)
-import Step1CategorySelection from "./steps/Step1CategorySelection";
-import Step2Tag from "./steps/Step2Tag";
+import Step01CategorySelection from "./steps/Step01CategorySelection";
+import Step1Tag from "./steps/Step1Tag";
+import Step2GetStarted from "./steps/Step2GetStarted";
 import Step3ExperienceDetails from "./steps/Step3ExperienceDetails";
 import Step4TagSelection from "./steps/Step4TagSelection";
 import Step5Availability from "./steps/Step5Availability";
@@ -239,7 +240,7 @@ const ExperienceCreationForm = () => {
     switch (step) {
       case 1:
         return (
-          <Step1CategorySelection
+          <Step01CategorySelection
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -247,7 +248,7 @@ const ExperienceCreationForm = () => {
         );
       case 2:
         return (
-          <Step2Tag
+          <Step1Tag
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -256,7 +257,7 @@ const ExperienceCreationForm = () => {
         );
       case 3:
         return (
-          <Step3ExperienceDetails
+          <Step2GetStarted
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -265,7 +266,7 @@ const ExperienceCreationForm = () => {
         );
       case 4:
         return (
-          <Step4TagSelection
+          <Step3ExperienceDetails
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -274,7 +275,7 @@ const ExperienceCreationForm = () => {
         );
       case 5:
         return (
-          <Step5Availability
+          <Step4TagSelection
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -283,7 +284,7 @@ const ExperienceCreationForm = () => {
         );
       case 6:
         return (
-          <Step6Destination
+          <Step5Availability
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -292,7 +293,7 @@ const ExperienceCreationForm = () => {
         );
       case 7:
         return (
-          <Step7Images
+          <Step6Destination
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -300,6 +301,15 @@ const ExperienceCreationForm = () => {
           />
         );
       case 8:
+        return (
+          <Step7Images
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNext}
+            onBack={handleBack}
+          />
+        );
+      case 9:
         return (
           <ReviewSubmit
             formData={formData}
@@ -315,27 +325,28 @@ const ExperienceCreationForm = () => {
 
   return (
     <div className="min-h-screen">
-      {/* Keep outer container consistent for all steps */}
-      <div className="max-w-[1440px] mx-auto">
-        <div className="flex-1 min-h-screen grid place-items-center font-display">
-          <LayoutGroup>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={step} // 👈 animate on every step change
-                initial={{ opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -40 }}
-                transition={{ duration: 0.4, ease: "easeInOut" }}
-                className="w-full"
-              >
-                {step >= 3 ? (
-                  <DashboardLayout>{renderStep()}</DashboardLayout>
-                ) : (
-                  renderStep()
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </LayoutGroup>
+      <div className=" mx-auto">
+        <div className="flex-1 min-h-screen w-full  grid place-items-center font-display ">
+          {step < 4 ? (
+            // Animate only for steps 1 and 2
+            <LayoutGroup>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={step}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -40 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="w-full"
+                >
+                  {renderStep()}
+                </motion.div>
+              </AnimatePresence>
+            </LayoutGroup>
+          ) : (
+            // Step 3+: render normally inside dashboard
+            <DashboardLayout>{renderStep()}</DashboardLayout>
+          )}
         </div>
       </div>
     </div>

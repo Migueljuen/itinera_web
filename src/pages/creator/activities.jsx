@@ -204,7 +204,7 @@ const ExperienceManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f8f8]">
+    <div className="min-h-screen ">
       {/* <div className="max-w-[99%] mx-auto py-6"> */}
       <div className="max-w-[99%] mx-auto py-6">
         {/* Header */}

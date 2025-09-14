@@ -151,7 +151,7 @@ const DashboardLayout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8f8f8] font-display">
+    <div className="min-h-screen w-full font-display">
       {/* Mobile Sidebar Backdrop */}
       {isSidebarOpen && (
         <div

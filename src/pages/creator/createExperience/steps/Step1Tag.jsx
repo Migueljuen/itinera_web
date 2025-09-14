@@ -23,7 +23,7 @@ const TagCard = ({ tag, isSelected, onToggle }) => (
   </button>
 );
 
-const Step2Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
+const Step1Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
   const [availableTags, setAvailableTags] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -152,47 +152,49 @@ const Step2Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
-      {/* Header */}
-      <div className="text-center mb-12 overflow-visible">
-        <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">
-          How would you describe this experience?
-        </h1>
+    <>
+      <div className="max-w-4xl mx-auto px-6 py-8">
+        {/* Header */}
+        <div className="text-center mb-12 overflow-visible">
+          <h1 className="text-4xl md:text-5xl font-semibold text-gray-900 mb-4">
+            How would you describe this experience?
+          </h1>
 
-        {formData.category_id && (
-          <motion.div
-            layoutId={`category-${formData.category_id}`}
-            className="px-12 py-8 my-8 rounded-xl shadow-xl bg-white inline-block"
-          >
-            <img
-              src={formData.category_image}
-              alt={formData.category_name}
-              className="   w-24 h-24 mx-auto mb-6 rounded-xl flex items-center justify-center overflow-hidden"
+          {formData.category_id && (
+            <motion.div
+              layoutId={`category-${formData.category_id}`}
+              className="px-12 py-8 my-8 rounded-2xl shadow-[0_2px_32px_-1px_rgba(0,0,0,0.15)] bg-white inline-block"
+            >
+              <img
+                src={formData.category_image}
+                alt={formData.category_name}
+                className="   w-24 h-24 mx-auto mb-6 rounded-xl flex items-center justify-center overflow-hidden"
+              />
+              {/* Category Name */}
+              <h3 className="text-base font-medium text-gray-900 text-center leading-tight min-h-10">
+                {formData.category_name}
+              </h3>
+            </motion.div>
+          )}
+        </div>
+        {/* Tags Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {availableTags.map((tag) => (
+            <TagCard
+              key={tag.tag_id}
+              tag={tag}
+              isSelected={selectedTags.includes(tag.tag_id)}
+              onToggle={toggleTag}
             />
-            {/* Category Name */}
-            <h3 className="text-base font-medium text-gray-900 text-center leading-tight min-h-10">
-              {formData.category_name}
-            </h3>
-          </motion.div>
-        )}
+          ))}
+        </div>
       </div>
-      {/* Tags Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        {availableTags.map((tag) => (
-          <TagCard
-            key={tag.tag_id}
-            tag={tag}
-            isSelected={selectedTags.includes(tag.tag_id)}
-            onToggle={toggleTag}
-          />
-        ))}
-      </div>
-
       {/* Navigation */}
-      <div className="flex justify-between">
+
+      <div className="flex justify-between mt-12 max-w-4xl mx-auto">
         <button
           onClick={onBack}
-          className="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-6 py-3 border border-gray-300 text-primary rounded-lg cursor-pointer hover:bg-gray-50 transition-colors"
         >
           Back
         </button>
@@ -202,15 +204,15 @@ const Step2Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
           disabled={!canProceed}
           className={`px-8 py-3 rounded-lg font-medium transition-colors ${
             canProceed
-              ? "bg-gray-900 text-white hover:bg-gray-800"
+              ? "bg-black/90 cursor-pointer text-white hover:bg-black/80"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
           Continue
         </button>
       </div>
-    </div>
+    </>
   );
 };
 
-export default Step2Tag;
+export default Step1Tag;

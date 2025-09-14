@@ -7,7 +7,7 @@ import cat2 from "../../../../assets/images/category2.png";
 import cat3 from "../../../../assets/images/category3.png";
 import cat4 from "../../../../assets/images/category4.png";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-const Step1CategorySelection = ({ formData, setFormData, onNext }) => {
+const Step01CategorySelection = ({ formData, setFormData, onNext }) => {
   const navigate = useNavigate();
   const categories = [
     {
@@ -106,4 +106,4 @@ const Step1CategorySelection = ({ formData, setFormData, onNext }) => {
   );
 };
 
-export default Step1CategorySelection;
+export default Step01CategorySelection;
