@@ -284,11 +284,11 @@ const LandingPage = () => {
         </div>
 
         {/* Mockup */}
-        <div className=" flex-[0.5] flex justify-center items-center">
+        <div className=" flex-[0.3] flex justify-center items-center">
           <img
             src={mockup1}
             alt="mockup1"
-            className="h-5/6  cursor-pointer transition-transform drop-shadow-2xl"
+            className="w-full  cursor-pointer transition-transform drop-shadow-2xl"
           />
         </div>
       </section>
@@ -301,7 +301,6 @@ const LandingPage = () => {
             src={mockup2}
             alt="Mockup"
             className="absolute object-contain cursor-pointer transition-transform drop-shadow-2xl -left-[25%] scale-115"
-            // Options: scale-110, scale-125, scale-150, scale-[1.3], etc.
           />
         </div>
         {/* Right content */}
@@ -312,17 +311,17 @@ const LandingPage = () => {
             <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold ">
               Share authentic activities.
             </h1>
-            <p className="w-11/12 text-black/80 text-lg">
+            <p className="w-10/12 text-black/80 text-lg">
               Bring your knowledge of local culture, food, and traditions to
               life by listing activities on Itinera. Manage your offerings with
               ease and connect with travelers who value authenticity.
             </p>
           </div>
           {/* Lower texts */}
-          <div className="h-3/6  pt-12 flex flex-col gap-8">
-            <p className="flex gap-3">
+          <div className="h-3/6  pt-12 flex flex-col gap-8 ">
+            <p className="flex gap-3 w-10/12">
               <GlobeAltIcon className="h-7 text-[#397ff1]" />
-              <span className="text-black/80 w-5/6">
+              <span className="text-black/80 ">
                 <span className="text-[#1f2937] font-semibold">
                   Share your activities.
                 </span>{" "}
@@ -331,9 +330,9 @@ const LandingPage = () => {
               </span>
             </p>
 
-            <p className="flex gap-3">
+            <p className="flex gap-3 w-10/12">
               <Cog6ToothIcon className="h-7 text-[#397ff1]" />
-              <span className=" text-black/80 w-5/6">
+              <span className=" text-black/80 ">
                 <span className="text-[#1f2937] font-semibold">
                   Manage with ease
                 </span>{" "}
@@ -342,9 +341,9 @@ const LandingPage = () => {
               </span>
             </p>
 
-            <p className="flex gap-3">
+            <p className="flex gap-3 w-10/12">
               <UsersIcon className="h-7 text-[#397ff1]" />
-              <span className="text-black/80 w-5/6">
+              <span className="text-black/80">
                 <span className="font-semibold text-[#1f2937]">
                   Reach the right audience.
                 </span>{" "}
@@ -430,7 +429,7 @@ const LandingPage = () => {
           </div>
 
           {/* Newsletter section */}
-          <div className="border border-y-gray-300 border-x-white p-8 lg:p-12 mb-16">
+          <div className=" p-8 lg:p-12 mb-16">
             <div className="text-center">
               <h3 className="text-[#1f2937] text-2xl lg:text-3xl font-semibold mb-4">
                 Stay updated with travel insights
@@ -445,7 +444,7 @@ const LandingPage = () => {
                   placeholder="Enter your email"
                   className="flex-1 px-4 py-3 rounded-lg border border-gray-400 focus:outline-none focus:ring-2 focus:ring-[#397ff1]/20 focus:border-[#397ff1] text-base"
                 />
-                <button className="bg-[#397ff1] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#397ff1]/80 transition-colors duration-300">
+                <button className="bg-[#397ff1] cursor-pointer text-white px-6 py-3 rounded-lg font-medium hover:bg-[#397ff1]/80 transition-colors duration-300">
                   Subscribe
                 </button>
               </div>

@@ -67,3 +67,9 @@
 .calendar .rbc-selected {
   @apply bg-blue-100;
 }
+
+@layer base {
+  button {
+    @apply cursor-pointer;
+  }
+}

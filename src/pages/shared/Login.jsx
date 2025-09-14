@@ -2,12 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
-import logoImage from "../../assets/images/logo.png";
 import googleIcon from "../../assets/images/google.png";
 import toast, { Toaster } from "react-hot-toast";
-import API_URL from "../../constants/api";
-import axios from "axios";
 
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 function Login() {
   const navigate = useNavigate();
   const { login, updateUser } = useAuth();
@@ -34,50 +32,6 @@ function Login() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
-  // const handleLogin = async (e) => {
-  //   e.preventDefault();
-  //   if (!validate()) return;
-
-  //   setIsSubmitting(true);
-
-  //   try {
-  //     const result = await login(email, password); // your login API call
-
-  //     if (result.success) {
-  //       if (result.user.role === "Creator") {
-  //         if (result.user.is_first_login) {
-  //           // Update DB so it won’t redirect again
-  //           await axios.put(`${API_URL}/api/login/${result.user.user_id}`);
-
-  //           // Update both local state + storage with new value
-  //           // const updatedUser = { ...result.user, is_first_login: 0 };
-  //           // updateUser(updatedUser);
-
-  //           toast.success("Welcome! Let's set up your first activity 🎉");
-  //           navigate("/owner/create", { replace: true });
-
-  //           setTimeout(() => {
-  //             const updatedUser = { ...result.user, is_first_login: 0 };
-  //             updateUser(updatedUser);
-  //           }, 100);
-  //         } else {
-  //           toast.success("Login successful! Redirecting...");
-  //           navigate("/owner");
-  //         }
-  //       } else {
-  //         toast.error("Access denied! Invalid user role.");
-  //       }
-  //     } else {
-  //       toast.error(result.error || "Login failed. Please try again.");
-  //     }
-  //   } catch (error) {
-  //     toast.error("An unexpected error occurred. Please try again.");
-  //     console.error(error);
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -124,7 +78,10 @@ function Login() {
           },
         }}
       />
-
+      <ChevronLeftIcon
+        className="h-8 cursor-pointer hover:text-black/90 absolute top-10 left-10"
+        onClick={() => navigate("/")}
+      />
       <div className="min-h-screen grid place-items-center p-4">
         <div className="w-full max-w-md p-8 bg-white rounded-lg border border-gray-300 space-y-6 ">
           <p className="text-center text-2xl  ">Login to Itinera</p>
