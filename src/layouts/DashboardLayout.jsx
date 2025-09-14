@@ -19,7 +19,7 @@ import logoImage from "../assets/images/alt.png";
 import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
 
-const DashboardLayout = () => {
+const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -228,7 +228,7 @@ const DashboardLayout = () => {
       <div className="lg:ml-64 min-h-screen flex flex-col">
         {/* Page Content */}
         <main className="p-4 lg:p-8 flex-1 flex flex-col">
-          <Outlet />
+          {children || <Outlet />}
         </main>
       </div>
     </div>

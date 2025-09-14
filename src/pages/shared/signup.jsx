@@ -13,7 +13,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import logoImage from "../../assets/images/logo.png";
 import googleIcon from "../../assets/images/google.png";
 import toast, { Toaster } from "react-hot-toast";
-
+import { ChevronLeftIcon } from "@heroicons/react/24/outline";
 const Signup = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
@@ -115,7 +115,10 @@ const Signup = () => {
           },
         }}
       />
-
+      <ChevronLeftIcon
+        className="h-8 cursor-pointer hover:text-black/90 absolute top-10 left-10"
+        onClick={() => navigate("/login")}
+      />
       <div className="min-h-screen grid place-items-center p-4">
         <div className="w-full max-w-2xl p-8 bg-white rounded-lg border border-gray-300 space-y-6">
           <p className="text-center text-2xl">Become a host</p>
