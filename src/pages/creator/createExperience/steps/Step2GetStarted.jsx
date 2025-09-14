@@ -63,7 +63,7 @@ const Step2GetStarted = ({ formData, onNext, onBack }) => {
         </button>
         <button
           onClick={onNext}
-          className="px-8 py-3 rounded-lg font-medium bg-black/90 text-white hover:bg-black/80 cursor-pointer"
+          className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white hover:bg-black/70 cursor-pointer"
         >
           Continue
         </button>

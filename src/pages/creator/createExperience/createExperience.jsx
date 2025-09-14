@@ -6,10 +6,9 @@ import Step01CategorySelection from "./steps/Step01CategorySelection";
 import Step1Tag from "./steps/Step1Tag";
 import Step2GetStarted from "./steps/Step2GetStarted";
 import Step3ExperienceDetails from "./steps/Step3ExperienceDetails";
-import Step4TagSelection from "./steps/Step4TagSelection";
-import Step5Availability from "./steps/Step5Availability";
+import Step4AvailabilityCompanion from "./steps/Step4AvailabilityCompanion";
 import Step6Destination from "./steps/Step6Destination";
-import Step7Images from "./steps/Step7Images";
+
 import ReviewSubmit from "./steps/Step8Review";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 const ExperienceCreationForm = () => {
@@ -18,7 +17,7 @@ const ExperienceCreationForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [formData, setFormData] = useState({
-    category: "", // New field for category selection
+    category_id: 0, // New field for category selection
     title: "",
     description: "",
     price: "",
@@ -43,14 +42,14 @@ const ExperienceCreationForm = () => {
       formData.travel_companions && formData.travel_companions.length > 0;
 
     // Add validation for new fields
-    if (!formData.category) {
+    if (!formData.category_id) {
       console.log("Category not selected");
       return false;
     }
 
     if (
-      !Array.isArray(formData.selectedTags) ||
-      formData.selectedTags.length === 0
+      !Array.isArray(formData.tags) ||
+      formData.tags.length === 0
     ) {
       console.log("No tags selected");
       return false;
@@ -141,14 +140,14 @@ const ExperienceCreationForm = () => {
       const formDataObj = new FormData();
 
       formDataObj.append("creator_id", "12");
-      formDataObj.append("category", formData.category); // Add category to submission
+      formDataObj.append("category", formData.category_id); // Add category to submission
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
       formDataObj.append("price", Number(formData.price).toString());
       formDataObj.append("unit", formData.unit);
       formDataObj.append("status", status);
       formDataObj.append("tags", JSON.stringify(formData.tags));
-      formDataObj.append("selectedTags", JSON.stringify(formData.selectedTags)); // Add selected tags
+      // formDataObj.append("selectedTags", JSON.stringify(formData.selectedTags)); // Add selected tags
       formDataObj.append(
         "travel_companions",
         JSON.stringify(formData.travel_companions || [])
@@ -275,7 +274,7 @@ const ExperienceCreationForm = () => {
         );
       case 5:
         return (
-          <Step4TagSelection
+          <Step4AvailabilityCompanion
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -284,15 +283,6 @@ const ExperienceCreationForm = () => {
         );
       case 6:
         return (
-          <Step5Availability
-            formData={formData}
-            setFormData={setFormData}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        );
-      case 7:
-        return (
           <Step6Destination
             formData={formData}
             setFormData={setFormData}
@@ -300,16 +290,8 @@ const ExperienceCreationForm = () => {
             onBack={handleBack}
           />
         );
-      case 8:
-        return (
-          <Step7Images
-            formData={formData}
-            setFormData={setFormData}
-            onNext={handleNext}
-            onBack={handleBack}
-          />
-        );
-      case 9:
+
+      case 7:
         return (
           <ReviewSubmit
             formData={formData}

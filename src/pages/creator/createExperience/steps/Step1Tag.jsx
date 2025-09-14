@@ -7,10 +7,9 @@ const TagCard = ({ tag, isSelected, onToggle }) => (
     onClick={() => onToggle(tag.tag_id)}
     className={`
       relative p-6 rounded-xl border-2 transition-all duration-200 text-center
-      ${
-        isSelected
-          ? "border-gray-900 bg-gray-50 shadow-md"
-          : "border-gray-300 bg-white hover:border-gray-400 "
+      ${isSelected
+        ? "border-gray-900 bg-gray-50 shadow-md"
+        : "border-gray-300 bg-white hover:border-gray-400 "
       }
     `}
   >
@@ -202,14 +201,14 @@ const Step1Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
         <button
           onClick={onNext}
           disabled={!canProceed}
-          className={`px-8 py-3 rounded-lg font-medium transition-colors ${
-            canProceed
-              ? "bg-black/90 cursor-pointer text-white hover:bg-black/80"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
+          className={`px-8 py-3 rounded-lg font-medium transition-colors ${canProceed
+            ? "bg-black/80 cursor-pointer text-white hover:bg-black/70"
+            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
         >
           Continue
         </button>
+
       </div>
     </>
   );

@@ -79,7 +79,7 @@ function Login() {
         }}
       />
       <ChevronLeftIcon
-        className="h-8 cursor-pointer hover:text-black/90 absolute top-10 left-10"
+        className="h-6 cursor-pointer hover:text-black/80 absolute top-10 left-10"
         onClick={() => navigate("/")}
       />
       <div className="min-h-screen grid place-items-center p-4">
