@@ -34,6 +34,7 @@ const CreatorDashboard = () => {
   return (
     <div className="flex flex-col ">
       {/* HEADER */}
+
       <header className="px-12 pt-4 py-8">
         <div className="flex items-center justify-between">
           <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">

@@ -57,7 +57,7 @@ const DashboardLayout = ({ children }) => {
       setExpanded: setIsProjectsExpanded,
       subItems: [
         { label: "Manage Activities", path: "/owner/activities" },
-        { label: "Add New", path: "/owner/create" },
+        { label: "Create listing", path: "/owner/create" },
       ],
     },
     {

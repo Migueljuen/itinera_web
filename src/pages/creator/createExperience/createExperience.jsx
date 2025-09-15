@@ -11,11 +11,13 @@ import Step6Destination from "./steps/Step6Destination";
 
 import ReviewSubmit from "./steps/Step8Review";
 import DashboardLayout from "../../../layouts/DashboardLayout";
+import { useAuth } from "../../../contexts/AuthContext";
+import API_URL from "../../../constants/api";
 const ExperienceCreationForm = () => {
   const [step, setStep] = useState(1);
   const stepCount = 7;
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     category_id: 0, // New field for category selection
     title: "",
@@ -47,10 +49,7 @@ const ExperienceCreationForm = () => {
       return false;
     }
 
-    if (
-      !Array.isArray(formData.tags) ||
-      formData.tags.length === 0
-    ) {
+    if (!Array.isArray(formData.tags) || formData.tags.length === 0) {
       console.log("No tags selected");
       return false;
     }
@@ -139,7 +138,7 @@ const ExperienceCreationForm = () => {
 
       const formDataObj = new FormData();
 
-      formDataObj.append("creator_id", "12");
+      formDataObj.append("creator_id", user.user_id);
       formDataObj.append("category", formData.category_id); // Add category to submission
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
@@ -198,8 +197,6 @@ const ExperienceCreationForm = () => {
           }
         });
       }
-
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
       const response = await fetch(`${API_URL}/experience/create`, {
         method: "POST",
