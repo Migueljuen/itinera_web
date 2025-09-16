@@ -109,11 +109,10 @@ const TimePickerWrapper = ({
 const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
-    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${
-      isSelected
-        ? "border-gray-900 bg-[#376a63]/5"
-        : "border-gray-200 bg-white hover:border-gray-900"
-    }`}
+    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
+      ? "border-gray-900 bg-[#376a63]/5"
+      : "border-gray-200 bg-white hover:border-gray-900"
+      }`}
   >
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -484,17 +483,16 @@ const Step4AvailabilityCompanion = ({
                       <label className="block font-medium text-sm mb-2">
                         Select Days
                       </label>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="grid grid-cols-7 gap-2 mb-3">
                         {daysOfWeek.map((day, index) => (
                           <button
                             key={day}
                             type="button"
                             onClick={() => toggleDaySelection(day)}
-                            className={`min-w-[45px] text-center px-2 py-1 rounded-sm border text-xs whitespace-nowrap transition-colors ${
-                              selectedDays.includes(day)
-                                ? "bg-[#376a63] text-white"
-                                : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-                            }`}
+                            className={`min-w-[45px] text-center px-2 py-1 rounded-sm border text-xs whitespace-nowrap transition-colors ${selectedDays.includes(day)
+                              ? "bg-[#376a63] text-white"
+                              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
+                              }`}
                           >
                             {daysShort[index]}
                           </button>
@@ -533,11 +531,10 @@ const Step4AvailabilityCompanion = ({
                       type="button"
                       onClick={addAvailability}
                       disabled={!start || !end || selectedDays.length === 0}
-                      className={`w-full p-2 rounded-xl font-medium text-sm transition-colors ${
-                        start && end && selectedDays.length > 0
-                          ? "bg-[#376a63] text-white hover:bg-[#376a63]/80 cursor-pointer"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      }`}
+                      className={`w-full p-2 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
+                        ? "bg-[#376a63] text-white hover:bg-[#376a63]/80 cursor-pointer"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        }`}
                     >
                       Add to Selected Days
                     </button>

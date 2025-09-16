@@ -2,7 +2,7 @@
 
 import { useNavigate } from "react-router-dom";
 import React from 'react';
-import { FileImage } from "lucide-react";
+import { FileImage, Clock } from "lucide-react";
 
 const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
     const navigate = useNavigate();
@@ -17,6 +17,94 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
         const sizes = ["Bytes", "KB", "MB", "GB"];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+    };
+
+    // Helper function to convert military time to standard time
+    const convertToStandardTime = (militaryTime) => {
+        if (!militaryTime) return '';
+
+        // Extract hours and minutes from HH:MM format
+        const [hours, minutes] = militaryTime.split(':');
+        const hour24 = parseInt(hours, 10);
+
+        // Convert to 12-hour format
+        const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
+        const period = hour24 < 12 ? 'AM' : 'PM';
+
+        return `${hour12}:${minutes}${period}`;
+    };
+
+    // Calendar helper function
+    const renderAvailabilityCalendar = () => {
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+        const shortDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+        // Create a map of availability by day
+        const availabilityMap = {};
+        if (formData.availability && formData.availability.length > 0) {
+            formData.availability.forEach(day => {
+                availabilityMap[day.day_of_week] = day.time_slots;
+            });
+        }
+
+        return (
+            <div className="grid grid-cols-7 gap-2">
+                {/* Header row with day names */}
+                {shortDays.map((day, index) => (
+                    <div key={index} className="text-center text-xs font-medium text-gray-600 py-2">
+                        {day}
+                    </div>
+                ))}
+
+                {/* Calendar days */}
+                {daysOfWeek.map((fullDay, index) => {
+                    const hasAvailability = availabilityMap[fullDay];
+                    const shortDay = shortDays[index];
+
+                    return (
+                        <div
+                            key={index}
+                            className={`flex flex-col justify-between h-full
+                                relative p-3 my-auto border rounded-lg  text-center
+                             border-gray-300
+                                }
+                            `}
+                        >
+
+
+                            {/* Time slots */}
+                            {hasAvailability ? (
+                                <div className="space-y-2">
+                                    {hasAvailability.slice(0, 2).map((slot, slotIndex) => (
+                                        <div
+                                            key={slotIndex}
+                                            className="text-[10.5px] bg-[#376a63] rounded py-1 text-white/90 "
+                                            title={`${convertToStandardTime(slot.start_time)} - ${convertToStandardTime(slot.end_time)}`}
+                                        >
+                                            <div className="flex items-center justify-center gap-0.5">
+
+                                                <span className="truncate">
+                                                    {convertToStandardTime(slot.start_time)} - {convertToStandardTime(slot.end_time)}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ))}
+                                    {hasAvailability.length > 2 && (
+                                        <div className="text-xs text-green-600 font-medium">
+                                            +{hasAvailability.length - 2} more
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-xs text-gray-400 mt-2">
+                                    Not available
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+        );
     };
 
     return (
@@ -34,9 +122,37 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         </div>
                     </div>
 
-                    {/* TWO COL */}
+                    {/* FULL WIDTH AVAILABILITY SECTION */}
+                    <div className="mb-8">
+                        <div className="border rounded-xl p-6 border-gray-300 bg-white">
+                            <h3 className="block font-medium text-left text-black/90 mb-4 text-lg">Weekly Availability</h3>
+                            {formData.availability && formData.availability.length > 0 ? (
+                                <div className=" rounded-lg border border-gray-200 p-6">
+                                    {renderAvailabilityCalendar()}
+
+                                    {/* Legend */}
+                                    <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-gray-200">
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 bg-[#376a63] border border-green-200 rounded"></div>
+                                            <span className="text-sm text-gray-600">Available</span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-4 h-4 bg-gray-50 border border-gray-200 rounded"></div>
+                                            <span className="text-sm text-gray-600">Not Available</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="w-full p-6 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50 text-center">
+                                    No availability set
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* TWO COL - EXPERIENCE DETAILS & DESTINATION */}
                     <div className="flex flex-row justify-between gap-8">
-                        {/* LEFT COL */}
+                        {/* LEFT COL - EXPERIENCE DETAILS */}
                         <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
                             {/* Basic Details Section */}
                             <div className="pb-4">
@@ -84,7 +200,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                                 <h3 className="block font-medium py-2 text-left text-black/90">Tags</h3>
                                 {formData.tags && formData.tags.length > 0 ? (
                                     <div className="flex flex-wrap gap-2">
-                                        {formData.tags.map((tagId, index) => (
+                                        {formData.tags.map((name, index) => (
                                             <div key={index} className="px-6 py-2 rounded-xl bg-black/80 text-white">
                                                 <span className="text-sm font-medium">Tag {tagId}</span>
                                             </div>
@@ -116,35 +232,10 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             </div>
                         </div>
 
-                        {/* RIGHT COL */}
+                        {/* RIGHT COL - DESTINATION & IMAGES */}
                         <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
-                            {/* Availability Section */}
-                            <div className="pb-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Availability</h3>
-                                {formData.availability && formData.availability.length > 0 ? (
-                                    <div className="space-y-3">
-                                        {formData.availability.map((day, dayIndex) => (
-                                            <div key={dayIndex} className="rounded-xl border border-gray-300 bg-gray-50 p-4">
-                                                <h4 className="text-sm font-medium text-gray-800 mb-2">{day.day_of_week}</h4>
-                                                <div className="space-y-1">
-                                                    {day.time_slots.map((slot, slotIndex) => (
-                                                        <div key={slotIndex} className="text-sm text-gray-600">
-                                                            {slot.start_time} - {slot.end_time}
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                ) : (
-                                    <div className="w-full p-4 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50">
-                                        No availability set
-                                    </div>
-                                )}
-                            </div>
-
                             {/* Destination Section */}
-                            <div className="pb-4 border-t border-gray-200 pt-4">
+                            <div className="pb-4">
                                 <h3 className="block font-medium py-2 text-left text-black/90">Destination</h3>
                                 {formData.useExistingDestination && formData.destination_id ? (
                                     <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
@@ -166,7 +257,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                                         </div>
                                         <div>
                                             <label className="block text-sm font-medium text-gray-500 mb-1">Description</label>
-                                            <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50 min-h-[80px]">
+                                            <div className="w-full p-4  text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50 min-h-[80px]">
                                                 {formData.destination_description || "No description provided"}
                                             </div>
                                         </div>
