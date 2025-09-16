@@ -1,49 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { Search, MapPin, Building, Loader2, CheckCircle, ArrowRight, ArrowLeft } from "lucide-react";
-import { MapContainer, TileLayer, Marker, Popup, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-
-// Fix for default markers in React Leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-// Custom component to handle map clicks
-const MapClickHandler = ({ onLocationSelect }) => {
-  useMapEvents({
-    click: async (e) => {
-      const { lat, lng } = e.latlng;
-
-      // Reverse geocode the clicked location
-      try {
-        const response = await fetch(
-          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
-        );
-        const data = await response.json();
-
-        onLocationSelect({
-          latitude: lat,
-          longitude: lng,
-          address: data
-        });
-      } catch (error) {
-        console.error('Error reverse geocoding clicked location:', error);
-        // Still allow selection even if geocoding fails
-        onLocationSelect({
-          latitude: lat,
-          longitude: lng,
-          address: null
-        });
-      }
-    }
-  });
-
-  return null;
-};
+import React, { useEffect, useState, useRef } from "react";
+import {
+  Search,
+  MapPin,
+  Building,
+  Loader2,
+  CheckCircle,
+  ArrowRight,
+  ArrowLeft,
+  Navigation,
+} from "lucide-react";
+import toast, { Toaster } from "react-hot-toast";
 
 const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
   const [loading, setLoading] = useState(false);
@@ -52,89 +18,281 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
-  const [mapCenter, setMapCenter] = useState([14.5995, 120.9842]); // Default to Manila
-  const [mapZoom, setMapZoom] = useState(13);
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  const mapContainer = useRef(null);
+  const map = useRef(null);
+  const marker = useRef(null);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  // Sync selectedLocation from formData (if returning to this step)
+  // Initialize from formData if returning to this step
   useEffect(() => {
     if (formData.latitude && formData.longitude) {
-      const location = {
-        latitude: Number(formData.latitude),
-        longitude: Number(formData.longitude),
-      };
-      setSelectedLocation(location);
-      setMapCenter([location.latitude, location.longitude]);
-      setMapZoom(15);
-    }
-  }, []);
+      const lat = formData.latitude === "" ? null : Number(formData.latitude);
+      const lng = formData.longitude === "" ? null : Number(formData.longitude);
 
-  // Get user's current location
-  useEffect(() => {
-    const getCurrentLocation = async () => {
-      if (!navigator.geolocation) {
-        setErrorMsg("Geolocation is not supported by this browser");
-        return;
+      if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+        setSelectedLocation({
+          latitude: lat,
+          longitude: lng,
+        });
       }
+    }
+  }, [formData.latitude, formData.longitude]);
 
-      setLoading(true);
-      try {
-        const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0,
-          });
+  // Initialize Leaflet Map
+  useEffect(() => {
+    const initializeMap = () => {
+      if (window.L && mapContainer.current && !map.current) {
+        // Handle initial coordinates - they might be empty strings
+        const initialLat =
+          formData.latitude && formData.latitude !== ""
+            ? Number(formData.latitude)
+            : 14.5995;
+        const initialLng =
+          formData.longitude && formData.longitude !== ""
+            ? Number(formData.longitude)
+            : 120.9842;
+        const defaultZoom =
+          formData.latitude && formData.latitude !== "" ? 15 : 11;
+
+        // Create map
+        map.current = window.L.map(mapContainer.current).setView(
+          [initialLat, initialLng],
+          defaultZoom
+        );
+
+        // Add tile layer
+        window.L.tileLayer(
+          "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+          {
+            attribution: "© OpenStreetMap contributors",
+          }
+        ).addTo(map.current);
+
+        // Add existing marker if coordinates exist and are not empty strings
+        if (
+          formData.latitude &&
+          formData.longitude &&
+          formData.latitude !== "" &&
+          formData.longitude !== ""
+        ) {
+          addMarker(Number(formData.latitude), Number(formData.longitude));
+        }
+
+        // Add click event
+        map.current.on("click", (e) => {
+          const { lat, lng } = e.latlng;
+          handleMapClick(lat, lng);
         });
 
-        const { latitude, longitude } = position.coords;
-
-        // Only set if formData has no coordinates yet
-        if (!formData.latitude || !formData.longitude) {
-          const location = { latitude, longitude };
-          setSelectedLocation(location);
-          setMapCenter([latitude, longitude]);
-          setMapZoom(15);
-          handleChange("latitude", latitude);
-          handleChange("longitude", longitude);
-
-          // Reverse geocode to get city
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`
-            );
-            const data = await response.json();
-
-            if (data.address && !formData.city) {
-              const city =
-                data.address.city ||
-                data.address.town ||
-                data.address.village ||
-                data.address.municipality ||
-                "";
-              if (city) {
-                handleChange("city", city);
-              }
-            }
-          } catch (error) {
-            console.error("Error reverse geocoding:", error);
-          }
-        }
-      } catch (error) {
-        setErrorMsg("Error getting location: " + error.message);
-        console.error(error);
-      } finally {
-        setLoading(false);
+        setMapLoaded(true);
+        console.log("Map initialized successfully");
       }
     };
 
-    getCurrentLocation();
+    // Load Leaflet if not already loaded
+    if (!window.L) {
+      // Load Leaflet CSS
+      const cssLink = document.createElement("link");
+      cssLink.rel = "stylesheet";
+      cssLink.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";
+      cssLink.integrity = "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=";
+      cssLink.crossOrigin = "";
+      document.head.appendChild(cssLink);
+
+      // Load Leaflet JS
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+      script.integrity = "sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=";
+      script.crossOrigin = "";
+      script.onload = initializeMap;
+      script.onerror = () => {
+        setErrorMsg("Failed to load map. Please refresh the page.");
+      };
+      document.body.appendChild(script);
+    } else {
+      initializeMap();
+    }
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+        map.current = null;
+      }
+    };
   }, []);
 
-  // Search for locations
+  const addMarker = (lat, lng) => {
+    if (!map.current) return;
+
+    // Remove existing marker
+    if (marker.current) {
+      map.current.removeLayer(marker.current);
+    }
+
+    // Add new marker
+    marker.current = window.L.marker([lat, lng], {
+      draggable: true,
+    }).addTo(map.current);
+
+    // Add popup
+    marker.current
+      .bindPopup(
+        `
+      <div style="text-align: center;">
+        <strong>📍 Selected Location</strong><br>
+        <small>${lat.toFixed(5)}, ${lng.toFixed(5)}</small><br>
+        <em>Drag to adjust position</em>
+      </div>
+    `
+      )
+      .openPopup();
+
+    // Handle marker drag
+    marker.current.on("dragend", (e) => {
+      const { lat, lng } = e.target.getLatLng();
+      handleMapClick(lat, lng);
+    });
+  };
+
+  const handleMapClick = async (lat, lng) => {
+    setSelectedLocation({ latitude: lat, longitude: lng });
+    handleChange("latitude", lat);
+    handleChange("longitude", lng);
+
+    addMarker(lat, lng);
+
+    // Center map on the clicked location
+    if (map.current) {
+      map.current.setView([lat, lng], 15);
+    }
+
+    // Try reverse geocoding
+    await reverseGeocode(lat, lng);
+  };
+
+  // Get user's current location
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setErrorMsg(
+        "Geolocation is not supported by this browser. Please click on the map to select a location."
+      );
+      return;
+    }
+
+    setLoading(true);
+    setErrorMsg(null);
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+
+        console.log("Got coordinates:", latitude, longitude);
+
+        setSelectedLocation({ latitude, longitude });
+        handleChange("latitude", latitude);
+        handleChange("longitude", longitude);
+
+        // Update map
+        if (map.current) {
+          map.current.setView([latitude, longitude], 15);
+          addMarker(latitude, longitude);
+        }
+
+        // Try to get location details
+        await reverseGeocode(latitude, longitude);
+        setLoading(false);
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        let errorMessage = "Could not get your location: ";
+
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage +=
+              "Location access denied. Please click on the map to select your location.";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage +=
+              "Location unavailable. Please click on the map to select your location.";
+            break;
+          case error.TIMEOUT:
+            errorMessage +=
+              "Location request timed out. Please click on the map to select your location.";
+            break;
+          default:
+            errorMessage += "Please click on the map to select your location.";
+            break;
+        }
+
+        setErrorMsg(errorMessage);
+        setLoading(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 300000,
+      }
+    );
+  };
+
+  // Reverse geocoding function
+  const reverseGeocode = async (latitude, longitude) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+        {
+          headers: {
+            "User-Agent": "LocationSelector/1.0",
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Reverse geocoding result:", data);
+
+        if (data.address) {
+          const city =
+            data.address.city ||
+            data.address.town ||
+            data.address.village ||
+            data.address.municipality ||
+            data.address.county;
+
+          if (city && (!formData.city || formData.city.trim() === "")) {
+            handleChange("city", city);
+          }
+
+          // Try to set a destination name (only if current destination_name is empty)
+          const placeName =
+            data.address.tourism ||
+            data.address.amenity ||
+            data.address.building ||
+            data.address.shop ||
+            data.name ||
+            data.display_name?.split(",")[0];
+
+          if (
+            placeName &&
+            (!formData.destination_name ||
+              formData.destination_name.trim() === "") &&
+            !placeName.match(/^\d/)
+          ) {
+            handleChange("destination_name", placeName);
+          }
+        }
+      }
+    } catch (error) {
+      console.warn("Could not reverse geocode location:", error);
+    }
+  };
+
+  // Search for locations using Nominatim (OpenStreetMap)
   const searchLocations = async (query) => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -146,10 +304,20 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           query
-        )}&limit=5&addressdetails=1`
+        )}&limit=5&addressdetails=1&countrycodes=ph`,
+        {
+          headers: {
+            "User-Agent": "LocationSelector/1.0",
+          },
+        }
       );
-      const data = await response.json();
-      setSearchResults(data || []);
+
+      if (response.ok) {
+        const data = await response.json();
+        setSearchResults(data || []);
+      } else {
+        setSearchResults([]);
+      }
     } catch (error) {
       console.error("Error searching locations:", error);
       setSearchResults([]);
@@ -172,52 +340,34 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
     const latitude = parseFloat(location.lat);
     const longitude = parseFloat(location.lon);
 
-    const selectedLoc = { latitude, longitude };
-    setSelectedLocation(selectedLoc);
-    setMapCenter([latitude, longitude]);
-    setMapZoom(15);
+    setSelectedLocation({ latitude, longitude });
     handleChange("latitude", latitude);
     handleChange("longitude", longitude);
 
-    // Extract place name and city from the selected location
-    let placeName = "";
-
-    if (location.name) {
-      placeName = location.name;
-    } else if (location.address) {
-      placeName =
-        location.address.tourism ||
-        location.address.amenity ||
-        location.address.leisure ||
-        location.address.building ||
-        location.address.house_name ||
-        location.address.shop ||
-        location.address.office ||
-        "";
+    // Update map
+    if (map.current) {
+      map.current.setView([latitude, longitude], 15);
+      addMarker(latitude, longitude);
     }
 
-    if (!placeName) {
-      const addressParts = location.display_name.split(",");
-      const firstPart = addressParts[0].trim();
-      if (firstPart && !/^\d/.test(firstPart)) {
-        placeName = firstPart;
-      }
-    }
-
-    if (placeName && !formData.destination_name) {
+    // Set destination name (only if current destination_name is empty)
+    let placeName = location.name || location.display_name?.split(",")[0];
+    if (
+      placeName &&
+      (!formData.destination_name || formData.destination_name.trim() === "")
+    ) {
       handleChange("destination_name", placeName);
     }
 
-    // Extract city
+    // Set city (only if current city is empty)
     if (location.address) {
       const city =
         location.address.city ||
         location.address.town ||
         location.address.village ||
-        location.address.municipality ||
-        "";
+        location.address.municipality;
 
-      if (city) {
+      if (city && (!formData.city || formData.city.trim() === "")) {
         handleChange("city", city);
       }
     }
@@ -227,319 +377,309 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
     setSearchResults([]);
   };
 
-  // Handle location selection from map click
-  const handleMapLocationSelect = ({ latitude, longitude, address }) => {
-    const selectedLoc = { latitude, longitude };
-    setSelectedLocation(selectedLoc);
-    handleChange("latitude", latitude);
-    handleChange("longitude", longitude);
-
-    // Extract information from reverse geocoding if available
-    if (address && address.address) {
-      // Extract place name
-      let placeName = "";
-      if (address.name) {
-        placeName = address.name;
-      } else if (address.address) {
-        placeName =
-          address.address.tourism ||
-          address.address.amenity ||
-          address.address.leisure ||
-          address.address.building ||
-          address.address.house_name ||
-          address.address.shop ||
-          address.address.office ||
-          "";
-      }
-
-      if (!placeName) {
-        const addressParts = address.display_name?.split(",") || [];
-        const firstPart = addressParts[0]?.trim();
-        if (firstPart && !/^\d/.test(firstPart)) {
-          placeName = firstPart;
-        }
-      }
-
-      if (placeName && !formData.destination_name) {
-        handleChange("destination_name", placeName);
-      }
-
-      // Extract city
-      const city =
-        address.address.city ||
-        address.address.town ||
-        address.address.village ||
-        address.address.municipality ||
-        "";
-
-      if (city && !formData.city) {
-        handleChange("city", city);
-      }
-    }
-  };
-
-  const getCurrentLocationHandler = () => {
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        const location = { latitude, longitude };
-        setSelectedLocation(location);
-        setMapCenter([latitude, longitude]);
-        setMapZoom(15);
-        handleChange("latitude", latitude);
-        handleChange("longitude", longitude);
-        setLoading(false);
-      },
-      (error) => {
-        setErrorMsg("Error getting current location");
-        setLoading(false);
-      }
-    );
-  };
-
   const isValid = () => {
     return (
       formData.destination_name &&
+      formData.destination_name.trim() !== "" &&
       formData.city &&
+      formData.city.trim() !== "" &&
       formData.destination_description &&
+      formData.destination_description.trim() !== "" &&
       formData.latitude &&
-      formData.longitude
+      formData.latitude !== "" &&
+      !isNaN(Number(formData.latitude)) &&
+      formData.longitude &&
+      formData.longitude !== "" &&
+      !isNaN(Number(formData.longitude))
     );
   };
 
+  const handleContinue = () => {
+    if (!selectedLocation) {
+      toast.error("Please pin a location on the map or use search.");
+      return;
+    }
+
+    if (!formData.destination_name?.trim()) {
+      toast.error("Please enter a destination name.");
+      return;
+    }
+
+    if (!formData.city?.trim()) {
+      toast.error("Please enter the city.");
+      return;
+    }
+
+    if (!formData.destination_description?.trim()) {
+      toast.error("Please enter a description for this destination.");
+      return;
+    }
+
+    // ✅ If all checks pass
+    onNext();
+  };
+
   return (
-    <div className="min-h-screen w-full">
-      <div className="mx-auto">
-        <div className="text-center py-2">
-          <div className="flex items-center justify-between ">
-            <div>
-              <h2 className="text-left text-xl font-semibold mb-2 text-black/90">
-                Where is your activity located?
-              </h2>
-              <p className="text-left text-sm text-black/60 mb-6">
-                Add the main location where your activity takes place. This helps visitors find where you'll meet them.
-              </p>
+    <>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
+      />
+      <div className="min-h-screen w-full">
+        <div className="mx-auto">
+          <div className="text-center py-2">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-left text-xl font-semibold mb-2 text-black/80">
+                  Where is your activity located?
+                </h2>
+                <p className="text-left text-sm text-black/60 mb-6">
+                  Search for a location, use your current location, or click
+                  anywhere on the map to pin your destination.
+                </p>
+              </div>
+
+              {/* Navigation Buttons */}
+              <div className="flex flex-col sm:flex-row gap-x-4">
+                <button
+                  onClick={onBack}
+                  className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors"
+                >
+                  <ArrowLeft size={20} />
+                  Previous Step
+                </button>
+
+                <button
+                  onClick={handleContinue}
+                  className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
 
-            {/* Navigation Buttons */}
-            <div className="flex flex-col sm:flex-row gap-x-4">
-              <button
-                onClick={onBack}
-                className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors"
-              >
-                <ArrowLeft size={20} />
-                Previous Step
-              </button>
+            {/* TWO COL */}
+            <div className="flex flex-row justify-between gap-8">
+              {/* LEFT - Location Search & Interactive Map */}
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
+                <h3 className="font-medium text-left text-black/80 mb-2">
+                  Find Your Location
+                </h3>
 
-              <button
-                onClick={isValid() ? onNext : undefined}
-                disabled={!isValid()}
-                className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px]"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-          {/* TWO COL */}
-          <div className="flex flex-row justify-between gap-8">
-            {/* LEFT - Location Search & Interactive Map */}
-            <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
-              <h3 className="font-medium text-left text-black/90 mb-2">
-                Search location or click on map
-              </h3>
+                {/* Search Input */}
+                <div className="relative mb-4">
+                  <div className="relative">
+                    <Search
+                      size={20}
+                      className="absolute left-3 top-3.5 text-gray-400"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Search for a location (e.g., Rizal Park, Manila)"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
+                    />
+                    {searching && (
+                      <Loader2
+                        size={20}
+                        className="absolute right-3 top-3.5 text-gray-400 animate-spin"
+                      />
+                    )}
+                  </div>
 
-              {/* Search Input */}
-              <div className="relative mb-4">
-                <div className="relative">
-                  <Search
-                    size={20}
-                    className="absolute left-3 top-3.5 text-gray-400"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Search for a location (e.g., Rizal Park, Manila)"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent text-sm"
-                  />
-                  {searching && (
+                  {/* Search Results Dropdown */}
+                  {searchResults.length > 0 && (
+                    <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+                      {searchResults.map((result, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleLocationSelect(result)}
+                          className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
+                        >
+                          <div className="flex items-start">
+                            <MapPin
+                              size={16}
+                              className="text-gray-400 mt-1 mr-2 flex-shrink-0"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-900 truncate">
+                                {result.name ||
+                                  result.display_name?.split(",")[0]}
+                              </p>
+                              <p className="text-xs text-gray-500 truncate">
+                                {result.display_name}
+                              </p>
+                            </div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Current Location Button */}
+                <button
+                  onClick={getCurrentLocation}
+                  disabled={loading}
+                  className="w-full bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-center hover:bg-blue-100 transition-colors disabled:opacity-50"
+                >
+                  {loading ? (
                     <Loader2
                       size={20}
-                      className="absolute right-3 top-3.5 text-gray-400 animate-spin"
+                      className="text-blue-600 animate-spin mr-2"
                     />
+                  ) : (
+                    <Navigation size={20} className="text-blue-600 mr-2" />
+                  )}
+                  <span className="font-medium text-blue-600">
+                    {loading
+                      ? "Getting Current Location..."
+                      : "Use Current Location"}
+                  </span>
+                </button>
+
+                {errorMsg && (
+                  <div className="bg-red-50 border border-red-200 rounded-xl p-3">
+                    <p className="text-red-600 text-sm">{errorMsg}</p>
+                  </div>
+                )}
+
+                {/* Interactive Map */}
+                <div className="mt-4 h-80 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 relative">
+                  <div
+                    ref={mapContainer}
+                    className="w-full h-full"
+                    style={{ minHeight: "320px" }}
+                  />
+                  {!mapLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                      <div className="text-center">
+                        <Loader2
+                          size={32}
+                          className="text-gray-400 animate-spin mx-auto mb-2"
+                        />
+                        <p className="text-sm text-gray-500">
+                          Loading interactive map...
+                        </p>
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                {/* Search Results Dropdown */}
-                {searchResults.length > 0 && (
-                  <div className="absolute z-20 w-full mt-1 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
-                    {searchResults.map((result, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleLocationSelect(result)}
-                        className="w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors"
-                      >
-                        <div className="flex items-start">
-                          <MapPin
-                            size={16}
-                            className="text-gray-400 mt-1 mr-2 flex-shrink-0"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
-                              {result.display_name.split(",")[0]}
-                            </p>
-                            <p className="text-xs text-gray-500 truncate">
-                              {result.display_name}
-                            </p>
-                          </div>
-                        </div>
-                      </button>
-                    ))}
+                <p className="text-xs text-gray-500 text-center">
+                  Click anywhere on the map to pin your location. You can drag
+                  the marker to adjust the position.
+                </p>
+
+                {/* Location Confirmation */}
+                {selectedLocation && (
+                  <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+                    <div className="flex items-center">
+                      <CheckCircle size={16} className="text-green-600 mr-2" />
+                      <span className="text-sm font-medium text-green-800">
+                        Location Pinned: {selectedLocation.latitude.toFixed(5)},{" "}
+                        {selectedLocation.longitude.toFixed(5)}
+                      </span>
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* Current Location Button */}
-              <button
-                onClick={getCurrentLocationHandler}
-                disabled={loading}
-                className="w-full bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-center hover:bg-blue-100 transition-colors disabled:opacity-50"
-              >
-                {loading ? (
-                  <Loader2
-                    size={20}
-                    className="text-blue-600 animate-spin mr-2"
-                  />
-                ) : (
-                  <MapPin size={20} className="text-blue-600 mr-2" />
-                )}
-                <span className="font-medium text-blue-600">
-                  {loading
-                    ? "Getting Current Location..."
-                    : "Use Current Location"}
-                </span>
-              </button>
+              {/* RIGHT - Destination Details */}
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 h-full flex-1">
+                <h3 className="font-medium text-left text-black/80 mb-2">
+                  Location Information
+                </h3>
+                {/* Destination Name + City in One Row */}
+                <div className="flex gap-4 pb-4">
+                  {/* Destination Name Input */}
+                  <div className="flex-1">
+                    <label className="block font-medium py-2 text-left text-black/80">
+                      Where is the experience located?{" "}
+                      <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="e.g., Rizal Park, SM Mall of Asia"
+                        value={formData.destination_name || ""}
+                        onChange={(e) =>
+                          handleChange("destination_name", e.target.value)
+                        }
+                        className="w-full p-4 text-sm text-gray-600 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent pr-12"
+                        required
+                      />
+                      <MapPin
+                        size={20}
+                        className="absolute right-4 top-4 text-gray-400"
+                      />
+                    </div>
+                  </div>
 
-              {errorMsg && (
-                <p className="text-red-500 text-sm mt-2">{errorMsg}</p>
-              )}
+                  {/* City Input */}
+                  <div className="flex-1">
+                    <label className="block font-medium py-2 text-left text-black/80">
+                      City <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="e.g., Manila, Cebu City"
+                        value={formData.city || ""}
+                        onChange={(e) => handleChange("city", e.target.value)}
+                        className="w-full p-4 text-sm text-gray-600 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent pr-12"
+                        required
+                      />
+                      <Building
+                        size={20}
+                        className="absolute right-4 top-4 text-gray-400"
+                      />
+                    </div>
+                  </div>
+                </div>
 
-              {/* Interactive Map */}
-              <div className="mt-4 h-80 rounded-xl overflow-hidden border border-gray-200">
-                <MapContainer
-                  center={mapCenter}
-                  zoom={mapZoom}
-                  style={{ height: '100%', width: '100%' }}
-                  className="rounded-xl"
-                >
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  />
-
-                  <MapClickHandler onLocationSelect={handleMapLocationSelect} />
-
-                  {selectedLocation && (
-                    <Marker position={[selectedLocation.latitude, selectedLocation.longitude]}>
-                      <Popup>
-                        <div className="text-center">
-                          <p className="font-medium">Selected Location</p>
-                          <p className="text-xs text-gray-600">
-                            {selectedLocation.latitude.toFixed(5)}, {selectedLocation.longitude.toFixed(5)}
-                          </p>
-                        </div>
-                      </Popup>
-                    </Marker>
-                  )}
-                </MapContainer>
-              </div>
-
-              <p className="text-xs text-gray-500 text-center">
-                Click anywhere on the map to select a location
-              </p>
-            </div>
-
-            {/* RIGHT - Destination Details */}
-            <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1">
-              <h3 className="font-medium text-left text-black/90 mb-2">
-                Destination Information
-              </h3>
-
-              {/* Destination Name Input */}
-              <div className="pb-4">
-                <label className="block font-medium py-2 text-left text-black/90">
-                  Destination Name
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="e.g., Rizal Park, SM Mall of Asia"
-                    value={formData.destination_name}
+                {/* Description Input */}
+                <div className="pb-4 flex-1">
+                  <label className="block font-medium py-2 text-left text-black/80">
+                    Short description or landmark of where the activity takes
+                    place <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    placeholder="Describe this location, how to find it, what landmarks to look for, parking information, etc."
+                    value={formData.destination_description || ""}
                     onChange={(e) =>
-                      handleChange("destination_name", e.target.value)
+                      handleChange("destination_description", e.target.value)
                     }
-                    className="w-full p-4 text-sm text-gray-600 rounded-xl border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent pr-12"
-                  />
-                  <MapPin
-                    size={20}
-                    className="absolute right-4 top-4 text-gray-400"
+                    className="w-full p-4 text-sm text-gray-800 h-32 rounded-xl border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    rows={4}
+                    required
                   />
                 </div>
-              </div>
 
-              {/* City Input */}
-              <div className="pb-4">
-                <label className="block font-medium py-2 text-left text-black/90">
-                  City
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="e.g., Manila, Cebu City"
-                    value={formData.city}
-                    onChange={(e) => handleChange("city", e.target.value)}
-                    className="w-full p-4 text-sm text-gray-600 rounded-xl border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent pr-12"
-                  />
-                  <Building
-                    size={20}
-                    className="absolute right-4 top-4 text-gray-400"
-                  />
-                </div>
-              </div>
-
-              {/* Description Input */}
-              <div className="pb-4 flex-1">
-                <label className="block font-medium py-2 text-left text-black/90">
-                  Description
-                </label>
-                <textarea
-                  placeholder="Tell visitors about this destination..."
-                  value={formData.destination_description}
-                  onChange={(e) =>
-                    handleChange("destination_description", e.target.value)
-                  }
-                  className="w-full p-4 text-sm text-gray-800 h-32 rounded-xl border border-gray-300 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  rows={4}
-                />
-              </div>
-
-              {/* Validation Status */}
-              {isValid() && (
-                <div className="bg-[#376a63]/10 rounded-xl p-3">
-                  <div className="flex items-center">
-                    <CheckCircle size={16} className="text-[#376a63] mr-2" />
-                    <span className="text-[#376a63] font-medium text-sm">
-                      All destination details completed
-                    </span>
+                {/* Validation Status */}
+                {isValid() && (
+                  <div className="bg-[#376a63]/10 rounded-xl p-3">
+                    <div className="flex items-center">
+                      <CheckCircle size={16} className="text-[#376a63] mr-2" />
+                      <span className="text-[#376a63] font-medium text-sm">
+                        All destination details completed
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

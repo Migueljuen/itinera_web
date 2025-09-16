@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import toast, { Toaster } from "react-hot-toast";
 
 const TRAVEL_COMPANIONS = [
   {
@@ -75,10 +76,10 @@ const TimePickerWrapper = ({
   return (
     <div className={`relative ${className}`}>
       <div className="flex items-center">
-        <Clock
+        {/* <Clock
           size={16}
           className="absolute left-3 text-gray-400 z-10 pointer-events-none"
-        />
+        /> */}
         <DatePicker
           selected={timeValue}
           onChange={(time) => {
@@ -93,11 +94,11 @@ const TimePickerWrapper = ({
           }}
           showTimeSelect
           showTimeSelectOnly
-          timeIntervals={15}
+          timeIntervals={30}
           timeCaption="Time"
           dateFormat="h:mm aa"
           placeholderText={placeholder}
-          className="w-full bg-white border border-gray-300 rounded-xl p-3 pl-10 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent hover:border-gray-400 transition-colors"
+          className="w-full bg-gray-50 rounded-xl p-3 cursor-pointer text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent hover:border-gray-400 transition-colors"
           wrapperClassName="w-full"
           popperClassName="custom-time-picker-popper"
         />
@@ -109,10 +110,11 @@ const TimePickerWrapper = ({
 const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
-    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
-      ? "border-gray-900 bg-[#376a63]/5"
-      : "border-gray-200 bg-white hover:border-gray-900"
-      }`}
+    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${
+      isSelected
+        ? "border-gray-900 bg-[#376a63]/5"
+        : "border-gray-200 bg-white hover:border-gray-900"
+    }`}
   >
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -255,14 +257,49 @@ const Step4AvailabilityCompanion = ({
 
   const canProceed = selectedCompanions.length > 0;
 
-  const isValid = () => {
-    const selectedCompanions = formData.travel_companions || [];
-    return selectedCompanions.length > 0;
+  // const isValid = () => {
+  //   const selectedCompanions = formData.travel_companions || [];
+  //   const availability = formData.availability || [];
+
+  //   if (selectedCompanions.length === 0) {
+  //     toast.error("Please select at least one travel companion");
+  //     return false;
+  //   }
+
+  //   if (availability.length === 0) {
+  //     toast.error("Please add at least one availability slot");
+  //     return false;
+  //   }
+
+  //   return true;
+  // };
+  const handleContinue = () => {
+    if (!formData.availability || formData.availability.length === 0) {
+      toast.error("Please set at least one availability slot.");
+      return;
+    }
+
+    if (!selectedCompanions || selectedCompanions.length === 0) {
+      toast.error("Please select at least one travel companion.");
+      return;
+    }
+
+    // ✅ If all good, proceed
+    onNext();
   };
 
   return (
     <>
-
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 4000,
+          style: {
+            background: "#363636",
+            color: "#fff",
+          },
+        }}
+      />
 
       <div className="min-h-screen w-full">
         <div className="mx-auto">
@@ -289,8 +326,7 @@ const Step4AvailabilityCompanion = ({
                 </button>
 
                 <button
-                  onClick={isValid() ? onNext : undefined}
-                  disabled={!isValid()}
+                  onClick={handleContinue}
                   className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px]"
                 >
                   Continue
@@ -301,10 +337,10 @@ const Step4AvailabilityCompanion = ({
             {/* TWO COL */}
             <div className="flex flex-row justify-between gap-8">
               {/* LEFT - Availability */}
-              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1">
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-[0.6]">
                 <div className="flex flex-col items-left">
                   <div>
-                    <label className="block font-medium py-2 text-left text-black/90 ">
+                    <label className="block font-medium py-2 text-left text-black/80 ">
                       Set the availability for this experience
                     </label>
                     <p className="text-left text-sm text-black/60 mb-4">
@@ -328,64 +364,58 @@ const Step4AvailabilityCompanion = ({
                 {/* Add New Button */}
                 <button
                   onClick={() => setShowAddForm(!showAddForm)}
-                  className="w-full bg-green-50 border border-green-200 rounded-xl p-3 flex items-center justify-center hover:bg-green-100 transition-colors mb-3"
+                  className="w-full rounded-xl p-3 flex items-center justify-start  transition-colors mb-3"
                 >
                   {showAddForm ? (
-                    <ChevronUp size={18} className="text-green-700" />
+                    <ChevronUp size={18} className="text-[#376a63]" />
                   ) : (
-                    <ChevronDown size={18} className="text-green-700" />
+                    <ChevronDown size={18} className="text-[#376a63]" />
                   )}
-                  <span className="ml-2 text-green-700 font-medium text-sm">
+                  <span className="ml-2 text-[#376a63] font-medium text-sm">
                     {showAddForm ? "Hide Add Form" : "Add Time Slots"}
                   </span>
                 </button>
 
                 {/* Add Form */}
                 {showAddForm && (
-                  <div className="bg-gray-50 rounded-xl p-3 mb-3 space-y-3 border border-gray-300">
+                  <div className=" rounded-xl w-full  space-y-6">
                     {/* Day Selection */}
-                    <div>
-                      <label className="block font-medium text-sm mb-2">
-                        Select Days
-                      </label>
-                      <div className="grid grid-cols-7 gap-2 mb-3">
-                        {daysOfWeek.map((day, index) => (
-                          <button
-                            key={day}
-                            type="button"
-                            onClick={() => toggleDaySelection(day)}
-                            className={`min-w-[45px] text-center px-2 py-1 rounded-sm border text-xs whitespace-nowrap transition-colors ${selectedDays.includes(day)
-                              ? "bg-[#376a63] text-white"
-                              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
-                              }`}
-                          >
-                            {daysShort[index]}
-                          </button>
-                        ))}
-                      </div>
+                    <div className="grid grid-cols-7">
+                      {daysOfWeek.map((day, index) => (
+                        <button
+                          key={day}
+                          type="button"
+                          onClick={() => toggleDaySelection(day)}
+                          className={`min-w-[45px] text-center font-medium px-4 py-2 text-xs whitespace-nowrap transition-colors
+        border-t border-b 
+        ${index !== daysOfWeek.length - 1 ? "border-r" : ""} 
+        ${
+          selectedDays.includes(day)
+            ? "bg-black/80 text-white"
+            : "bg-white border-gray-300 text-black/80 hover:bg-gray-50"
+        }`}
+                        >
+                          {daysShort[index]}
+                        </button>
+                      ))}
                     </div>
 
                     {/* Time Selection */}
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="block font-medium text-xs mb-1">
-                          Start Time
-                        </label>
+                    <div className="flex justify-between items-center  ">
+                      <div className="flex-[0.5]">
                         <TimePickerWrapper
                           value={start}
                           onChange={setStart}
-                          placeholder="Start time"
-                          className="text-sm"
+                          placeholder="From"
+                          className="text-sm "
                         />
                       </div>
-                      <div>
-                        <label className="block font-medium text-xs mb-1">
-                          End Time
-                        </label>
+                      <ArrowRight size={16} className="flex-[0.1]" />
+                      <div className="flex-[0.5]">
                         <TimePickerWrapper
                           value={end}
                           onChange={setEnd}
-                          placeholder="End time"
+                          placeholder="To"
                           className="text-sm"
                         />
                       </div>
@@ -396,10 +426,11 @@ const Step4AvailabilityCompanion = ({
                       type="button"
                       onClick={addAvailability}
                       disabled={!start || !end || selectedDays.length === 0}
-                      className={`w-full p-2 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
-                        ? "bg-[#376a63] text-white hover:bg-[#376a63]/80 cursor-pointer"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        }`}
+                      className={`w-full py-3 rounded-xl font-medium text-sm transition-colors ${
+                        start && end && selectedDays.length > 0
+                          ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
                     >
                       Add to Selected Days
                     </button>
@@ -418,7 +449,7 @@ const Step4AvailabilityCompanion = ({
                         No availability set
                       </p>
                       <p className="text-gray-400 text-xs mt-1">
-                        Add time slots above (optional)
+                        Add time slots above
                       </p>
                     </div>
                   ) : (
@@ -467,21 +498,15 @@ const Step4AvailabilityCompanion = ({
                               {item.time_slots.map((slot, i) => (
                                 <div
                                   key={`${item.day_of_week}-${i}`}
-                                  className="flex justify-between items-center py-2"
+                                  className="flex justify-between items-center py-4 px-2 border-b border-gray-300"
                                 >
-                                  <div className="flex items-center">
-                                    <Clock
-                                      size={14}
-                                      className="text-gray-400 mr-2"
-                                    />
-                                    <span className="text-gray-700 text-sm">
-                                      {formatTimeForDisplay(slot.start_time)} -{" "}
-                                      {formatTimeForDisplay(slot.end_time)}
-                                    </span>
-                                  </div>
+                                  <span className="text-black/80 text-sm">
+                                    {formatTimeForDisplay(slot.start_time)} -{" "}
+                                    {formatTimeForDisplay(slot.end_time)}
+                                  </span>
                                   <button
                                     onClick={() => removeSlot(index, i)}
-                                    className="p-1 text-red-500 hover:text-red-700 transition-colors"
+                                    className="p-1 text-black/60 hover:text-black/50 transition-colors"
                                   >
                                     <Trash2 size={14} />
                                   </button>
@@ -497,9 +522,9 @@ const Step4AvailabilityCompanion = ({
               </div>
 
               {/* RIGHT - Travel Companions */}
-              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-[0.4] h-fit">
                 <div className="pb-4">
-                  <label className="block font-medium py-2 text-left text-black/90 ">
+                  <label className="block font-medium py-2 text-left text-black/80 ">
                     Who is this experience perfect for?
                   </label>
                   <p className="text-left text-sm text-black/60  ">

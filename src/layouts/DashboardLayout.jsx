@@ -18,7 +18,7 @@ import { useAuth } from "../contexts/AuthContext";
 import logoImage from "../assets/images/alt.png";
 import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
-
+import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -151,87 +151,95 @@ const DashboardLayout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen w-full font-display">
-      {/* Mobile Sidebar Backdrop */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+    <AnimatePresence mode="wait">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -40 }}
+        transition={{ duration: 0.4, ease: "easeInOut" }}
+        className="min-h-screen w-full font-display"
       >
-        <div className="flex flex-col h-full">
-          {/* Logo Section */}
-          <div className="flex items-center justify-between p-6">
-            <div className="flex items-center gap-3">
-              <img
-                src={logoImage}
-                alt="Itinera Logo"
-                className="w-8 cursor-pointer transition-transform"
-              />
-              <span className="text-2xl pt-1  font-medium">Itinera</span>
+        {/* Mobile Sidebar Backdrop */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
+        {/* Sidebar */}
+        <aside
+          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="flex flex-col h-full">
+            {/* Logo Section */}
+            <div className="flex items-center justify-between p-6">
+              <div className="flex items-center gap-3">
+                <img
+                  src={logoImage}
+                  alt="Itinera Logo"
+                  className="w-8 cursor-pointer transition-transform"
+                />
+                <span className="text-2xl pt-1  font-medium">Itinera</span>
+              </div>
+              <button
+                onClick={() => setIsSidebarOpen(false)}
+                className="lg:hidden p-1 hover:bg-gray-100 rounded-lg"
+              >
+                <X size={20} />
+              </button>
             </div>
-            <button
-              onClick={() => setIsSidebarOpen(false)}
-              className="lg:hidden p-1 hover:bg-gray-100 rounded-lg"
-            >
-              <X size={20} />
-            </button>
-          </div>
 
-          {/* Navigation */}
-          <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-            <p className="pl-4 text-black/60 text-xs font-medium">OVERVIEW</p>
-            {navigationItems.map((item) => (
-              <NavItem key={item.id} item={item} />
-            ))}
-          </nav>
+            {/* Navigation */}
+            <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+              <p className="pl-4 text-black/60 text-xs font-medium">OVERVIEW</p>
+              {navigationItems.map((item) => (
+                <NavItem key={item.id} item={item} />
+              ))}
+            </nav>
 
-          {/* Upgrade Section */}
-          <div className="p-4 border-t border-gray-200">
-            <div className=" rounded-lg p-4  text-center text-primary">
-              <h3 className="font-bold mb-1">Upgrade Plan</h3>
-              <p className="text-sm opacity-90 mb-3">
-                Showcase more activities
-              </p>
-              <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-[#376a63]/80 cursor-pointer transition-colors w-3/4">
-                Upgrade
+            {/* Upgrade Section */}
+            <div className="p-4 border-t border-gray-200">
+              <div className=" rounded-lg p-4  text-center text-primary">
+                <h3 className="font-bold mb-1">Upgrade Plan</h3>
+                <p className="text-sm opacity-90 mb-3">
+                  Showcase more activities
+                </p>
+                <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-[#376a63]/80 cursor-pointer transition-colors w-3/4">
+                  Upgrade
+                </button>
+              </div>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="p-4   space-y-1">
+              <p className="pl-4 text-black/60 text-xs font-medium">SETTINGS</p>
+              <button className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+                <Settings size={20} className="text-gray-500" />
+                <span className="font-medium">Settings</span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <LogOut size={20} className="text-gray-500" />
+                <span className="font-medium">Log out</span>
               </button>
             </div>
           </div>
+        </aside>
 
-          {/* Bottom Section */}
-          <div className="p-4 border border-gray-300  space-y-1">
-            <p className="pl-4 text-black/60 text-xs font-medium">SETTINGS</p>
-            <button className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-              <Settings size={20} className="text-gray-500" />
-              <span className="font-medium">Settings</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <LogOut size={20} className="text-gray-500" />
-              <span className="font-medium">Log out</span>
-            </button>
-          </div>
+        {/* Main Content */}
+        <div className="lg:ml-64 min-h-screen flex flex-col">
+          {/* Page Content */}
+          <main className="p-4 lg:p-8 flex-1 flex flex-col">
+            {children || <Outlet />}
+          </main>
         </div>
-      </aside>
-
-      {/* Main Content */}
-      <div className="lg:ml-64 min-h-screen flex flex-col">
-        {/* Page Content */}
-        <main className="p-4 lg:p-8 flex-1 flex flex-col">
-          {children || <Outlet />}
-        </main>
-      </div>
-    </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
