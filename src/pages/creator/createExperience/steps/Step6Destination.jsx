@@ -59,8 +59,6 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
-  console.log("Form Data at Step 6:", formData);
-
   // Sync selectedLocation from formData (if returning to this step)
   useEffect(() => {
     if (formData.latitude && formData.longitude) {

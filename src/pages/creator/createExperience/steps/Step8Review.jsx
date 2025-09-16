@@ -3,7 +3,7 @@
 import { useNavigate } from "react-router-dom";
 import React from 'react';
 import { FileImage, Clock } from "lucide-react";
-
+import { ArrowLeft } from "lucide-react";
 const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
     const navigate = useNavigate();
 
@@ -78,7 +78,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                                     {hasAvailability.slice(0, 2).map((slot, slotIndex) => (
                                         <div
                                             key={slotIndex}
-                                            className="text-[10.5px] bg-[#376a63] rounded py-1 text-white/90 "
+                                            className="text-[10.5px] bg-black/5 rounded py-1 text-black/60 "
                                             title={`${convertToStandardTime(slot.start_time)} - ${convertToStandardTime(slot.end_time)}`}
                                         >
                                             <div className="flex items-center justify-center gap-0.5">
@@ -112,38 +112,71 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
             <div className="mx-auto">
                 <div className="text-center py-2">
                     <div className="flex items-center justify-between mb-6">
-                        <div>
-                            <h2 className="text-left text-xl font-semibold mb-2 text-black/90">
-                                Review & Submit
-                            </h2>
-                            <p className="text-left text-sm text-black/60">
-                                Please review your experience details before submitting.
-                            </p>
+                        {/* LEFT SIDE */}
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h2 className="text-left text-xl font-semibold mb-2 text-black/90">
+                                    Review & Submit
+                                </h2>
+                                <p className="text-left text-sm text-black/60 mb-6">
+                                    Please review your experience details before submitting.
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* RIGHT SIDE - Action Buttons */}
+                        <div className="flex flex-col sm:flex-row gap-x-4">
+                            <button
+                                onClick={onBack}
+                                disabled={isSubmitting}
+                                className="px-8 py-3 rounded-lg font-medium border text-sm border-gray-300 text-black/70 hover:bg-gray-50 disabled:opacity-50"
+                            >
+                                <ArrowLeft size={20} />
+                                Previous Step
+                            </button>
+
+
+                            <button
+                                onClick={() => {
+                                    onSubmit('draft');
+                                    navigate("/dashboard");
+                                }}
+                                disabled={isSubmitting}
+                                className="px-8 py-3 rounded-lg font-medium border text-sm border-gray-300 text-black/70 hover:bg-gray-50 disabled:opacity-50"
+                            >
+                                {isSubmitting ? (
+                                    <div className=" border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                                ) : (
+                                    "Save as Draft"
+                                )}
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    onSubmit('active');
+                                    navigate("/dashboard");
+                                }}
+                                disabled={isSubmitting}
+                                className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer"
+                            >
+                                Publish Activity
+                            </button>
+
                         </div>
                     </div>
 
                     {/* FULL WIDTH AVAILABILITY SECTION */}
                     <div className="mb-8">
-                        <div className="border rounded-xl p-6 border-gray-300 bg-white">
-                            <h3 className="block font-medium text-left text-black/90 mb-4 text-lg">Weekly Availability</h3>
+                        <div className="border rounded-xl p-4 border-gray-300 bg-white">
+                            <h3 className="font-medium py-2 text-left text-black/90 text-lg">Weekly Availability</h3>
                             {formData.availability && formData.availability.length > 0 ? (
-                                <div className=" rounded-lg border border-gray-200 p-6">
+                                <div className="rounded-lg border border-gray-200 p-4">
                                     {renderAvailabilityCalendar()}
 
-                                    {/* Legend */}
-                                    <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-gray-200">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 bg-[#376a63] border border-green-200 rounded"></div>
-                                            <span className="text-sm text-gray-600">Available</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-4 h-4 bg-gray-50 border border-gray-200 rounded"></div>
-                                            <span className="text-sm text-gray-600">Not Available</span>
-                                        </div>
-                                    </div>
+
                                 </div>
                             ) : (
-                                <div className="w-full p-6 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50 text-center">
+                                <div className="w-full px-4 py-2 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50 text-center">
                                     No availability set
                                 </div>
                             )}
@@ -155,31 +188,34 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         {/* LEFT COL - EXPERIENCE DETAILS */}
                         <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
                             {/* Basic Details Section */}
-                            <div className="pb-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Basic Details</h3>
-                                <div className="space-y-4">
+                            <div className="pb-4 text-left">
+                                <h3 className="font-medium py-2  text-black/90">Basic Details</h3>
+                                <div className="space-y-4 mt-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 mb-1">Title</label>
-                                        <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
+                                        <label className="text-sm text-black/60">Activity title</label>
+                                        <div className="w-full  px-4 py-2 mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 ">
                                             {formData.title || "Not specified"}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-500 mb-1">Description</label>
-                                        <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50 min-h-[100px]">
+                                        <label className="text-sm text-black/60">Description</label>
+                                        <div className="w-full px-4 py-2  mt-2 text-sm text-gray-800 rounded-xl border border-gray-300  min-h-[100px]">
                                             {formData.description || "No description provided"}
                                         </div>
                                     </div>
+                                    <h3 className="font-medium py-2  text-black/90">Pricing</h3>
                                     <div className="flex gap-4">
+
                                         <div className="flex-1">
-                                            <label className="block text-sm font-medium text-gray-500 mb-1">Price</label>
-                                            <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
+
+                                            <label className="text-sm text-black/60">Price</label>
+                                            <div className="w-full px-4 py-2  mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 ">
                                                 ₱{formData.price || "0"}
                                             </div>
                                         </div>
                                         <div className="flex-1">
-                                            <label className="block text-sm font-medium text-gray-500 mb-1">Charge per</label>
-                                            <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
+                                            <label className="text-sm text-black/60">Charge per</label>
+                                            <div className="w-full px-4 py-2  mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 ">
                                                 {formData.unit || "Not specified"}
                                             </div>
                                         </div>
@@ -187,35 +223,41 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                                 </div>
                             </div>
 
-                            {/* Category Section */}
-                            <div className="pb-4 border-t border-gray-200 pt-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Category</h3>
-                                <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
-                                    {formData.category_name || "Not selected"}
-                                </div>
-                            </div>
+                            <div className="  text-left">
+                                <h3 className="font-medium py-2  text-black/90">Category and Tag</h3>
+                                {/* Category Section */}
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="pb-4  pt-4 text-left">
 
-                            {/* Tags Section */}
-                            <div className="pb-4 border-t border-gray-200 pt-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Tags</h3>
-                                {formData.tags && formData.tags.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                        {formData.tags.map((name, index) => (
-                                            <div key={index} className="px-6 py-2 rounded-xl bg-black/80 text-white">
-                                                <span className="text-sm font-medium">Tag {tagId}</span>
+                                        <label className="text-sm text-black/60">Category</label>
+                                        <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 ">
+                                            {formData.category_name || "Not selected"}
+                                        </div>
+                                    </div>
+
+                                    {/* Tags Section */}
+                                    <div className="pb-4 pt-4 ">
+                                        <label className="text-sm text-black/60">Tag</label>
+                                        {formData.tags && formData.tags.length > 0 ? (
+                                            <div className="flex flex-wrap gap-2 mt-2">
+                                                {formData.tags.map((tagId, index) => (
+                                                    <div key={index} className="px-6 py-2 rounded-xl bg-black/80 text-white">
+                                                        <span className="text-sm font-medium">Tag {tagId}</span>
+                                                    </div>
+                                                ))}
                                             </div>
-                                        ))}
+                                        ) : (
+                                            <div className="w-full px-4 py-2 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50">
+                                                No tags selected
+                                            </div>
+                                        )}
                                     </div>
-                                ) : (
-                                    <div className="w-full p-4 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50">
-                                        No tags selected
-                                    </div>
-                                )}
+                                </div>
                             </div>
 
                             {/* Travel Companions Section */}
                             <div className="pb-4 border-t border-gray-200 pt-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Travel Companions</h3>
+                                <h3 className="font-medium py-2 text-left text-black/90">This activity is best suited for</h3>
                                 {companions.length > 0 ? (
                                     <div className="flex flex-wrap gap-2">
                                         {companions.map((companion, index) => (
@@ -225,7 +267,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="w-full p-4 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50">
+                                    <div className="w-full px-4 py-2 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50">
                                         No companions selected
                                     </div>
                                 )}
@@ -236,47 +278,46 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
                             {/* Destination Section */}
                             <div className="pb-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Destination</h3>
-                                {formData.useExistingDestination && formData.destination_id ? (
-                                    <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
-                                        Using existing destination (ID: {formData.destination_id})
-                                    </div>
-                                ) : (
-                                    <div className="space-y-4">
+                                <h3 className="font-medium py-2 text-left text-black/90">Location of the activity</h3>
+
+
+                                <div className="space-y-4 text-left">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-500 mb-1">Name</label>
-                                            <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
+                                            <label className=" text-sm text-black/60 ">Name</label>
+                                            <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
                                                 {formData.destination_name || "Not specified"}
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-500 mb-1">City</label>
-                                            <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
+                                            <label className="text-sm text-black/60 ">City</label>
+                                            <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
                                                 {formData.city || "Not specified"}
                                             </div>
                                         </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-500 mb-1">Description</label>
-                                            <div className="w-full p-4  text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50 min-h-[80px]">
-                                                {formData.destination_description || "No description provided"}
-                                            </div>
+                                    </div>
+                                    <div>
+                                        <label className="text-sm text-black/60 ">Description or Landmark</label>
+                                        <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50 min-h-[80px]">
+                                            {formData.destination_description || "No description provided"}
                                         </div>
-                                        <div>
+                                    </div>
+                                    {/* <div>
                                             <label className="block text-sm font-medium text-gray-500 mb-1">Coordinates</label>
-                                            <div className="w-full p-4 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
+                                            <div className="w-full px-4 py-2 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
                                                 {formData.latitude && formData.longitude
                                                     ? `${formData.latitude}, ${formData.longitude}`
                                                     : "Not specified"
                                                 }
                                             </div>
-                                        </div>
-                                    </div>
-                                )}
+                                        </div> */}
+                                </div>
+
                             </div>
 
                             {/* Images Section */}
                             <div className="pb-4 border-t border-gray-200 pt-4">
-                                <h3 className="block font-medium py-2 text-left text-black/90">Images</h3>
+                                <h3 className="font-medium py-2 text-left text-black/90">Images</h3>
                                 <div className="max-h-64 overflow-y-auto">
                                     {formData.images && formData.images.length > 0 ? (
                                         <div className="grid grid-cols-2 gap-3">
@@ -333,48 +374,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         </div>
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
-                        <button
-                            onClick={onBack}
-                            disabled={isSubmitting}
-                            className="px-8 py-3 rounded-lg font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                        >
-                            Previous Step
-                        </button>
 
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => {
-                                    onSubmit('draft');
-                                    navigate("/dashboard");
-                                }}
-                                disabled={isSubmitting}
-                                className="px-8 py-3 rounded-lg font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                            >
-                                {isSubmitting ? (
-                                    <div className="w-5 h-5 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    "Save as Draft"
-                                )}
-                            </button>
-
-                            <button
-                                onClick={() => {
-                                    onSubmit('active');
-                                    navigate("/dashboard");
-                                }}
-                                disabled={isSubmitting}
-                                className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white hover:bg-black/70 disabled:opacity-50"
-                            >
-                                {isSubmitting ? (
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                ) : (
-                                    "Publish Experience"
-                                )}
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
