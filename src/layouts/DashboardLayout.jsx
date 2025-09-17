@@ -104,46 +104,52 @@ const DashboardLayout = ({ children }) => {
 
     if (item.expandable) {
       return (
-        <>
-          <div>
-            <button
-              onClick={() => item.setExpanded(!item.isExpanded)}
-              className="w-full flex items-center justify-between px-4 py-3  hover:bg-gray-100 rounded-lg transition-colors group"
-            >
-              <div className="flex items-center gap-3">
-                <Icon size={20} className="text-primary  " />
-                <span className="text-primary">{item.label}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <ChevronDown
-                  size={16}
-                  className={`text-gray-400 transition-transform ${
-                    item.isExpanded ? "rotate-180" : ""
-                  }`}
-                />
-              </div>
-            </button>
-            {item.isExpanded && (
-              <div className="ml-8 mt-1 space-y-1">
-                {item.subItems.map((subItem) => (
+        <div className="relative">
+          <button
+            onClick={() => item.setExpanded(!item.isExpanded)}
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-100 rounded-lg transition-colors group"
+          >
+            <div className="flex items-center gap-3">
+              <Icon size={20} className="text-primary" />
+              <span className="text-primary">{item.label}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <ChevronDown
+                size={16}
+                className={`text-gray-400 transition-transform ${
+                  item.isExpanded ? "rotate-180" : ""
+                }`}
+              />
+            </div>
+          </button>
+
+          {item.isExpanded && (
+            <div className="relative ml-8 mt-1 space-y-1">
+              {/* Vertical line connecting to sub-items */}
+              <div className="absolute left-2 top-0 bottom-0 w-px bg-gray-300"></div>
+
+              {item.subItems.map((subItem, index) => (
+                <div key={subItem.path} className="relative">
+                  {/* Horizontal line connecting to each sub-item */}
+                  <div className="absolute left-2 top-1/2 w-4 h-px bg-gray-300 -translate-y-1/2"></div>
+
                   <NavLink
-                    key={subItem.path}
                     to={subItem.path}
                     className={({ isActive }) =>
-                      `block px-4 py-2 text-sm rounded-lg transition-colors ${
+                      `block px-6 py-2 text-sm rounded-lg transition-colors ml-4 whitespace-nowrap ${
                         isActive
-                          ? "bg-gray-100 text-primary "
+                          ? "bg-gray-100 text-primary"
                           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`
                     }
                   >
                     {subItem.label}
                   </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
-        </>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       );
     }
 
@@ -156,7 +162,7 @@ const DashboardLayout = ({ children }) => {
           }`
         }
       >
-        <Icon size={20} className={`text-primary`} />
+        <Icon size={20} className="text-primary" />
         <span className="text-primary">{item.label}</span>
       </NavLink>
     );
@@ -187,7 +193,7 @@ const DashboardLayout = ({ children }) => {
             isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col min-h-screen">
             {/* Logo Section */}
             <div className="flex items-center justify-between p-6">
               <div className="flex items-center gap-3">

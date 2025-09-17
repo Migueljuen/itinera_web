@@ -23,10 +23,13 @@ import {
   Mail,
   CreditCard,
 } from "lucide-react";
+
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import toast, { Toaster } from "react-hot-toast";
+import dayjs from "dayjs";
+import { div } from "framer-motion/client";
 
 const BookingManagement = () => {
   const navigate = useNavigate();
@@ -41,6 +44,10 @@ const BookingManagement = () => {
 
   const ITEMS_PER_PAGE = 10;
 
+  //convert booking date
+  const formatDate = (dateString) => {
+    return dayjs(dateString).format("MMM D");
+  };
   // Function to fetch bookings
   const fetchBookings = async () => {
     if (!user?.user_id) return;
@@ -83,9 +90,15 @@ const BookingManagement = () => {
 
   const filteredBookings = bookings.filter((booking) => {
     const matchesSearch =
-      booking.traveler_first_name?.toLowerCase().includes(searchText.toLowerCase()) ||
-      booking.traveler_last_name?.toLowerCase().includes(searchText.toLowerCase()) ||
-      booking.traveler_email?.toLowerCase().includes(searchText.toLowerCase()) ||
+      booking.traveler_first_name
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      booking.traveler_last_name
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
+      booking.traveler_email
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
       booking.booking_id?.toString().includes(searchText.toLowerCase());
 
     const matchesTab =
@@ -126,15 +139,24 @@ const BookingManagement = () => {
   };
 
   // Function to format date and time
-  const formatDateTime = (date, startTime, endTime) => {
-    const bookingDate = new Date(date);
-    const formattedDate = bookingDate.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+  const formatDateTime = (createdAt, startTime, endTime) => {
+    // Convert times to Date objects if they aren't already
+    const start = new Date(`1970-01-01T${startTime}`);
+    const end = new Date(`1970-01-01T${endTime}`);
+
+    const startFormatted = start.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
     });
 
-    return `${formattedDate} • ${startTime}-${endTime}`;
+    const endFormatted = end.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    });
+
+    return `${startFormatted} - ${endFormatted}`;
   };
 
   // Function to update booking status
@@ -185,8 +207,10 @@ const BookingManagement = () => {
   const getTabCounts = () => {
     const counts = {
       All: bookings.length,
-      Confirmed: bookings.filter(b => b.status?.toLowerCase() === 'confirmed').length,
-      Cancelled: bookings.filter(b => b.status?.toLowerCase() === 'cancelled').length,
+      Confirmed: bookings.filter((b) => b.status?.toLowerCase() === "confirmed")
+        .length,
+      Cancelled: bookings.filter((b) => b.status?.toLowerCase() === "cancelled")
+        .length,
     };
     return counts;
   };
@@ -225,14 +249,31 @@ const BookingManagement = () => {
             </div>
           </div>
 
-
           {/* Bookings Table */}
           <div className="bg-white rounded-lg">
             {/* Table Header */}
             <div className="py-4">
               {/* Search and Filters */}
               <div className="bg-white rounded-lg mb-6">
-                <div className="flex justify-between gap-4">
+                <div className="flex justify-between">
+                  {/* Tab Navigation */}
+                  <div className="flex   bg-gray-50  rounded-lg w-fit p-2">
+                    {["All", "Confirmed", "Cancelled", "Completed"].map(
+                      (tab) => (
+                        <button
+                          key={tab}
+                          onClick={() => setSelectedTab(tab)}
+                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
+                            selectedTab === tab
+                              ? "bg-white text-black/80 shadow-sm/10"
+                              : "text-black/50 hover:text-black/70"
+                          }`}
+                        >
+                          {tab === "Confirmed" ? "Upcoming" : tab}
+                        </button>
+                      )
+                    )}
+                  </div>
                   {/* Search */}
                   <div className="relative h-fit">
                     <Search
@@ -247,37 +288,10 @@ const BookingManagement = () => {
                       onChange={(e) => setSearchText(e.target.value)}
                     />
                   </div>
-                  {/* Tab Navigation */}
-                  <div className="flex gap-1  bg-gray-100 p-1 rounded-lg w-fit">
-                    {["All", "Confirmed", "Cancelled"].map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setSelectedTab(tab)}
-                        className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${selectedTab === tab
-                          ? "bg-white text-black/80 shadow-sm"
-                          : "text-black/60 hover:text-black/70"
-                          }`}
-                      >
-                        {tab}
-                      </button>
-                    ))}
-                  </div>
-
                 </div>
               </div>
 
               {/* Table Header Row */}
-              <div className="bg-[#f8f8f8] px-4 rounded-lg py-4 grid grid-cols-[100px_1fr_200px_140px_120px_120px_56px] gap-6 items-center text-sm font-base text-black/90">
-                <div className="justify-self-start">
-                  <input type="checkbox" className="rounded" />
-                </div>
-                <div className="justify-self-start">Booking ID</div>
-                <div className="justify-self-start">Traveler</div>
-                <div className="justify-self-center">Date & Time</div>
-                <div className="justify-self-center">Status</div>
-                <div className="justify-self-center">Payment</div>
-                <div className="justify-self-end">Actions</div>
-              </div>
             </div>
 
             {/* Table Body */}
@@ -293,105 +307,164 @@ const BookingManagement = () => {
                 </div>
               ) : (
                 paginatedBookings.map((booking) => (
-                  <div key={booking.booking_id} className="py-4 hover:bg-gray-50">
-                    <div className="px-4 grid grid-cols-[100px_1fr_200px_140px_120px_120px_56px] gap-6 items-center">
-                      {/* Checkbox */}
-                      <div className="justify-self-start">
-                        <input type="checkbox" className="rounded" />
-                      </div>
+                  // TOP CONTENT
+                  <>
+                    <div
+                      key={booking.booking_id}
+                      className="py-6 mb-4 flex items-center justify-between  border rounded-xl border-gray-300 hover:bg-gray-50"
+                    >
+                      <div className="grid grid-cols-[120px_240px_300px] gap-4">
+                        {/* DAY NUMBER AND DAY OF WEEK */}
+                        <div
+                          className={`text-center px-4 border-r border-gray-300
+    ${
+      dayjs(booking.booking_date).isSame(dayjs(), "day")
+        ? " text-[#376a63]" // if today
+        : "text-[#3A81F3]"
+    }`}
+                        >
+                          <p className="text-xl">
+                            {booking.day_of_week.slice(0, 3)}
+                          </p>
+                          <p className="text-4xl font-semibold">
+                            {dayjs(booking.booking_date).format("D")}
+                          </p>
+                        </div>
 
-                      {/* Booking ID */}
-                      <div className="justify-self-start">
-                        <span className="font-mono text-sm text-gray-900">
-                          #{booking.booking_id}
-                        </span>
-                      </div>
-
-                      {/* Traveler Info */}
-                      <div className="justify-self-start">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
-                            <User size={16} className="text-gray-400" />
+                        {/* Date & Time */}
+                        <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around ">
+                          <div className="flex items-center gap-3">
+                            <Clock size={16} className="text-black/60" />
+                            <span className="text-sm">
+                              {formatDateTime(
+                                booking.created_at,
+                                booking.start_time,
+                                booking.end_time
+                              )}
+                            </span>
                           </div>
-                          <div>
-                            <h3 className="font-medium text-sm text-black/80">
-                              {booking.traveler_first_name} {booking.traveler_last_name}
-                            </h3>
-                            <div className="flex items-center gap-1 mt-1">
-                              <Mail size={12} className="text-gray-400" />
-                              <span className="text-xs text-black/60">
-                                {booking.traveler_email}
-                              </span>
-                            </div>
+                          <div className="flex items-center gap-3">
+                            <Calendar size={16} className="text-black/60" />
+                            <span className="text-sm">
+                              {formatDate(booking.booking_date)}
+                            </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Date & Time */}
-                      <div className="text-sm text-gray-600 justify-self-center">
-                        <div className="flex items-center gap-1">
-                          <Calendar size={12} className="text-gray-400" />
-                          <span className="text-xs">
-                            {formatDateTime(booking.created_at, booking.start_time, booking.end_time)}
+                        {/* Activity booked and user icon */}
+                        <div className="flex flex-col justify-around px-4">
+                          <span className="font-medium text-sm text-black/70">
+                            {booking.experience_title}
                           </span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {booking.day_of_week}
-                        </div>
-                      </div>
-
-                      {/* Status */}
-                      <div className="justify-self-center">
-                        <div className="flex flex-col gap-2 items-center relative">
-                          <button
-                            onClick={() => toggleDropdown(booking.booking_id)}
-                            className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize ${getStatusColor(
-                              booking.status
-                            )}`}
-                          >
-                            {booking.status} <ChevronDown size={16} />
-                          </button>
-
-                          {/* Dropdown */}
-                          {openDropdownId === booking.booking_id && (
-                            <div className="absolute top-full mt-1 w-32 bg-white shadow-lg rounded-md z-50 border">
-                              {["Confirmed", "Cancelled"].map((status) => (
-                                <button
-                                  key={status}
-                                  onClick={() =>
-                                    updateBookingStatus(
-                                      booking.booking_id,
-                                      status
-                                    )
-                                  }
-                                  disabled={updatingStatus}
-                                  className="block w-full text-left p-3 text-sm text-black/80 hover:bg-gray-100 capitalize disabled:opacity-50"
-                                >
-                                  {status}
-                                </button>
-                              ))}
+                          {booking?.traveler_profile_pic ? (
+                            <div className="flex">
+                              <img
+                                src={`${API_URL}/${booking.traveler_profile_pic}`}
+                                alt="Profile"
+                                className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
+                              />
+                              <img
+                                src={`${API_URL}/${booking.traveler_profile_pic}`}
+                                alt="Profile"
+                                className="w-6 h-6 -ml-1 border-2 border-white rounded-full object-cover"
+                              />
                             </div>
+                          ) : (
+                            <User size={16} className="text-gray-400" />
                           )}
                         </div>
                       </div>
 
-                      {/* Payment Status */}
-                      <div className="justify-self-center">
-                        <span className={`px-2 py-1 rounded-md text-sm font-normal ${getPaymentStatusColor(
-                          booking.payment_status
-                        )}`}>
-                          {booking.payment_status === 'Paid (offline)' ? 'Paid' : booking.payment_status}
-                        </span>
-                      </div>
-
-                      {/* Actions */}
-                      <div className="justify-self-end">
-                        <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded">
-                          <MoreHorizontal size={16} />
+                      {/* // DROP DOWN EDIT BUTTON */}
+                      <div className="flex flex-col gap-2 items-center relative px-8">
+                        <button
+                          onClick={() => toggleDropdown(booking.booking_id)}
+                          className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize `}
+                        >
+                          More <ChevronDown size={16} />
                         </button>
+
+                        {/* Dropdown */}
+                        {openDropdownId === booking.booking_id && (
+                          <div className="absolute  top-full mt-1 w-32 bg-white shadow-lg/5  rounded-md  z-50">
+                            <button
+                              onClick={console.log("itot")}
+                              className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
+                            >
+                              test
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
-                  </div>
+
+                    {/* DUMMY DATA */}
+                    <div className="py-6  flex items-center justify-between  border rounded-xl border-gray-300 hover:bg-gray-50">
+                      <div className="grid  grid-cols-[120px_240px_300px] gap-4 ">
+                        <div className="text-black/80 text-center px-4 border-r border-gray-300">
+                          <p className="text-xl">Wed</p>
+                          <p className="text-4xl font-semibold">28</p>
+                        </div>
+
+                        <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around">
+                          <div className="flex items-center gap-3">
+                            <Clock size={16} className="text-black/60" />
+                            <span className="text-sm">08:00 AM - 10:00 AM</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <Calendar size={16} className="text-black/60" />
+                            <span className="text-sm">Feb 24</span>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col justify-around px-4">
+                          <span className="font-medium text-sm text-black/70 truncate">
+                            Chris Art's Joint Rolling Workshop
+                          </span>
+                          <div className="flex">
+                            <img
+                              src="https://i.pravatar.cc/150?img=1"
+                              className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
+                            />
+                            <img
+                              src="https://i.pravatar.cc/150?img=2"
+                              className="w-6 h-6 -ml-1 z-9 border-2 border-white rounded-full object-cover"
+                            />
+                            <img
+                              src="https://i.pravatar.cc/150?img=3"
+                              className="w-6 h-6 -ml-1 z-8 border-2 border-white rounded-full object-cover"
+                            />
+                            <img
+                              src="https://i.pravatar.cc/150?img=4"
+                              className="w-6 h-6 -ml-1 z-7 border-2 border-white rounded-full object-cover"
+                            />
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* // DROP DOWN EDIT BUTTON */}
+                      <div className="flex flex-col gap-2 items-center relative px-8">
+                        <button
+                          onClick={() => toggleDropdown(booking.booking_id)}
+                          className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize `}
+                        >
+                          More <ChevronDown size={16} />
+                        </button>
+
+                        {/* Dropdown */}
+                        {openDropdownId === booking.booking_id && (
+                          <div className="absolute  top-full mt-1 w-32 bg-white shadow-lg/5  rounded-md  z-50">
+                            <button
+                              onClick={console.log("itot")}
+                              className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
+                            >
+                              test
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </>
                 ))
               )}
             </div>
@@ -402,10 +475,7 @@ const BookingManagement = () => {
             <div className="mt-6 flex justify-between items-center">
               <div className="text-sm text-gray-600">
                 Showing {startIndex + 1}-
-                {Math.min(
-                  startIndex + ITEMS_PER_PAGE,
-                  filteredBookings.length
-                )}{" "}
+                {Math.min(startIndex + ITEMS_PER_PAGE, filteredBookings.length)}{" "}
                 of {filteredBookings.length} bookings
               </div>
 
@@ -426,10 +496,11 @@ const BookingManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${currentPage === page
-                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                        : "border-gray-300 hover:bg-gray-50"
-                        }`}
+                      className={`px-3 py-2 border rounded-lg ${
+                        currentPage === page
+                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                          : "border-gray-300 hover:bg-gray-50"
+                      }`}
                     >
                       {page}
                     </button>
