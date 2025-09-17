@@ -415,7 +415,7 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
       return;
     }
 
-    // ✅ If all checks pass
+    // If all checks pass
     onNext();
   };
 

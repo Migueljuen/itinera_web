@@ -263,7 +263,11 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                           Select unit
                         </option>
                         {units.map((unit) => (
-                          <option key={unit} value={unit}>
+                          <option
+                            className="border-none flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize"
+                            key={unit}
+                            value={unit}
+                          >
                             {unit}
                           </option>
                         ))}
@@ -328,7 +332,7 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                   className="hidden"
                 />
 
-                <p className="text-xs text-gray-500 text-center italic">
+                <p className="text-xs text-gray-500 text-center italic py-4">
                   {formData.images?.length > 0
                     ? `${formData.images.length} image${
                         formData.images.length > 1 ? "s" : ""
@@ -337,9 +341,9 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                 </p>
 
                 {/* Selected Images Display */}
-                <div className="max-h-64 overflow-y-auto">
+                <div className="w-h-52 overflow-y-auto">
                   {(formData.images || []).length > 0 ? (
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-2 px-4">
                       {(formData.images || []).map((img, index) => {
                         const uri = typeof img === "string" ? img : img.uri;
                         const name =
@@ -349,9 +353,9 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                         const size = typeof img === "string" ? null : img.size;
 
                         return (
-                          <div key={index} className="relative group">
+                          <div key={index} className="relative group mt-4 ">
                             {/* Image Preview */}
-                            <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                            <div className=" rounded-lg overflow-hidden">
                               <img
                                 src={uri}
                                 alt={`Preview ${index + 1}`}
@@ -362,9 +366,9 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                                 }}
                               />
                               {/* Fallback if image fails to load */}
-                              <div className="w-full h-full flex items-center justify-center text-gray-400">
+                              {/* <div className="w-full h-full flex items-center justify-center text-gray-400">
                                 <FileImage size={24} />
-                              </div>
+                              </div> */}
                             </div>
 
                             {/* Remove Button */}

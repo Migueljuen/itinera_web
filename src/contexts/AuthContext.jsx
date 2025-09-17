@@ -68,16 +68,22 @@ const isTokenExpired = (token) => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  const [loading, setLoading] = useState(true); // START WITH TRUE!
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // NEW: Dashboard animation state
+  const [shouldAnimateDashboard, setShouldAnimateDashboard] = useState(false);
 
   // Logout function
   const logout = useCallback(async () => {
     try {
       setToken(null);
       setUser(null);
+      // Reset animation state on logout
+      setShouldAnimateDashboard(false);
       storage.removeItem("token");
       storage.removeItem("user");
+      // Clear the session storage flag so next login will animate
+      sessionStorage.removeItem("dashboardAnimated");
       delete axios.defaults.headers.common["Authorization"];
       return { success: true };
     } catch (error) {
@@ -101,13 +107,15 @@ export const AuthProvider = ({ children }) => {
             "Authorization"
           ] = `Bearer ${storedToken}`;
           console.log("Auth loaded successfully");
+
+          // Don't animate if user is already logged in (page refresh)
+          // Only animate on fresh login
         } else {
           console.log("No valid auth found");
         }
       } catch (error) {
         console.error("Error loading auth data", error);
       } finally {
-        // ALWAYS set loading to false
         setLoading(false);
       }
     };
@@ -132,6 +140,9 @@ export const AuthProvider = ({ children }) => {
       setUser(user);
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
+      // NEW: Set animation flag for successful login
+      setShouldAnimateDashboard(true);
+
       return { success: true, user, wasFirstLogin };
     } catch (error) {
       console.error("Login error:", error);
@@ -143,6 +154,12 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  // NEW: Function to disable dashboard animation after it runs
+  const disableDashboardAnimation = useCallback(() => {
+    setShouldAnimateDashboard(false);
+    sessionStorage.setItem("dashboardAnimated", "true");
+  }, []);
 
   // Update user state + localStorage
   const updateUser = (updatedUser) => {
@@ -177,16 +194,10 @@ export const AuthProvider = ({ children }) => {
     logout,
     isAuthenticated,
     updateUser,
+    // NEW: Animation control
+    shouldAnimateDashboard,
+    disableDashboardAnimation,
   };
-
-  //   manual logout incase error
-
-  //   useEffect(() => {
-  //     if (token) {
-  //       console.log("Token expired. Logging out...");
-  //       logout();
-  //     }
-  //   }, [token, logout]);
 
   // Don't render children until we've checked auth
   if (loading) {

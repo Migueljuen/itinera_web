@@ -50,7 +50,7 @@ function Login() {
             toast.success("Welcome! Let's set up your first activity 🎉");
             navigate("/owner/create", { replace: true });
           } else {
-            toast.success("Login successful! Redirecting...");
+            // toast.success("Login successful! Redirecting...");
             navigate("/owner");
           }
         } else {

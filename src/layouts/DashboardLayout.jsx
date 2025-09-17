@@ -19,6 +19,7 @@ import logoImage from "../assets/images/alt.png";
 import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -26,7 +27,7 @@ const DashboardLayout = ({ children }) => {
   const location = useLocation();
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
   const [isTasksExpanded, setIsTasksExpanded] = useState(true);
-
+  const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
   // Only redirect if the user is a first-login creator and on /owner root
   useEffect(() => {
     if (user?.is_first_login) {
@@ -38,6 +39,17 @@ const DashboardLayout = ({ children }) => {
     await logout();
     navigate("/login");
   };
+
+  // Disable animation after it completes
+  useEffect(() => {
+    if (shouldAnimateDashboard) {
+      const timer = setTimeout(() => {
+        disableDashboardAnimation();
+      }, 500); // After animation duration completes
+
+      return () => clearTimeout(timer);
+    }
+  }, [shouldAnimateDashboard, disableDashboardAnimation]);
 
   const navigationItems = [
     {
@@ -69,7 +81,7 @@ const DashboardLayout = ({ children }) => {
       isExpanded: isTasksExpanded,
       setExpanded: setIsTasksExpanded,
       subItems: [
-        { label: "Active Bookings", path: "/owner/bookings/active" },
+        { label: "Manage Bookings", path: "/owner/bookings" },
         { label: "Completed", path: "/owner/bookings/completed" },
       ],
     },
@@ -153,10 +165,12 @@ const DashboardLayout = ({ children }) => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -40 }}
-        transition={{ duration: 0.4, ease: "easeInOut" }}
+        initial={shouldAnimateDashboard ? { opacity: 0, y: 40 } : false}
+        animate={shouldAnimateDashboard ? { opacity: 1, y: 0 } : {}}
+        exit={shouldAnimateDashboard ? { opacity: 0, y: -40 } : {}}
+        transition={
+          shouldAnimateDashboard ? { duration: 0.4, ease: "easeInOut" } : {}
+        }
         className="min-h-screen w-full font-display"
       >
         {/* Mobile Sidebar Backdrop */}

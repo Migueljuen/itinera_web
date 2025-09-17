@@ -24,7 +24,7 @@ import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import toast, { Toaster } from "react-hot-toast";
-const ExperienceManagement = () => {
+const BookingManagement = () => {
   const navigate = useNavigate();
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -229,11 +229,9 @@ const ExperienceManagement = () => {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">
-                Activity Management
+                Booking Management
               </h1>
-              <p className="text-gray-600 mt-1">
-                Manage your experiential offerings
-              </p>
+              <p className="text-gray-600 mt-1">Manage your bookings</p>
             </div>
             <div className="flex gap-3">
               <button className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -434,4 +432,4 @@ const ExperienceManagement = () => {
   );
 };
 
-export default ExperienceManagement;
+export default BookingManagement;

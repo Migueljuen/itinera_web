@@ -11,6 +11,7 @@ import Signup from "./pages/shared/signup";
 import DashboardLayout from "./layouts/DashboardLayout";
 import CreatorDashboard from "./pages/creator/index";
 import CreatorExperiences from "./pages/creator/activities";
+import BookingManagement from "./pages/creator/bookings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
@@ -63,6 +64,7 @@ export default function App() {
           <Route index element={<CreatorDashboard />} />
           <Route path="dashboard" element={<CreatorDashboard />} />
           <Route path="activities" element={<CreatorExperiences />} />
+          <Route path="bookings" element={<BookingManagement />} />
         </Route>
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />

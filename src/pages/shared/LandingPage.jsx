@@ -154,6 +154,8 @@ const LandingPage = () => {
 
             {/* Bottom hero */}
           </div>
+          {/* Navigate link */}
+          <div id="features" className=""></div>
         </motion.section>
 
         {/* Features Section */}
@@ -162,7 +164,6 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          id="features"
           className="py-24 flex justify-center w-11/12 mx-auto"
         >
           {/* Text & Features */}
@@ -240,13 +241,15 @@ const LandingPage = () => {
           </div>
         </motion.section>
 
+        {/* Navigate link */}
+        <div id="why" className=""></div>
+
         {/* Why us 1 */}
         <motion.section
           variants={fadeInUp}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          id="why"
           className=" h-dvh flex flex-row justify-center w-11/12 mx-auto "
         >
           {/* Left content */}
