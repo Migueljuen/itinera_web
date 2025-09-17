@@ -252,7 +252,7 @@ const ExperienceManagement = () => {
             {/* Table Header */}
             <div className=" py-4">
               {/* Search and Filters */}
-              <div className="bg-white rounded-lg   mb-6">
+              <div className="bg-white rounded-lg   mb-6  min-h-[44px]">
                 <div className="flex flex-col lg:flex-row gap-4">
                   {/* Search */}
                   <div className="relative">
@@ -262,7 +262,7 @@ const ExperienceManagement = () => {
                     />
                     <input
                       type="text"
-                      placeholder="Search "
+                      placeholder="Search"
                       className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                       value={searchText}
                       onChange={(e) => setSearchText(e.target.value)}
@@ -405,11 +405,10 @@ const ExperienceManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
                     >
                       {page}
                     </button>
