@@ -87,9 +87,9 @@ const CreatorDashboard = () => {
       </header>
 
       {/* MAIN GRID */}
-      <div className="flex flex-1 w-full  gap-8  ">
+      <div className="flex flex-1 lg:flex-col xl:flex-row w-full  xl:border-none gap-8  ">
         {/* LEFT COLUMN */}
-        <div className="flex flex-col flex-[0.7]  gap-8 ">
+        <div className="flex flex-col flex-[0.7]  xl:bg-white gap-8 ">
           {/* Subscription Banner */}
           {!isSubscribed && <SubscriptionBanner />}
 
@@ -103,7 +103,7 @@ const CreatorDashboard = () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className=" bg-white flex-[0.3] min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300  flex flex-col  items-start justify-start ">
+        <div className="  xl:bg-white flex-[0.3] lg:w-full min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300  flex flex-col  items-start justify-start ">
           <h1 className="text-xl font-semibold  p-8 text-gray-900 ">
             Booking Statistic
           </h1>
