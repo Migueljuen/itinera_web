@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   // NEW: Dashboard animation state
-  const [shouldAnimateDashboard, setShouldAnimateDashboard] = useState(false);
+  // const [shouldAnimateDashboard, setShouldAnimateDashboard] = useState(false);
 
   // Logout function
   const logout = useCallback(async () => {
@@ -79,11 +79,11 @@ export const AuthProvider = ({ children }) => {
       setToken(null);
       setUser(null);
       // Reset animation state on logout
-      setShouldAnimateDashboard(false);
+      // setShouldAnimateDashboard(false);
       storage.removeItem("token");
       storage.removeItem("user");
       // Clear the session storage flag so next login will animate
-      sessionStorage.removeItem("dashboardAnimated");
+      // sessionStorage.removeItem("dashboardAnimated");
       delete axios.defaults.headers.common["Authorization"];
       return { success: true };
     } catch (error) {
@@ -141,7 +141,7 @@ export const AuthProvider = ({ children }) => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
 
       // NEW: Set animation flag for successful login
-      setShouldAnimateDashboard(true);
+      // setShouldAnimateDashboard(true);
 
       return { success: true, user, wasFirstLogin };
     } catch (error) {
@@ -156,10 +156,10 @@ export const AuthProvider = ({ children }) => {
   };
 
   // NEW: Function to disable dashboard animation after it runs
-  const disableDashboardAnimation = useCallback(() => {
-    setShouldAnimateDashboard(false);
-    sessionStorage.setItem("dashboardAnimated", "true");
-  }, []);
+  // const disableDashboardAnimation = useCallback(() => {
+  //   setShouldAnimateDashboard(false);
+  //   sessionStorage.setItem("dashboardAnimated", "true");
+  // }, []);
 
   // Update user state + localStorage
   const updateUser = (updatedUser) => {
@@ -195,8 +195,8 @@ export const AuthProvider = ({ children }) => {
     isAuthenticated,
     updateUser,
     // NEW: Animation control
-    shouldAnimateDashboard,
-    disableDashboardAnimation,
+    // shouldAnimateDashboard,
+    // disableDashboardAnimation,
   };
 
   // Don't render children until we've checked auth

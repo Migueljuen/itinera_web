@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { fadeInUp } from "../../components/animation";
-// Import your images here
-import logoImage from "../../assets/images/logo.png";
-import UndrawSvg from "../../assets/images/undraw.svg";
-import Undraw1Svg from "../../assets/images/undraw1.svg";
-import Undraw2Svg from "../../assets/images/undraw2.svg";
+
+// Lazy load images for better performance
+const logoImage = new URL("../../assets/images/logo.png", import.meta.url).href;
+const mockup = new URL("../../assets/images/test2.png", import.meta.url).href;
+const mockup1 = new URL("../../assets/images/mockup1.png", import.meta.url)
+  .href;
+const mockup2 = new URL("../../assets/images/mockup2.png", import.meta.url)
+  .href;
+
 import Button from "../../components/Button";
-import mockup from "../../assets/images/test2.png";
-import mockup1 from "../../assets/images/mockup1.png";
-import mockup2 from "../../assets/images/mockup2.png";
 import {
   MapIcon,
   SparklesIcon,
@@ -22,65 +22,140 @@ import {
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
 
+// Optimized animation variants - simpler and more performant
+const fadeInUp = {
+  hidden: {
+    opacity: 0,
+    y: 30,
+  },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut",
+    },
+  },
+};
+
 const LandingPage = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
 
+  // Force scroll to top on component mount/refresh
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
+    // Disable automatic scroll restoration
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
 
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    // Force scroll to top immediately
+    window.scrollTo(0, 0);
+
+    // Also force scroll to top after a brief delay to handle any async loading
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 50);
+
+    return () => {
+      clearTimeout(timer);
+      // Re-enable scroll restoration when leaving the page
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "auto";
+      }
+    };
   }, []);
 
-  const handleSignIn = () => {
-    navigate("/login");
-  };
+  // Throttled scroll handler (your existing optimized version)
+  const throttledHandleScroll = useCallback(() => {
+    let ticking = false;
 
-  const footerSections = [
-    {
-      title: "Legal",
-      links: ["Terms and Conditions", "Privacy Policy"],
-    },
-    {
-      title: "Support",
-      links: ["Contact Us"],
-    },
-    {
-      title: "Other",
-      links: ["FAQs", "About Us"],
-    },
-    {
-      title: "Itineraries",
-      links: ["Destinations", "Become a host"],
-    },
-  ];
+    const updateScrolled = () => {
+      const isScrolled = window.scrollY > 50;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+      ticking = false;
+    };
+
+    return () => {
+      if (!ticking) {
+        requestAnimationFrame(updateScrolled);
+        ticking = true;
+      }
+    };
+  }, [scrolled]);
+
+  useEffect(() => {
+    const handleScroll = throttledHandleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [throttledHandleScroll]);
+  // Memoize static data to prevent recreation on each render
+  const footerSections = useMemo(
+    () => [
+      {
+        title: "Legal",
+        links: ["Terms and Conditions", "Privacy Policy"],
+      },
+      {
+        title: "Support",
+        links: ["Contact Us"],
+      },
+      {
+        title: "Other",
+        links: ["FAQs", "About Us"],
+      },
+      {
+        title: "Itineraries",
+        links: ["Destinations", "Become a host"],
+      },
+    ],
+    []
+  );
+
+  // Memoize navigation handler
+  const handleSignIn = useCallback(() => {
+    navigate("/login");
+  }, [navigate]);
+
+  // Preload critical images
+  useEffect(() => {
+    const preloadImages = [logoImage, mockup];
+    preloadImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
 
   return (
     <AnimatePresence mode="wait">
       <div className="min-h-screen bg-white font-display">
         {/* Header */}
         <header
-          className={`fixed top-5 w-full z-50 transition-all duration-300 ' `}
+          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${
+            scrolled ? "transform-gpu" : ""
+          }`}
         >
-          <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px]  mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm  ">
+          <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
             <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
               {/* Logo */}
               <div className="ml-4 mb-2">
                 <img
                   src={logoImage}
                   alt="Itinera Logo"
-                  className="w-24 cursor-pointer transition-transform"
+                  className="w-24 cursor-pointer transition-transform will-change-transform"
+                  loading="eager"
+                  decoding="async"
                 />
               </div>
 
               {/* Nav Links (center column) */}
-              <div className="flex justify-center space-x-10 text-base font-medium text-[#1f2937] ">
+              <nav className="flex justify-center space-x-10 text-base font-medium text-[#1f2937]">
                 <a
                   href="#features"
-                  className="hover:text-[#1f2937]/60 transition-colors "
+                  className="hover:text-[#1f2937]/60 transition-colors"
                 >
                   Features
                 </a>
@@ -102,7 +177,7 @@ const LandingPage = () => {
                 >
                   About
                 </a>
-              </div>
+              </nav>
 
               {/* Buttons */}
               <div className="flex justify-end space-x-4">
@@ -126,36 +201,88 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="z-10 min-h-screen lg:min-h-[120vh] pt-24 pb-24 lg:pt-0 bg-gradient-to-b from-[#54a056eb]/15 to-gray-50 relative"
+          className="relative bg-gradient-to-b from-[#54a056eb]/15 to-gray-50"
+          style={{
+            minHeight: "100vh",
+            paddingTop: "6rem",
+            paddingBottom: "6rem",
+          }}
         >
-          <div className="z-10 mx-auto flex flex-col justify-center min-h-screen lg:min-h-[120vh] font-display text-center px-4">
-            {/* Main text and CTA*/}
-            <div className="flex-1 flex flex-col justify-center items-center pt-8 lg:pt-60 pb-4 lg:pb-8">
-              <h1 className="text-4xl lg:text-5xl font-medium text-[#1f2937]">
+          <div className="mx-auto px-4 font-display text-center">
+            {/* Main text and CTA */}
+            <div
+              className="flex flex-col items-center justify-center"
+              style={{ minHeight: "calc(50vh - 3rem)" }}
+            >
+              <motion.h1
+                className="text-4xl lg:text-5xl font-medium text-[#1f2937] will-change-transform"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { delay: 0.2, duration: 0.6 },
+                  },
+                }}
+              >
                 <span className="block">
                   Smart itinerary planning for travelers
                 </span>
                 <span className="block">who want more.</span>
-              </h1>
-              <p className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-8 lg:my-12">
+              </motion.h1>
+
+              <motion.p
+                className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-8 lg:my-12"
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { delay: 0.4, duration: 0.6 },
+                  },
+                }}
+              >
                 Travel smarter. Stress less. Your journey, your way.
-              </p>
-              <Button onClick={handleSignIn}>See How It Works</Button>
+              </motion.p>
+
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { delay: 0.6, duration: 0.6 },
+                  },
+                }}
+              >
+                <Button onClick={handleSignIn}>See How It Works</Button>
+              </motion.div>
             </div>
 
             {/* Mockup Section */}
-            <div className="flex-1 flex items-center justify-center py-8">
-              <img
+            <div
+              className="flex items-center justify-center"
+              style={{ minHeight: "calc(50vh - 3rem)" }}
+            >
+              <motion.img
                 src={mockup}
                 alt="mockup"
-                className="w-4/6 max-w-4xl cursor-pointer transition-transform"
+                className="w-4/6 max-w-4xl cursor-pointer will-change-transform"
+                loading="eager"
+                decoding="async"
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95 },
+                  show: {
+                    opacity: 1,
+                    scale: 1,
+                    transition: { delay: 0.8, duration: 0.8, ease: "easeOut" },
+                  },
+                }}
               />
             </div>
-
-            {/* Bottom hero */}
           </div>
-          {/* Navigate link */}
-          <div id="features" className=""></div>
+
+          <div id="features" className="absolute bottom-0"></div>
         </motion.section>
 
         {/* Features Section */}
@@ -166,9 +293,8 @@ const LandingPage = () => {
           viewport={{ once: true, amount: 0.3 }}
           className="py-24 flex justify-center w-11/12 mx-auto"
         >
-          {/* Text & Features */}
+          {/* Your existing features content */}
           <div className="flex flex-col justify-center items-center w-full">
-            {/* Upper texts */}
             <div className="mb-16 flex flex-col items-center justify-center">
               <h2 className="text-[#397ff1] font-semibold">Features</h2>
               <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold text-center">
@@ -180,9 +306,7 @@ const LandingPage = () => {
               </p>
             </div>
 
-            {/* Features Grid */}
             <div className="grid mt-8 grid-cols-1 md:grid-cols-2 gap-16 w-full md:w-4/5">
-              {/* Traveler Feature 1 */}
               <div className="flex gap-3">
                 <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
                   <AdjustmentsHorizontalIcon className="h-7 w-7 text-white" />
@@ -196,7 +320,6 @@ const LandingPage = () => {
                 </span>
               </div>
 
-              {/* Traveler Feature 2 */}
               <div className="flex gap-3">
                 <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
                   <EyeIcon className="h-7 w-7 text-white" />
@@ -210,7 +333,6 @@ const LandingPage = () => {
                 </span>
               </div>
 
-              {/* Creator Feature 1 */}
               <div className="flex gap-3">
                 <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
                   <MapIcon className="h-7 w-7 text-white" />
@@ -224,7 +346,6 @@ const LandingPage = () => {
                 </span>
               </div>
 
-              {/* Creator Feature 2 */}
               <div className="flex gap-3">
                 <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
                   <UsersIcon className="h-7 w-7 text-white" />
