@@ -212,7 +212,7 @@ const LandingPage = () => {
             {/* Main text and CTA */}
             <div
               className="flex flex-col items-center justify-center"
-              style={{ minHeight: "calc(50vh - 3rem)" }}
+              style={{ minHeight: "calc(70vh - 3rem)" }}
             >
               <motion.h1
                 className="text-4xl lg:text-5xl font-medium text-[#1f2937] will-change-transform"

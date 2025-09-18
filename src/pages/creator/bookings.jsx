@@ -88,7 +88,23 @@ const BookingManagement = () => {
     setCurrentPage(1);
   }, [selectedTab, searchText]);
 
-  const filteredBookings = bookings.filter((booking) => {
+  const sortedBookings = [...bookings].sort((a, b) => {
+    const today = dayjs();
+    const dateA = dayjs(a.booking_date);
+    const dateB = dayjs(b.booking_date);
+
+    // Difference in days from today
+    const diffA = Math.abs(dateA.diff(today, "day"));
+    const diffB = Math.abs(dateB.diff(today, "day"));
+
+    // Sort by which date is closer to today
+    if (diffA === diffB) {
+      return dateA.isBefore(dateB) ? -1 : 1; // if equal distance, earlier date first
+    }
+    return diffA - diffB;
+  });
+
+  const filteredBookings = sortedBookings.filter((booking) => {
     const matchesSearch =
       booking.traveler_first_name
         ?.toLowerCase()
@@ -319,8 +335,8 @@ const BookingManagement = () => {
                           className={`text-center px-4 border-r border-gray-300
     ${
       dayjs(booking.booking_date).isSame(dayjs(), "day")
-        ? " text-[#376a63]" // if today
-        : "text-[#3A81F3]"
+        ? " text-[#3A81F3]" // if today
+        : "text-black/60"
     }`}
                         >
                           <p className="text-xl">
@@ -372,73 +388,6 @@ const BookingManagement = () => {
                           ) : (
                             <User size={16} className="text-gray-400" />
                           )}
-                        </div>
-                      </div>
-
-                      {/* // DROP DOWN EDIT BUTTON */}
-                      <div className="flex flex-col gap-2 items-center relative px-8">
-                        <button
-                          onClick={() => toggleDropdown(booking.booking_id)}
-                          className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize `}
-                        >
-                          More <ChevronDown size={16} />
-                        </button>
-
-                        {/* Dropdown */}
-                        {openDropdownId === booking.booking_id && (
-                          <div className="absolute  top-full mt-1 w-32 bg-white shadow-lg/5  rounded-md  z-50">
-                            <button
-                              onClick={console.log("itot")}
-                              className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
-                            >
-                              test
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* DUMMY DATA */}
-                    <div className="py-6  flex items-center justify-between  border rounded-xl border-gray-300 hover:bg-gray-50">
-                      <div className="grid  grid-cols-[120px_240px_300px] gap-4 ">
-                        <div className="text-black/80 text-center px-4 border-r border-gray-300">
-                          <p className="text-xl">Wed</p>
-                          <p className="text-4xl font-semibold">28</p>
-                        </div>
-
-                        <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around">
-                          <div className="flex items-center gap-3">
-                            <Clock size={16} className="text-black/60" />
-                            <span className="text-sm">08:00 AM - 10:00 AM</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <Calendar size={16} className="text-black/60" />
-                            <span className="text-sm">Feb 24</span>
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col justify-around px-4">
-                          <span className="font-medium text-sm text-black/70 truncate">
-                            Chris Art's Joint Rolling Workshop
-                          </span>
-                          <div className="flex">
-                            <img
-                              src="https://i.pravatar.cc/150?img=1"
-                              className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
-                            />
-                            <img
-                              src="https://i.pravatar.cc/150?img=2"
-                              className="w-6 h-6 -ml-1 z-9 border-2 border-white rounded-full object-cover"
-                            />
-                            <img
-                              src="https://i.pravatar.cc/150?img=3"
-                              className="w-6 h-6 -ml-1 z-8 border-2 border-white rounded-full object-cover"
-                            />
-                            <img
-                              src="https://i.pravatar.cc/150?img=4"
-                              className="w-6 h-6 -ml-1 z-7 border-2 border-white rounded-full object-cover"
-                            />
-                          </div>
                         </div>
                       </div>
 
