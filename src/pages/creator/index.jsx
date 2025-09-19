@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, Star, Activity, Circle, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import envelope from "../../assets/icons/envelope.svg";
@@ -10,11 +10,48 @@ import BarChartTest from "../../components/BarChart";
 import SubscriptionBanner from "../../components/SubscriptionBanner";
 import CalendarView from "../../components/Calendar";
 import RecentBooking from "../../components/RecentBooking";
+import dummyNotifications from "../../constants/dummyNotif";
+import NotificationDropdown from "../../components/NotificationDropdown";
 const CreatorDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState(dummyNotifications);
+  const notificationRef = useRef(null);
   const isSubscribed = 0;
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationRef.current &&
+        !notificationRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  const handleMarkAsRead = (notificationId) => {
+    if (notificationId === "all") {
+      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+    } else {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n))
+      );
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const demoEvents = [
     {
@@ -54,12 +91,25 @@ const CreatorDashboard = () => {
                   className="w-5 cursor-pointer"
                 />
               </div>
-              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center">
-                <img
-                  src={bell}
-                  alt="Notifications"
-                  className="w-5 cursor-pointer"
-                />
+              <div className="relative" ref={notificationRef}>
+                <div
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer hover:bg-gray-50 transition-colors relative"
+                  onClick={() => setShowNotifications(!showNotifications)}
+                >
+                  <img src={bell} alt="Notifications" className="w-5" />
+                  {unreadCount > 0 && (
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </div>
+                  )}
+                </div>
+                {showNotifications && (
+                  <NotificationDropdown
+                    notifications={notifications}
+                    onClose={() => setShowNotifications(false)}
+                    onMarkAsRead={handleMarkAsRead}
+                  />
+                )}
               </div>
             </div>
             <div className="flex items-center gap-4">
