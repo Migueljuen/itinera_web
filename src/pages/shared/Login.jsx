@@ -83,7 +83,7 @@ function Login() {
         onClick={() => navigate("/")}
       />
       <div className="min-h-screen grid place-items-center p-4">
-        <div className="w-full max-w-md p-8 bg-white rounded-lg border border-gray-300 space-y-6 ">
+        <div className="w-full max-w-md p-8 bg-white rounded-lg  border-gray-300 space-y-6 ">
           <p className="text-center text-2xl  ">Login to Itinera</p>
           {/* Form Container */}
           <form onSubmit={handleLogin} className="space-y-4">

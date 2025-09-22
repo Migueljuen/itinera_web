@@ -12,12 +12,18 @@ import CalendarView from "../../components/Calendar";
 import RecentBooking from "../../components/RecentBooking";
 import dummyNotifications from "../../constants/dummyNotif";
 import NotificationDropdown from "../../components/NotificationDropdown";
+
+import { BellIcon as BellOutline } from '@heroicons/react/24/outline'
+import { BellIcon as BellSolid } from '@heroicons/react/24/solid'
+
 const CreatorDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState(dummyNotifications);
+  const [hasOpenedDropdown, setHasOpenedDropdown] = useState(false);
+
   const notificationRef = useRef(null);
   const isSubscribed = 0;
 
@@ -44,10 +50,13 @@ const CreatorDashboard = () => {
   const handleMarkAsRead = (notificationId) => {
     if (notificationId === "all") {
       setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+
     } else {
       setNotifications((prev) =>
         prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n))
+
       );
+
     }
   };
 
@@ -72,7 +81,7 @@ const CreatorDashboard = () => {
     <div className="flex flex-col ">
       {/* HEADER */}
 
-      <header className="px-12 pt-4 py-8">
+      <header className="px-12 pt-4 py-8 ">
         <div className="flex items-center justify-between">
           <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
             <Menu size={24} />
@@ -93,11 +102,24 @@ const CreatorDashboard = () => {
               </div>
               <div className="relative" ref={notificationRef}>
                 <div
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer hover:bg-gray-50 transition-colors relative"
-                  onClick={() => setShowNotifications(!showNotifications)}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
+                    ? 'bg-blue-100 hover:bg-blue-200 active:bg-blue-300'
+                    : 'hover:bg-gray-100 active:bg-gray-200'
+                    }`}
+                  onClick={() => {
+                    setShowNotifications(!showNotifications);
+                    if (!showNotifications) {
+                      setHasOpenedDropdown(true);
+                    }
+                  }}
                 >
-                  <img src={bell} alt="Notifications" className="w-5" />
-                  {unreadCount > 0 && (
+                  {/* <img src={bell} alt="Notifications" className="w-5 " /> */}
+                  {showNotifications ? (
+                    <BellSolid className="w-5 h-5 text-blue-600" />
+                  ) : (
+                    <BellOutline className="w-5 h-5 text-black/90" />
+                  )}
+                  {unreadCount > 0 && !hasOpenedDropdown && (
                     <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </div>
