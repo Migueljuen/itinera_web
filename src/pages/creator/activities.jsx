@@ -8,6 +8,8 @@ import {
   EyeOff,
   Trash2,
   Calendar,
+  LayoutGrid,
+  List,
   Clock,
   Users,
   MapPin,
@@ -27,6 +29,7 @@ import toast, { Toaster } from "react-hot-toast";
 const ExperienceManagement = () => {
   const navigate = useNavigate();
   const { user, token } = useAuth();
+  const [viewMode, setViewMode] = useState("card"); // or 'table'
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = useState("All");
@@ -222,8 +225,7 @@ const ExperienceManagement = () => {
           },
         }}
       />
-      <div className="min-h-screen ">
-        {/* <div className="max-w-[99%] mx-auto py-6"> */}
+      <div className="min-h-screen">
         <div className="">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
@@ -247,104 +249,187 @@ const ExperienceManagement = () => {
             </div>
           </div>
 
-          {/* Experiences Table */}
-          <div className="bg-white rounded-lg  ">
+          {/* Activities Table */}
+          <div className="bg-white rounded-lg">
             {/* Table Header */}
-            <div className=" py-4">
+            <div className="py-4">
               {/* Search and Filters */}
-              <div className="bg-white rounded-lg   mb-6  min-h-[44px]">
-                <div className="flex flex-col lg:flex-row gap-4">
-                  {/* Search */}
-                  <div className="relative">
-                    <Search
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                      size={20}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      value={searchText}
-                      onChange={(e) => setSearchText(e.target.value)}
-                    />
+              <div className="bg-white rounded-lg mb-6">
+                <div className="flex justify-between items-center">
+                  {/* Tab Navigation */}
+                  <div className="flex bg-gray-50 rounded-lg w-fit p-2">
+                    {["All", "Active", "Inactive", "Draft"].map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setSelectedTab(tab)}
+                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${
+                          selectedTab === tab
+                            ? "bg-white text-black/80 shadow-sm/10"
+                            : "text-black/50 hover:text-black/70"
+                        }`}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Layout Toggle and Search */}
+                  <div className="flex items-center gap-4">
+                    {/* Layout Toggle */}
+                    <div className="flex bg-gray-50 rounded-lg p-1">
+                      <button
+                        onClick={() => setViewMode("card")}
+                        className={`p-2 rounded transition-colors ${
+                          viewMode === "card"
+                            ? "bg-white text-black/80 shadow-sm"
+                            : "text-black/50 hover:text-black/70"
+                        }`}
+                        title="Card view"
+                      >
+                        <LayoutGrid size={16} />
+                      </button>
+                      <button
+                        onClick={() => setViewMode("table")}
+                        className={`p-2 rounded transition-colors ${
+                          viewMode === "table"
+                            ? "bg-white text-black/80 shadow-sm"
+                            : "text-black/50 hover:text-black/70"
+                        }`}
+                        title="Table view"
+                      >
+                        <List size={16} />
+                      </button>
+                    </div>
+
+                    {/* Search */}
+                    <div className="relative h-fit">
+                      <Search
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                        size={20}
+                      />
+                      <input
+                        type="text"
+                        placeholder="Search activities..."
+                        className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
-              {/* Use a stable column template and vertically center items */}
-              <div className="bg-[#f8f8f8] px-4 rounded-lg py-4 grid grid-cols-[24px_1fr_180px_120px_200px_56px] gap-6 items-center text-sm font-base text-black/90">
-                <div className="justify-self-start">
-                  <input type="checkbox" className="rounded" />
-                </div>
-
-                <div className="justify-self-start">Activity Name</div>
-
-                <div className="justify-self-center">Availability</div>
-
-                <div className="justify-self-center">Price</div>
-
-                <div className="justify-self-center">Status</div>
-
-                <div className="justify-self-end">Actions</div>
               </div>
             </div>
 
             {/* Table Body */}
             <div className="divide-y divide-gray-200">
-              {paginatedExperiences.map((item) => (
-                <div key={item.experience_id} className="py-4 hover:bg-gray-50">
-                  <div className="px-4 grid grid-cols-[24px_1fr_180px_120px_200px_56px] gap-6 items-center">
-                    {/* Checkbox */}
-                    <div className="justify-self-start">
-                      <input type="checkbox" className="rounded" />
-                    </div>
-
-                    {/* Activity Name */}
-                    <div className="flex items-center gap-3 justify-self-start">
-                      <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                        {/* <ImageIcon size={24} className="text-gray-400" /> */}
-                        <img
-                          src={`${API_URL}/${item.images[0]}`}
-                          size={24}
-                          className="object-cover w-full h-full rounded-lg"
-                        />
+              {loading ? (
+                <div className="py-8 text-center">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+                  <p className="text-gray-500 mt-2">Loading activities...</p>
+                </div>
+              ) : paginatedExperiences.length === 0 ? (
+                <div className="py-8 text-center">
+                  <p className="text-gray-500">No activities found</p>
+                </div>
+              ) : viewMode === "card" ? (
+                // CARD VIEW
+                paginatedExperiences.map((item) => (
+                  <div
+                    key={item.experience_id}
+                    className="py-6 mb-4 flex items-center justify-between border rounded-xl border-gray-300 hover:bg-gray-50"
+                  >
+                    <div className="grid grid-cols-[80px_280px_220px] gap-4">
+                      {/* Activity Image */}
+                      <div className="text-center px-4 border-r border-gray-300">
+                        <div className="w-16 h-16 bg-gray-200 rounded-lg mx-auto flex items-center justify-center overflow-hidden">
+                          <img
+                            src={`${API_URL}/${item.images[0]}`}
+                            alt={item.title}
+                            className="object-cover w-full h-full rounded-lg"
+                          />
+                        </div>
                       </div>
-                      <div>
-                        <h3 className="font-base text-sm text-black/80">
-                          {item.title}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <MapPin size={14} className="text-gray-400" />
+
+                      {/* Activity Details */}
+                      <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around">
+                        <div>
+                          <h3 className="font-medium text-base text-black/80 mb-1">
+                            {item.title}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <MapPin size={16} className="text-black/60" />
+                            <span className="text-sm">
+                              {item.destination_name}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Calendar size={16} className="text-black/60" />
+                          <span className="text-sm">
+                            {item.availabilitySummary?.join(", ") ||
+                              "No availability set"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Price and Status */}
+                      <div className="flex flex-col justify-around px-4">
+                        <div>
+                          <span className="text-lg font-semibold text-black/80">
+                            ₱{item.price.toLocaleString()}
+                          </span>
                           <span className="text-sm text-black/60">
-                            {item.destination_name}
+                            /{item.unit}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              item.status === "active"
+                                ? "bg-green-500"
+                                : item.status === "inactive"
+                                ? "bg-red-500"
+                                : "bg-yellow-500"
+                            }`}
+                          ></div>
+                          <span className="text-sm capitalize text-black/70">
+                            {item.status}
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Availability */}
-                    <div className="text-sm text-gray-600 justify-self-center">
-                      {item.availabilitySummary?.join(", ")}
-                    </div>
+                    {/* Actions Dropdown */}
+                    <div className="flex flex-col gap-2 items-center relative px-8">
+                      <button
+                        onClick={() => toggleDropdown(item.experience_id)}
+                        className="flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize"
+                      >
+                        More <ChevronDown size={16} />
+                      </button>
 
-                    {/* Price */}
-                    <div className="font-normal text-sm text-black/60 justify-self-center">
-                      ₱{item.price.toLocaleString()}/{item.unit}
-                    </div>
-
-                    <div className="justify-self-center">
-                      <div className="flex flex-col gap-2 items-center relative">
-                        <button
-                          onClick={() => toggleDropdown(item.experience_id)}
-                          className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize ${getStatusColor(
-                            item.status
-                          )}`}
-                        >
-                          {item.status} <ChevronDown size={16} />
-                        </button>
-
-                        {/* Dropdown */}
-                        {openDropdownId === item.experience_id && (
-                          <div className="absolute  top-full mt-1 w-32 bg-white shadow-lg/5  rounded-md  z-50">
+                      {/* Dropdown */}
+                      {openDropdownId === item.experience_id && (
+                        <div className="absolute top-full mt-1 w-32 bg-white shadow-lg/5 rounded-md z-50">
+                          <button
+                            onClick={() => console.log("Edit activity")}
+                            className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => console.log("View details")}
+                            className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100"
+                          >
+                            View Details
+                          </button>
+                          <button
+                            onClick={() => console.log("Duplicate")}
+                            className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100"
+                          >
+                            Duplicate
+                          </button>
+                          <div className="border-t border-gray-200">
                             {["active", "inactive", "draft"].map((status) => (
                               <button
                                 key={status}
@@ -356,23 +441,121 @@ const ExperienceManagement = () => {
                                 }
                                 className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
                               >
-                                {status}
+                                Mark as {status}
                               </button>
                             ))}
                           </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Actions */}
-                    <div className="justify-self-end">
-                      <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded">
-                        <MoreHorizontal size={16} />
-                      </button>
+                        </div>
+                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                // TABLE VIEW
+                <>
+                  {/* Table Header */}
+                  <div className="bg-[#f8f8f8] px-4 rounded-lg py-4 grid grid-cols-[24px_1fr_180px_120px_200px_56px] gap-6 items-center text-sm font-base text-black/90">
+                    <div className="justify-self-start">
+                      <input type="checkbox" className="rounded" />
+                    </div>
+                    <div className="justify-self-start">Activity Name</div>
+                    <div className="justify-self-center">Availability</div>
+                    <div className="justify-self-center">Price</div>
+                    <div className="justify-self-center">Status</div>
+                    <div className="justify-self-end">Actions</div>
+                  </div>
+
+                  {/* Table Rows */}
+                  {paginatedExperiences.map((item) => (
+                    <div
+                      key={item.experience_id}
+                      className="py-4 hover:bg-gray-50"
+                    >
+                      <div className="px-4 grid grid-cols-[24px_1fr_180px_120px_200px_56px] gap-6 items-center">
+                        {/* Checkbox */}
+                        <div className="justify-self-start">
+                          <input type="checkbox" className="rounded" />
+                        </div>
+
+                        {/* Activity Name */}
+                        <div className="flex items-center gap-3 justify-self-start">
+                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <img
+                              src={`${API_URL}/${item.images[0]}`}
+                              alt={item.title}
+                              className="object-cover w-full h-full rounded-lg"
+                            />
+                          </div>
+                          <div>
+                            <h3 className="font-base text-sm text-black/80">
+                              {item.title}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1">
+                              <MapPin size={14} className="text-gray-400" />
+                              <span className="text-sm text-black/60">
+                                {item.destination_name}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Availability */}
+                        <div className="text-sm text-gray-600 justify-self-center">
+                          {item.availabilitySummary?.join(", ") ||
+                            "No availability"}
+                        </div>
+
+                        {/* Price */}
+                        <div className="font-normal text-sm text-black/60 justify-self-center">
+                          ₱{item.price.toLocaleString()}/{item.unit}
+                        </div>
+
+                        <div className="justify-self-center">
+                          <div className="flex flex-col gap-2 items-center relative">
+                            <button
+                              onClick={() => toggleDropdown(item.experience_id)}
+                              className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize ${getStatusColor(
+                                item.status
+                              )}`}
+                            >
+                              {item.status} <ChevronDown size={16} />
+                            </button>
+
+                            {/* Dropdown */}
+                            {openDropdownId === item.experience_id && (
+                              <div className="absolute top-full mt-1 w-32 bg-white shadow-lg/5 rounded-md z-50">
+                                {["active", "inactive", "draft"].map(
+                                  (status) => (
+                                    <button
+                                      key={status}
+                                      onClick={() =>
+                                        updateExperienceStatus(
+                                          item.experience_id,
+                                          status
+                                        )
+                                      }
+                                      className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
+                                    >
+                                      {status}
+                                    </button>
+                                  )
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="justify-self-end">
+                          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded">
+                            <MoreHorizontal size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </div>
 
