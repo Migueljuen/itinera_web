@@ -23,7 +23,7 @@ import {
   Mail,
   CreditCard,
 } from "lucide-react";
-
+import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
@@ -41,6 +41,7 @@ const BookingManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [expandedBookingId, setExpandedBookingId] = useState(null);
 
   const ITEMS_PER_PAGE = 10;
 
@@ -276,99 +277,149 @@ const BookingManagement = () => {
                   <p className="text-gray-500">No bookings found</p>
                 </div>
               ) : (
-                paginatedBookings.map((booking) => (
-                  // TOP CONTENT
-                  <>
+                paginatedBookings.map((booking) => {
+                  const isExpanded = expandedBookingId === booking.booking_id;
+
+                  return (
                     <div
                       key={booking.booking_id}
-                      className="py-6 mb-4 flex items-center justify-between  border rounded-xl border-gray-300 hover:bg-gray-50"
+                      className="py-6 mb-4 border rounded-xl border-gray-300 bg-white hover:bg-gray-50 transition"
                     >
-                      <div className="grid grid-cols-[120px_240px_300px] gap-4">
-                        {/* DAY NUMBER AND DAY OF WEEK */}
-                        <div
-                          className={`text-center px-4 border-r border-gray-300
-    ${
-      dayjs(booking.booking_date).isSame(dayjs(), "day")
-        ? " text-[#3A81F3]" // if today
-        : "text-black/60"
-    }`}
-                        >
-                          <p className="text-xl">
-                            {booking.day_of_week.slice(0, 3)}
-                          </p>
-                          <p className="text-4xl font-semibold">
-                            {dayjs(booking.booking_date).format("D")}
-                          </p>
-                        </div>
-
-                        {/* Date & Time */}
-                        <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around ">
-                          <div className="flex items-center gap-3">
-                            <Clock size={16} className="text-black/60" />
-                            <span className="text-sm">
-                              {formatDateTime(
-                                booking.created_at,
-                                booking.start_time,
-                                booking.end_time
-                              )}
-                            </span>
+                      {/* Top Row */}
+                      <div className="flex items-center justify-between">
+                        <div className="grid grid-cols-[120px_240px_300px] gap-4">
+                          {/* DAY NUMBER AND DAY OF WEEK */}
+                          <div
+                            className={`text-center px-4 border-r border-gray-300 ${
+                              dayjs(booking.booking_date).isSame(dayjs(), "day")
+                                ? "text-[#3A81F3]"
+                                : "text-black/60"
+                            }`}
+                          >
+                            <p className="text-xl">
+                              {booking.day_of_week.slice(0, 3)}
+                            </p>
+                            <p className="text-4xl font-semibold">
+                              {dayjs(booking.booking_date).format("D")}
+                            </p>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <Calendar size={16} className="text-black/60" />
-                            <span className="text-sm">
-                              {formatDate(booking.booking_date)}
-                            </span>
-                          </div>
-                        </div>
 
-                        {/* Activity booked and user icon */}
-                        <div className="flex flex-col justify-around px-4">
-                          <span className="font-medium text-sm text-black/70">
-                            {booking.experience_title}
-                          </span>
-                          {booking?.traveler_profile_pic ? (
-                            <div className="flex">
-                              <img
-                                src={`${API_URL}/${booking.traveler_profile_pic}`}
-                                alt="Profile"
-                                className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
-                              />
-                              <img
-                                src={`${API_URL}/${booking.traveler_profile_pic}`}
-                                alt="Profile"
-                                className="w-6 h-6 -ml-1 border-2 border-white rounded-full object-cover"
-                              />
+                          {/* Date & Time */}
+                          <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around">
+                            <div className="flex items-center gap-3">
+                              <Clock size={16} className="text-black/60" />
+                              <span>
+                                {formatDateTime(
+                                  booking.created_at,
+                                  booking.start_time,
+                                  booking.end_time
+                                )}
+                              </span>
                             </div>
-                          ) : (
-                            <User size={16} className="text-gray-400" />
-                          )}
+                            <div className="flex items-center gap-3">
+                              <Calendar size={16} className="text-black/60" />
+                              <span>{formatDate(booking.booking_date)}</span>
+                            </div>
+                          </div>
+
+                          {/* Activity booked and user */}
+                          <div className="flex flex-col justify-around px-4">
+                            <span className="font-medium text-sm text-black/70">
+                              {booking.experience_title}
+                            </span>
+                            {booking?.traveler_profile_pic ? (
+                              <div className="flex">
+                                <img
+                                  src={`${API_URL}/${booking.traveler_profile_pic}`}
+                                  alt="Profile"
+                                  className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
+                                />
+                                <img
+                                  src={`${API_URL}/${booking.traveler_profile_pic}`}
+                                  alt="Profile"
+                                  className="w-6 h-6 -ml-1 border-2 border-white rounded-full object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <User size={16} className="text-gray-400" />
+                            )}
+                          </div>
                         </div>
+
+                        {/* Expand Button */}
+                        <button
+                          onClick={() =>
+                            setExpandedBookingId(
+                              isExpanded ? null : booking.booking_id
+                            )
+                          }
+                          className="flex items-center gap-2 px-2 py-1 rounded-md text-sm font-normal text-gray-600 hover:bg-gray-100"
+                        >
+                          {isExpanded ? "Less" : "More"}{" "}
+                          <ChevronDown
+                            size={16}
+                            className={`transition-transform duration-300 ${
+                              isExpanded ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
                       </div>
 
-                      {/* // DROP DOWN EDIT BUTTON */}
-                      <div className="flex flex-col gap-2 items-center relative px-8">
-                        <button
-                          onClick={() => toggleDropdown(booking.booking_id)}
-                          className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize `}
-                        >
-                          More <ChevronDown size={16} />
-                        </button>
+                      {/* Expanded Content (Sliding Section) */}
+                      <div
+                        className={`transition-all duration-500 [cubic-bezier(0.4,0,0.2,1)] overflow-hidden ${
+                          isExpanded
+                            ? "max-h-[500px] opacity-100 mt-4"
+                            : "max-h-0 opacity-0"
+                        }`}
+                      >
+                        <div className="border-t border-gray-200 pt-4 px-4 text-sm text-black/70 space-y-4">
+                          {/* Traveler Details */}
+                          <div>
+                            <h4 className="font-semibold mb-1">
+                              Traveler Details
+                            </h4>
+                            <p>
+                              Full Name: {booking.traveler_first_name}{" "}
+                              {booking.traveler_last_name}
+                            </p>
+                            <p>
+                              Mobile Number: {booking.traveler_mobile || "N/A"}
+                            </p>
+                            <p>Email: {booking.traveler_email}</p>
+                          </div>
 
-                        {/* Dropdown */}
-                        {openDropdownId === booking.booking_id && (
-                          <div className="absolute  top-full mt-1 w-32 bg-white shadow-lg/5  rounded-md  z-50">
-                            <button
-                              onClick={console.log("itot")}
-                              className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
-                            >
-                              test
+                          {/* Booking Details */}
+                          <div>
+                            <h4 className="font-semibold mb-1">
+                              Booking Details
+                            </h4>
+                            <p>Booking ID: {booking.booking_id}</p>
+                          </div>
+
+                          {/* Experience Details */}
+                          <div>
+                            <h4 className="font-semibold mb-1">
+                              Experience Details
+                            </h4>
+                            <p>
+                              Location: {booking.destination_name},{" "}
+                              {booking.destination_city}
+                            </p>
+                          </div>
+
+                          {/* Actions */}
+                          <div>
+                            <h4 className="font-semibold mb-1">Actions</h4>
+                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                              Contact Traveler
                             </button>
                           </div>
-                        )}
+                        </div>
                       </div>
                     </div>
-                  </>
-                ))
+                  );
+                })
               )}
             </div>
           </div>
