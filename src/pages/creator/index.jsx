@@ -4,8 +4,6 @@ import { Menu } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import envelope from "../../assets/icons/envelope.svg";
-import bell from "../../assets/icons/bell.svg";
-import Button from "../../components/Button";
 import BarChartTest from "../../components/BarChart";
 import SubscriptionBanner from "../../components/SubscriptionBanner";
 import CalendarView from "../../components/Calendar";
@@ -13,20 +11,105 @@ import RecentBooking from "../../components/RecentBooking";
 import dummyNotifications from "../../constants/dummyNotif";
 import NotificationDropdown from "../../components/NotificationDropdown";
 
-import { BellIcon as BellOutline } from '@heroicons/react/24/outline'
-import { BellIcon as BellSolid } from '@heroicons/react/24/solid'
+import { BellIcon as BellOutline } from "@heroicons/react/24/outline";
+import { BellIcon as BellSolid } from "@heroicons/react/24/solid";
 
 const CreatorDashboard = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [loading, setLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState(dummyNotifications);
+  const [notifications, setNotifications] = useState([]);
   const [hasOpenedDropdown, setHasOpenedDropdown] = useState(false);
-
   const notificationRef = useRef(null);
   const isSubscribed = 0;
 
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      console.log("=== FETCH NOTIFICATIONS DEBUG ===");
+
+      try {
+        // 1. Check token
+        const token =
+          localStorage.getItem("token") || sessionStorage.getItem("token");
+        console.log("Token found:", !!token);
+        console.log(
+          "Token value:",
+          token ? `${token.substring(0, 20)}...` : "null"
+        );
+
+        if (!token) {
+          console.error("No auth token found - setting dummy notifications");
+          setNotifications(dummyNotifications);
+          return;
+        }
+
+        // 2. Check API_URL
+        console.log("API_URL:", API_URL);
+        console.log("Full endpoint:", `${API_URL}/notifications`);
+
+        // 3. Make the request
+        console.log("Making fetch request...");
+        const res = await fetch(`${API_URL}/notifications`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        console.log("Response received:");
+        console.log("- Status:", res.status);
+        console.log("- OK:", res.ok);
+        console.log("- Status Text:", res.statusText);
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error("Error response body:", errorText);
+          throw new Error(`HTTP error! status: ${res.status} - ${errorText}`);
+        }
+
+        // 4. Parse response
+        console.log("Parsing JSON...");
+        const response = await res.json();
+        console.log("Parsed response:", response);
+
+        // 5. Check response structure
+        console.log("Response.success:", response.success);
+        console.log("Response.notifications:", response.notifications);
+        console.log(
+          "Notifications length:",
+          response.notifications?.length || 0
+        );
+
+        // 6. Set notifications
+        if (response.success && response.notifications) {
+          console.log("Setting notifications from API");
+          setNotifications(
+            response.notifications.length > 0
+              ? response.notifications
+              : dummyNotifications
+          );
+        } else {
+          console.log("API response invalid, using dummy data");
+          setNotifications(dummyNotifications);
+        }
+      } catch (err) {
+        console.error("=== FETCH ERROR ===");
+        console.error("Error details:", err);
+        console.error("Error message:", err.message);
+        console.error("Setting dummy notifications as fallback");
+        setNotifications(dummyNotifications);
+      }
+
+      console.log("=== END FETCH DEBUG ===");
+    };
+
+    fetchNotifications();
+  }, []);
+  useEffect(() => {
+    console.log("User ID:", user?.id);
+    console.log("Notifications:", notifications);
+  }, [user?.id, notifications]);
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,22 +124,56 @@ const CreatorDashboard = () => {
     if (showNotifications) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showNotifications]);
 
-  const handleMarkAsRead = (notificationId) => {
-    if (notificationId === "all") {
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
+  // Mark notifications as read
+  const handleMarkAsRead = async (notificationId) => {
+    try {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
 
-    } else {
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === notificationId ? { ...n, is_read: true } : n))
+      if (!token) {
+        console.error("No auth token found");
+        return;
+      }
 
-      );
+      if (notificationId === "all") {
+        const res = await fetch(`${API_URL}/notifications/mark-all-read`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
+        if (res.ok) {
+          setNotifications((prev) =>
+            prev.map((n) => ({ ...n, is_read: true }))
+          );
+        }
+      } else {
+        const res = await fetch(
+          `${API_URL}/notifications/${notificationId}/read`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (res.ok) {
+          setNotifications((prev) =>
+            prev.map((n) =>
+              n.id === notificationId ? { ...n, is_read: true } : n
+            )
+          );
+        }
+      }
+    } catch (err) {
+      console.error("Error marking notification as read:", err);
     }
   };
 
@@ -66,8 +183,8 @@ const CreatorDashboard = () => {
     {
       id: 1,
       title: "2 Upcoming",
-      start: new Date(2025, 8, 10, 9, 0), // Sept 10, 9 AM
-      end: new Date(2025, 8, 10, 11, 0), // Sept 10, 11 AM
+      start: new Date(2025, 8, 10, 9, 0),
+      end: new Date(2025, 8, 10, 11, 0),
     },
     {
       id: 2,
@@ -80,7 +197,6 @@ const CreatorDashboard = () => {
   return (
     <div className="flex flex-col ">
       {/* HEADER */}
-
       <header className="px-12 pt-4 py-8 ">
         <div className="flex items-center justify-between">
           <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
@@ -100,20 +216,19 @@ const CreatorDashboard = () => {
                   className="w-5 cursor-pointer"
                 />
               </div>
+              {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
-                    ? 'bg-blue-100 hover:bg-blue-200 active:bg-blue-300'
-                    : 'hover:bg-gray-100 active:bg-gray-200'
-                    }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
+                    showNotifications
+                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                      : "hover:bg-gray-100 active:bg-gray-200"
+                  }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
-                    if (!showNotifications) {
-                      setHasOpenedDropdown(true);
-                    }
+                    if (!showNotifications) setHasOpenedDropdown(true);
                   }}
                 >
-                  {/* <img src={bell} alt="Notifications" className="w-5 " /> */}
                   {showNotifications ? (
                     <BellSolid className="w-5 h-5 text-blue-600" />
                   ) : (
@@ -134,6 +249,8 @@ const CreatorDashboard = () => {
                 )}
               </div>
             </div>
+
+            {/* Profile */}
             <div className="flex items-center gap-4">
               {user?.profile_pic ? (
                 <img
@@ -162,15 +279,10 @@ const CreatorDashboard = () => {
       <div className="flex flex-1 lg:flex-col xl:flex-row w-full  xl:border-none gap-8  ">
         {/* LEFT COLUMN */}
         <div className="flex flex-col flex-[0.7]  xl:bg-white gap-8 ">
-          {/* Subscription Banner */}
           {!isSubscribed && <SubscriptionBanner />}
-
-          {/* Calendar */}
           <div className="flex-1 min-h-[600px]">
             <CalendarView events={demoEvents} />
           </div>
-
-          {/* Blue div at bottom */}
           <div className="bg-blue-200 h-72 rounded-4xl flex-shrink-0"></div>
         </div>
 

@@ -48,6 +48,19 @@ const BookingManagement = () => {
   const formatDate = (dateString) => {
     return dayjs(dateString).format("MMM D");
   };
+
+  const isOngoing = (booking) => {
+    const now = dayjs();
+    const bookingDate = dayjs(booking.booking_date);
+
+    if (!booking.start_time || !booking.end_time) return false;
+
+    const start = dayjs(`${booking.booking_date}T${booking.start_time}`);
+    const end = dayjs(`${booking.booking_date}T${booking.end_time}`);
+
+    return now.isAfter(start) && now.isBefore(end);
+  };
+
   // Function to fetch bookings
   const fetchBookings = async () => {
     if (!user?.user_id) return;
@@ -119,7 +132,9 @@ const BookingManagement = () => {
 
     const matchesTab =
       selectedTab === "All" ||
-      booking.status.toLowerCase() === selectedTab.toLowerCase();
+      (selectedTab === "Ongoing" && isOngoing(booking)) ||
+      (selectedTab !== "Ongoing" &&
+        booking.status.toLowerCase() === selectedTab.toLowerCase());
 
     return matchesSearch && matchesTab;
   });
@@ -129,30 +144,6 @@ const BookingManagement = () => {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedBookings = filteredBookings.slice(startIndex, endIndex);
-
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "confirmed":
-        return "bg-[#EAFFE7] text-[#27661E]";
-      case "cancelled":
-        return "bg-red-100 text-red-700";
-      case "pending":
-        return "bg-yellow-100 text-yellow-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
-
-  const getPaymentStatusColor = (paymentStatus) => {
-    switch (paymentStatus?.toLowerCase()) {
-      case "paid (offline)":
-        return "bg-[#EAFFE7] text-[#27661E]";
-      case "unpaid":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
 
   // Function to format date and time
   const formatDateTime = (createdAt, startTime, endTime) => {
@@ -173,47 +164,6 @@ const BookingManagement = () => {
     });
 
     return `${startFormatted} - ${endFormatted}`;
-  };
-
-  // Function to update booking status
-  const updateBookingStatus = async (bookingId, newStatus) => {
-    try {
-      setUpdatingStatus(true);
-
-      const response = await axios.patch(
-        `${API_URL}/booking/${bookingId}/status`,
-        { status: newStatus },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (response.status === 200) {
-        setBookings((prevBookings) =>
-          prevBookings.map((booking) =>
-            booking.booking_id === bookingId
-              ? { ...booking, status: newStatus }
-              : booking
-          )
-        );
-
-        toast.success(`Booking status updated to ${newStatus}`);
-      }
-    } catch (error) {
-      console.error("Error updating booking status:", error);
-
-      if (error.response?.status === 500) {
-        await fetchBookings();
-      }
-
-      toast.error("Failed to update booking status. Please try again.");
-    } finally {
-      setUpdatingStatus(false);
-      setOpenDropdownId(null);
-    }
   };
 
   const toggleDropdown = (id) => {
@@ -274,21 +224,25 @@ const BookingManagement = () => {
                 <div className="flex justify-between">
                   {/* Tab Navigation */}
                   <div className="flex   bg-gray-50  rounded-lg w-fit p-2">
-                    {["All", "Confirmed", "Cancelled", "Completed"].map(
-                      (tab) => (
-                        <button
-                          key={tab}
-                          onClick={() => setSelectedTab(tab)}
-                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                            selectedTab === tab
-                              ? "bg-white text-black/80 shadow-sm/10"
-                              : "text-black/50 hover:text-black/70"
-                          }`}
-                        >
-                          {tab === "Confirmed" ? "Upcoming" : tab}
-                        </button>
-                      )
-                    )}
+                    {[
+                      "All",
+                      "Confirmed",
+                      "Ongoing",
+                      "Completed",
+                      "Cancelled",
+                    ].map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setSelectedTab(tab)}
+                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${
+                          selectedTab === tab
+                            ? "bg-white text-black/80 shadow-sm/10"
+                            : "text-black/50 hover:text-black/70"
+                        }`}
+                      >
+                        {tab === "Confirmed" ? "Upcoming" : tab}
+                      </button>
+                    ))}
                   </div>
                   {/* Search */}
                   <div className="relative h-fit">

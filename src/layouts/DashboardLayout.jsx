@@ -27,7 +27,49 @@ const DashboardLayout = ({ children }) => {
   const location = useLocation();
   const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
   const [isTasksExpanded, setIsTasksExpanded] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
   const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
+
+  // Function to fetch unread notification count
+  const fetchUnreadCount = async () => {
+    try {
+      const token =
+        localStorage.getItem("token") || sessionStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(`${API_URL}/notifications/unread-count`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUnreadCount(data.count);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching unread count:", error);
+    }
+  };
+
+  // Set up polling to check for new notifications
+  useEffect(() => {
+    fetchUnreadCount();
+
+    // Poll every 30 seconds for new notifications
+    const interval = setInterval(fetchUnreadCount, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Refresh count when location changes (navigation)
+  useEffect(() => {
+    fetchUnreadCount();
+  }, [location.pathname]);
+
   // Only redirect if the user is a first-login creator and on /owner root
   useEffect(() => {
     if (user?.is_first_login) {
@@ -91,8 +133,10 @@ const DashboardLayout = ({ children }) => {
       icon: Inbox,
       path: "/creator/messages",
       expandable: false,
+      badge: unreadCount, // Add badge count to inbox
     },
   ];
+
   useEffect(() => {
     console.log("DashboardLayout mounted");
     console.log("Current user:", user);
@@ -124,7 +168,7 @@ const DashboardLayout = ({ children }) => {
           </button>
 
           {item.isExpanded && (
-            <div className="relative ml-8 mt-1 space-y-1">
+            <div className="relative ml-8 mt-1 space-y-1 ">
               {/* Vertical line connecting to sub-items */}
               <div className="absolute left-2 top-0 bottom-0 w-px bg-gray-300"></div>
 
@@ -156,13 +200,29 @@ const DashboardLayout = ({ children }) => {
     return (
       <NavLink
         to={item.path}
+        onClick={() => {
+          // Refresh notification count when inbox is clicked
+          if (item.id === "messages") {
+            setTimeout(() => {
+              fetchUnreadCount();
+            }, 100);
+          }
+        }}
         className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group ${
+          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative ${
             isActive ? "bg-green-50 text-green-600" : " hover:bg-gray-100"
           }`
         }
       >
-        <Icon size={20} className="text-primary" />
+        <div className="relative">
+          <Icon size={20} className="text-primary" />
+          {/* Notification Badge */}
+          {item.badge > 0 && (
+            <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+              {item.badge > 99 ? "99+" : item.badge}
+            </div>
+          )}
+        </div>
         <span className="text-primary">{item.label}</span>
       </NavLink>
     );
