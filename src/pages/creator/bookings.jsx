@@ -235,11 +235,10 @@ const BookingManagement = () => {
                       <button
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
-                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                          selectedTab === tab
-                            ? "bg-white text-black/80 shadow-sm/10"
-                            : "text-black/50 hover:text-black/70"
-                        }`}
+                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
+                          ? "bg-white text-black/80 shadow-sm/10"
+                          : "text-black/50 hover:text-black/70"
+                          }`}
                       >
                         {tab === "Confirmed" ? "Upcoming" : tab}
                       </button>
@@ -283,18 +282,17 @@ const BookingManagement = () => {
                   return (
                     <div
                       key={booking.booking_id}
-                      className="py-6 mb-4 border rounded-xl border-gray-300 bg-white hover:bg-gray-50 transition"
+                      className="py-6 mb-4 border rounded-xl border-gray-300 bg-white  transition"
                     >
                       {/* Top Row */}
-                      <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between px-2">
                         <div className="grid grid-cols-[120px_240px_300px] gap-4">
                           {/* DAY NUMBER AND DAY OF WEEK */}
                           <div
-                            className={`text-center px-4 border-r border-gray-300 ${
-                              dayjs(booking.booking_date).isSame(dayjs(), "day")
-                                ? "text-[#3A81F3]"
-                                : "text-black/60"
-                            }`}
+                            className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
+                              ? "text-[#3A81F3]"
+                              : "text-black/60"
+                              }`}
                           >
                             <p className="text-xl">
                               {booking.day_of_week.slice(0, 3)}
@@ -334,11 +332,7 @@ const BookingManagement = () => {
                                   alt="Profile"
                                   className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
                                 />
-                                <img
-                                  src={`${API_URL}/${booking.traveler_profile_pic}`}
-                                  alt="Profile"
-                                  className="w-6 h-6 -ml-1 border-2 border-white rounded-full object-cover"
-                                />
+
                               </div>
                             ) : (
                               <User size={16} className="text-gray-400" />
@@ -353,25 +347,23 @@ const BookingManagement = () => {
                               isExpanded ? null : booking.booking_id
                             )
                           }
-                          className="flex items-center gap-2 px-2 py-1 rounded-md text-sm font-normal text-gray-600 hover:bg-gray-100"
+                          className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
                         >
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                       </div>
 
                       {/* Expanded Content (Sliding Section) */}
                       <div
-                        className={`transition-all duration-500 [cubic-bezier(0.4,0,0.2,1)] overflow-hidden ${
-                          isExpanded
-                            ? "max-h-[500px] opacity-100 mt-4"
-                            : "max-h-0 opacity-0"
-                        }`}
+                        className={`transition-all duration-500 [cubic-bezier(0.4,0,0.2,1)] overflow-hidden ${isExpanded
+                          ? "max-h-[500px] opacity-100 mt-4"
+                          : "max-h-0 opacity-0"
+                          }`}
                       >
                         <div className="border-t border-gray-200 pt-4 px-4 text-sm text-black/70 space-y-4">
                           {/* Traveler Details */}
@@ -450,11 +442,10 @@ const BookingManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
                     >
                       {page}
                     </button>

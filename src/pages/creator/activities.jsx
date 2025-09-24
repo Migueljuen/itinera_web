@@ -262,11 +262,10 @@ const ExperienceManagement = () => {
                       <button
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
-                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                          selectedTab === tab
+                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
                             ? "bg-white text-black/80 shadow-sm/10"
                             : "text-black/50 hover:text-black/70"
-                        }`}
+                          }`}
                       >
                         {tab}
                       </button>
@@ -279,22 +278,20 @@ const ExperienceManagement = () => {
                     <div className="flex bg-gray-50 rounded-lg p-1">
                       <button
                         onClick={() => setViewMode("card")}
-                        className={`p-2 rounded transition-colors ${
-                          viewMode === "card"
+                        className={`p-2 rounded transition-colors ${viewMode === "card"
                             ? "bg-white text-black/80 shadow-sm"
                             : "text-black/50 hover:text-black/70"
-                        }`}
+                          }`}
                         title="Card view"
                       >
                         <LayoutGrid size={16} />
                       </button>
                       <button
                         onClick={() => setViewMode("table")}
-                        className={`p-2 rounded transition-colors ${
-                          viewMode === "table"
+                        className={`p-2 rounded transition-colors ${viewMode === "table"
                             ? "bg-white text-black/80 shadow-sm"
                             : "text-black/50 hover:text-black/70"
-                        }`}
+                          }`}
                         title="Table view"
                       >
                         <List size={16} />
@@ -384,13 +381,12 @@ const ExperienceManagement = () => {
                         </div>
                         <div className="flex items-center gap-2">
                           <div
-                            className={`w-2 h-2 rounded-full ${
-                              item.status === "active"
+                            className={`w-2 h-2 rounded-full ${item.status === "active"
                                 ? "bg-green-500"
                                 : item.status === "inactive"
-                                ? "bg-red-500"
-                                : "bg-yellow-500"
-                            }`}
+                                  ? "bg-red-500"
+                                  : "bg-yellow-500"
+                              }`}
                           ></div>
                           <span className="text-sm capitalize text-black/70">
                             {item.status}
@@ -588,11 +584,10 @@ const ExperienceManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
                           ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
                           : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       {page}
                     </button>

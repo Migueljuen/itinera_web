@@ -10,17 +10,26 @@ import CalendarView from "../../components/Calendar";
 import RecentBooking from "../../components/RecentBooking";
 import dummyNotifications from "../../constants/dummyNotif";
 import NotificationDropdown from "../../components/NotificationDropdown";
-
+import toast, { Toaster } from "react-hot-toast";
 import { BellIcon as BellOutline } from "@heroicons/react/24/outline";
 import { BellIcon as BellSolid } from "@heroicons/react/24/solid";
+import axios from "axios";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const CreatorDashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const [hasOpenedDropdown, setHasOpenedDropdown] = useState(false);
   const notificationRef = useRef(null);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(false);
   const isSubscribed = 0;
 
   useEffect(() => {
@@ -110,6 +119,7 @@ const CreatorDashboard = () => {
     console.log("User ID:", user?.id);
     console.log("Notifications:", notifications);
   }, [user?.id, notifications]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -179,20 +189,56 @@ const CreatorDashboard = () => {
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
-  const demoEvents = [
-    {
-      id: 1,
-      title: "2 Upcoming",
-      start: new Date(2025, 8, 10, 9, 0),
-      end: new Date(2025, 8, 10, 11, 0),
-    },
-    {
-      id: 2,
-      title: "1 Upcoming",
-      start: new Date(2025, 8, 12, 12, 0),
-      end: new Date(2025, 8, 12, 13, 0),
-    },
-  ];
+  const fetchBookings = async () => {
+    if (!user?.user_id) return;
+
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${API_URL}/booking/creator/upcoming/${user.user_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      setBookings(response.data.bookings || []);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      setBookings([]);
+      if (error.response?.status !== 404) {
+        toast.error("Failed to fetch bookings");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.user_id) {
+      fetchBookings();
+    }
+  }, [user]);
+
+  const confirmedEvents = bookings.map((b) => {
+    const start = dayjs.utc(b.booking_date).tz("Asia/Manila").hour(
+      parseInt(b.start_time.split(":")[0])
+    ).minute(parseInt(b.start_time.split(":")[1]));
+
+    const end = dayjs.utc(b.booking_date).tz("Asia/Manila").hour(
+      parseInt(b.end_time.split(":")[0])
+    ).minute(parseInt(b.end_time.split(":")[1]));
+
+    return {
+      id: b.booking_id,
+      title: b.experience_title || "Upcoming",
+      start: start.toDate(),
+      end: end.toDate(),
+    };
+  });
+
 
   return (
     <div className="flex flex-col ">
@@ -219,11 +265,10 @@ const CreatorDashboard = () => {
               {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
-                    showNotifications
-                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                      : "hover:bg-gray-100 active:bg-gray-200"
-                  }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
+                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                    : "hover:bg-gray-100 active:bg-gray-200"
+                    }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -281,7 +326,7 @@ const CreatorDashboard = () => {
         <div className="flex flex-col flex-[0.7]  xl:bg-white gap-8 ">
           {!isSubscribed && <SubscriptionBanner />}
           <div className="flex-1 min-h-[600px]">
-            <CalendarView events={demoEvents} />
+            <CalendarView events={confirmedEvents} />
           </div>
           <div className="bg-blue-200 h-72 rounded-4xl flex-shrink-0"></div>
         </div>
