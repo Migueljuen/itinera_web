@@ -133,9 +133,10 @@ const BookingManagement = () => {
 
     const matchesTab =
       selectedTab === "All" ||
-      (selectedTab === "Ongoing" && isOngoing(booking)) ||
+      (selectedTab === "Ongoing" &&
+        (booking.status?.toLowerCase() === "ongoing" || isOngoing(booking))) ||
       (selectedTab !== "Ongoing" &&
-        booking.status.toLowerCase() === selectedTab.toLowerCase());
+        booking.status?.toLowerCase() === selectedTab.toLowerCase());
 
     return matchesSearch && matchesTab;
   });
@@ -171,16 +172,14 @@ const BookingManagement = () => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  const getTabCounts = () => {
-    const counts = {
-      All: bookings.length,
-      Confirmed: bookings.filter((b) => b.status?.toLowerCase() === "confirmed")
-        .length,
-      Cancelled: bookings.filter((b) => b.status?.toLowerCase() === "cancelled")
-        .length,
-    };
-    return counts;
-  };
+  const getTabCounts = () => ({
+    All: bookings.length,
+    Confirmed: bookings.filter(b => b.status?.toLowerCase() === "confirmed").length,
+    Ongoing: bookings.filter(b => isOngoing(b) || b.status?.toLowerCase() === "ongoing").length,
+    Completed: bookings.filter(b => b.status?.toLowerCase() === "completed").length,
+    Cancelled: bookings.filter(b => b.status?.toLowerCase() === "cancelled").length,
+  });
+
 
   const tabCounts = getTabCounts();
 
@@ -360,25 +359,25 @@ const BookingManagement = () => {
 
                       {/* Expanded Content (Sliding Section) */}
                       <div
-                        className={`transition-all duration-500 [cubic-bezier(0.4,0,0.2,1)] overflow-hidden ${isExpanded
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
                           ? "max-h-[500px] opacity-100 mt-4"
                           : "max-h-0 opacity-0"
                           }`}
                       >
-                        <div className="border-t border-gray-200 pt-4 px-4 text-sm text-black/70 space-y-4">
+                        <div className="border-t border-gray-200 pt-4 px-8 text-sm text-black/70 space-y-4 flex justify-between">
                           {/* Traveler Details */}
                           <div>
                             <h4 className="font-semibold mb-1">
                               Traveler Details
                             </h4>
-                            <p>
+                            <p className="text-black/60">
                               Full Name: {booking.traveler_first_name}{" "}
                               {booking.traveler_last_name}
                             </p>
-                            <p>
+                            <p className="text-black/60">
                               Mobile Number: {booking.traveler_mobile || "N/A"}
                             </p>
-                            <p>Email: {booking.traveler_email}</p>
+                            <p className="text-black/60">Email: {booking.traveler_email}</p>
                           </div>
 
                           {/* Booking Details */}
@@ -386,24 +385,29 @@ const BookingManagement = () => {
                             <h4 className="font-semibold mb-1">
                               Booking Details
                             </h4>
-                            <p>Booking ID: {booking.booking_id}</p>
+                            <p className="text-black/60">Booking ID: 0000{booking.booking_id}</p>
                           </div>
 
                           {/* Experience Details */}
                           <div>
                             <h4 className="font-semibold mb-1">
-                              Experience Details
+                              Activity booked
                             </h4>
-                            <p>
-                              Location: {booking.destination_name},{" "}
-                              {booking.destination_city}
+                            <p className="text-black/60">
+
+                              {booking.experience_title},
                             </p>
+                            <p className="text-black/60">
+
+                              {booking.destination_name}
+                            </p>
+
                           </div>
 
                           {/* Actions */}
                           <div>
-                            <h4 className="font-semibold mb-1">Actions</h4>
-                            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+
+                            <button className="px-4 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75 ">
                               Contact Traveler
                             </button>
                           </div>
