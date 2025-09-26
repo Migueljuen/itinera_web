@@ -109,16 +109,15 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
           </div>
         ) : (
           <div className="p-4">
-            {notifications.map((notification, index) => (
+            {notifications.map((notification) => (
               <div
                 key={notification.notification_id}
-                className={`bg-white rounded-xl p-4 mb-3 cursor-pointer hover:bg-gray-50 transition-colors ${
+                className={`bg-white rounded-xl p-4 mb-3 hover:bg-gray-50 transition-colors ${
                   !notification.is_read ? "border-l-4 border-blue-600" : ""
                 }`}
                 style={{
                   boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
                 }}
-                onClick={() => onMarkAsRead && onMarkAsRead(notification.id)}
               >
                 <div className="flex">
                   {/* Icon */}
@@ -153,9 +152,56 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
                         )}
                       </div>
                     </div>
-                    <p className="text-gray-500 text-sm leading-5 line-clamp-2">
+                    <p className="text-gray-500 text-sm leading-5 mb-2">
                       {notification.description}
                     </p>
+
+                    {/*  Show buttons only for attendance confirmation */}
+                    {notification.type === "attendance_confirmation" && (
+                      <div className="flex gap-2 mt-2">
+                        <button
+                          className="font-medium px-12 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75"
+                          onClick={() =>
+                            handleAttendanceResponse(
+                              notification.metadata.booking_id,
+                              true
+                            )
+                          }
+                        >
+                          Yes
+                        </button>
+
+                        {notification.title ===
+                          "Confirm Traveler Attendance" && (
+                          <button
+                            className="font-medium px-12 py-2 bg-gray-100 text-black/80 rounded-lg  hover:bg-gray-200"
+                            onClick={() =>
+                              handleAttendanceResponse(
+                                notification.metadata.booking_id,
+                                false
+                              )
+                            }
+                          >
+                            Still Waiting
+                          </button>
+                        )}
+
+                        {notification.title !==
+                          "Confirm Traveler Attendance" && (
+                          <button
+                            className="font-medium px-12 py-2 bg-gray-100 text-black/80 rounded-lg  hover:bg-gray-200"
+                            onClick={() =>
+                              handleAttendanceResponse(
+                                notification.metadata.booking_id,
+                                false
+                              )
+                            }
+                          >
+                            No
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
