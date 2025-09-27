@@ -17,14 +17,38 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import axios from "axios";
+import API_URL from "../constants/api";
 const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
   const [toggleDropdown, setToggleDropdown] = useState(false);
+  const [attendanceResponses, setAttendanceResponses] = useState({});
+
   const formatTime = (timeStr) => {
     return formatDistanceToNow(new Date(timeStr), { addSuffix: true }).replace(
       /^about\s/,
       ""
     ); // remove leading "about"
+  };
+  console.log("Notification objectasd:", notifications);
+  const handleAttendanceResponse = async (bookingId, responseType) => {
+    try {
+      await axios.post(`${API_URL}/booking/${bookingId}/attendance`, {
+        response: responseType,
+      });
+
+      // Update local state to show text instead of buttons
+      setAttendanceResponses((prev) => ({
+        ...prev,
+        [bookingId]: responseType, // store response per booking
+      }));
+
+      console.log(
+        `✅ Sent attendance response: ${responseType} for booking ${bookingId}`
+      );
+    } catch (err) {
+      console.error("❌ Failed to send attendance response:", err);
+    }
   };
 
   const getIcon = (iconName) => {
@@ -159,46 +183,62 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
                     {/*  Show buttons only for attendance confirmation */}
                     {notification.type === "attendance_confirmation" && (
                       <div className="flex gap-2 mt-2">
-                        <button
-                          className="font-medium px-12 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75"
-                          onClick={() =>
-                            handleAttendanceResponse(
-                              notification.metadata.booking_id,
-                              true
-                            )
-                          }
-                        >
-                          Yes
-                        </button>
+                        {notification.traveler_attendance ? (
+                          <p className="text-sm font-medium text-gray-600">
+                            {notification.traveler_attendance === "yes" &&
+                              "Traveler present"}
+                            {notification.traveler_attendance === "waiting" &&
+                              "Still waiting"}
+                            {notification.traveler_attendance === "no" &&
+                              "Traveler absent"}
+                          </p>
+                        ) : (
+                          <>
+                            {/* YES */}
+                            <button
+                              className="font-medium text-sm px-12 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75"
+                              onClick={() =>
+                                handleAttendanceResponse(
+                                  notification.booking_id,
+                                  "yes"
+                                )
+                              }
+                            >
+                              Yes
+                            </button>
 
-                        {notification.title ===
-                          "Confirm Traveler Attendance" && (
-                          <button
-                            className="font-medium px-12 py-2 bg-gray-100 text-black/80 rounded-lg  hover:bg-gray-200"
-                            onClick={() =>
-                              handleAttendanceResponse(
-                                notification.metadata.booking_id,
-                                false
-                              )
-                            }
-                          >
-                            Still Waiting
-                          </button>
-                        )}
+                            {/* STILL WAITING (only if title matches) */}
+                            {notification.title ===
+                              "Confirm Traveler Attendance" && (
+                              <button
+                                className="font-medium text-sm px-12 py-2 bg-gray-100 text-black/80 rounded-lg hover:bg-gray-200"
+                                onClick={() =>
+                                  handleAttendanceResponse(
+                                    notification.booking_id,
+                                    "waiting"
+                                  )
+                                }
+                              >
+                                Still Waiting
+                              </button>
+                            )}
 
-                        {notification.title !==
-                          "Confirm Traveler Attendance" && (
-                          <button
-                            className="font-medium px-12 py-2 bg-gray-100 text-black/80 rounded-lg  hover:bg-gray-200"
-                            onClick={() =>
-                              handleAttendanceResponse(
-                                notification.metadata.booking_id,
-                                false
-                              )
-                            }
-                          >
-                            No
-                          </button>
+                            {/* NO (only if title is different) */}
+                            {notification.title !==
+                              "Confirm Traveler Attendance" && (
+                              <button
+                                className="font-medium text-sm px-12 py-2 bg-gray-100 text-black/80 rounded-lg hover:bg-gray-200"
+                                onClick={() =>
+                                  handleAttendanceResponse(
+                                    notification.booking_id,
+                                    "no"
+                                  )
+                                }
+                              >
+                                No
+                              </button>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
