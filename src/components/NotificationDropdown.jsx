@@ -2,9 +2,6 @@ import React, { useState } from "react";
 import {
   Calendar,
   Star,
-  Activity,
-  Circle,
-  Menu,
   CheckCircle,
   Check,
   MoreHorizontal,
@@ -19,37 +16,36 @@ import {
 import { formatDistanceToNow } from "date-fns";
 import axios from "axios";
 import API_URL from "../constants/api";
-const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
+
+const NotificationDropdown = ({ notifications, setNotifications, onClose, onMarkAsRead }) => {
   const unreadCount = notifications.filter((n) => !n.is_read).length;
   const [toggleDropdown, setToggleDropdown] = useState(false);
   const [attendanceResponses, setAttendanceResponses] = useState({});
 
   const formatTime = (timeStr) => {
-    return formatDistanceToNow(new Date(timeStr), { addSuffix: true }).replace(
-      /^about\s/,
-      ""
-    ); // remove leading "about"
+    return formatDistanceToNow(new Date(timeStr), { addSuffix: true }).replace(/^about\s/, "");
   };
-  console.log("Notification objectasd:", notifications);
-  const handleAttendanceResponse = async (bookingId, responseType) => {
+  const handleAttendanceResponse = async (bookingId, notificationId, responseType) => {
     try {
-      await axios.post(`${API_URL}/booking/${bookingId}/attendance`, {
+      await axios.put(`${API_URL}/booking/${bookingId}/attendance/${notificationId}`, {
         response: responseType,
       });
 
-      // Update local state to show text instead of buttons
+      // update local button state
       setAttendanceResponses((prev) => ({
         ...prev,
-        [bookingId]: responseType, // store response per booking
+        [bookingId]: responseType,
       }));
 
-      console.log(
-        `✅ Sent attendance response: ${responseType} for booking ${bookingId}`
-      );
+      // ✅ update parent notifications state
+      if (typeof onUpdateNotification === "function") {
+        onUpdateNotification(notificationId, responseType);
+      }
     } catch (err) {
       console.error("❌ Failed to send attendance response:", err);
     }
   };
+
 
   const getIcon = (iconName) => {
     const iconMap = {
@@ -69,27 +65,22 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
   };
 
   return (
-    <div className="absolute h-[42rem] right-0 mt-2  w-[32rem] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-auto">
+    <div className="absolute h-[42rem] right-0 mt-2 w-[32rem] bg-white rounded-2xl shadow-2xl border border-gray-200 z-50 overflow-auto">
       {/* Header */}
-      <div className="p-6 relative flex justify-between ">
+      <div className="p-6 relative flex justify-between">
         <div>
-          <div className="flex justify-between items-center mb-2 gap-4 ">
-            <h3 className="text-xl font-semibold text-black/80 ">
-              Notifications
-            </h3>
-          </div>
+          <h3 className="text-xl font-semibold text-black/80">Notifications</h3>
           <p className="text-gray-400 text-sm">
-            {unreadCount > 0
-              ? `${unreadCount} new notifications`
-              : "All caught up"}
+            {unreadCount > 0 ? `${unreadCount} new notifications` : "All caught up"}
           </p>
         </div>
         <button
           onClick={() => setToggleDropdown(!toggleDropdown)}
-          className=" p-1 text-black/60 self-start hover:text-black/40 rounded-full hover:bg-gray-200 active:bg-gray-300"
+          className="p-1 text-black/60 self-start hover:text-black/40 rounded-full hover:bg-gray-200 active:bg-gray-300"
         >
           <MoreHorizontal size={18} />
         </button>
+
         {/* Dropdown */}
         {toggleDropdown && (
           <div className="absolute right-5 mt-8 w-fit bg-white rounded-md z-50 shadow-[0_0_10px_rgba(0,0,0,0.2)]">
@@ -108,41 +99,32 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
       </div>
 
       {/* Notifications List */}
-      <div className=" overflow-y-auto">
+      <div className="overflow-y-auto">
         {notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 512 512"
-                className="text-gray-400"
-              >
+              <svg width="24" height="24" viewBox="0 0 512 512" className="text-gray-400">
                 <path
                   fill="currentColor"
                   d="M424 80H88a56.06 56.06 0 00-56 56v240a56.06 56.06 0 0056 56h336a56.06 56.06 0 0056-56V136a56.06 56.06 0 00-56-56zM424 96c13.23 0 24 10.77 24 24v16L256 272 64 136v-16c0-13.23 10.77-24 24-24z"
                 />
               </svg>
             </div>
-            <p className="text-gray-400 font-medium text-lg">
-              No notifications
-            </p>
-            <p className="text-gray-400 text-sm mt-2">
-              You'll see your updates here
-            </p>
+            <p className="text-gray-400 font-medium text-lg">No notifications</p>
+            <p className="text-gray-400 text-sm mt-2">You'll see your updates here</p>
           </div>
         ) : (
           <div className="p-4">
             {notifications.map((notification) => (
+
               <div
-                key={notification.notification_id}
-                className={`bg-white rounded-xl p-4 mb-3 hover:bg-gray-50 transition-colors ${
-                  !notification.is_read ? "border-l-4 border-blue-600" : ""
-                }`}
-                style={{
-                  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)",
-                }}
-              >
+                key={notification.id}
+                className={`bg-white rounded-xl p-4 mb-3 hover:bg-gray-50 transition-colors ${!notification.is_read ? "border-l-4 border-blue-600" : ""
+                  }`}
+                style={{ boxShadow: "0 2px 8px rgba(0, 0, 0, 0.06)" }}
+              >     {console.log("Notification type:", notification.type)}
+                {console.log("Rendering notification:", notification)
+                }
                 <div className="flex">
                   {/* Icon */}
                   <div
@@ -159,11 +141,8 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-start mb-1">
                       <h4
-                        className={`font-semibold text-base truncate mr-2 ${
-                          !notification.is_read
-                            ? "text-black/90"
-                            : "text-black/70"
-                        }`}
+                        className={`font-semibold text-base truncate mr-2 ${!notification.is_read ? "text-black/90" : "text-black/70"
+                          }`}
                       >
                         {notification.title}
                       </h4>
@@ -180,68 +159,65 @@ const NotificationDropdown = ({ notifications, onClose, onMarkAsRead }) => {
                       {notification.description}
                     </p>
 
-                    {/*  Show buttons only for attendance confirmation */}
+                    {/* Attendance confirmation */}
                     {notification.type === "attendance_confirmation" && (
                       <div className="flex gap-2 mt-2">
-                        {notification.traveler_attendance ? (
-                          <p className="text-sm font-medium text-gray-600">
-                            {notification.traveler_attendance === "yes" &&
-                              "Traveler present"}
-                            {notification.traveler_attendance === "waiting" &&
-                              "Still waiting"}
-                            {notification.traveler_attendance === "no" &&
-                              "Traveler absent"}
-                          </p>
-                        ) : (
+                        {notification.is_read === 0 && notification.traveler_attendance === "Waiting" ? (
                           <>
-                            {/* YES */}
-                            <button
-                              className="font-medium text-sm px-12 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75"
-                              onClick={() =>
-                                handleAttendanceResponse(
-                                  notification.booking_id,
-                                  "yes"
-                                )
-                              }
-                            >
-                              Yes
-                            </button>
-
-                            {/* STILL WAITING (only if title matches) */}
-                            {notification.title ===
-                              "Confirm Traveler Attendance" && (
-                              <button
-                                className="font-medium text-sm px-12 py-2 bg-gray-100 text-black/80 rounded-lg hover:bg-gray-200"
-                                onClick={() =>
-                                  handleAttendanceResponse(
-                                    notification.booking_id,
-                                    "waiting"
-                                  )
-                                }
-                              >
-                                Still Waiting
-                              </button>
+                            {notification.title === "Confirm Traveler Attendance" && (
+                              <>
+                                <button
+                                  className="font-medium text-sm px-12 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75"
+                                  onClick={() =>
+                                    handleAttendanceResponse(notification.booking_id, notification.id, "yes")
+                                  }
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  className="font-medium text-sm px-12 py-2 bg-gray-100 text-black/80 rounded-lg hover:bg-gray-200"
+                                  onClick={() =>
+                                    handleAttendanceResponse(notification.booking_id, notification.id, "waiting")
+                                  }
+                                >
+                                  Still Waiting
+                                </button>
+                              </>
                             )}
 
-                            {/* NO (only if title is different) */}
-                            {notification.title !==
-                              "Confirm Traveler Attendance" && (
-                              <button
-                                className="font-medium text-sm px-12 py-2 bg-gray-100 text-black/80 rounded-lg hover:bg-gray-200"
-                                onClick={() =>
-                                  handleAttendanceResponse(
-                                    notification.booking_id,
-                                    "no"
-                                  )
-                                }
-                              >
-                                No
-                              </button>
+                            {notification.title === "Still waiting for traveler?" && (
+                              <>
+                                <button
+                                  className="font-medium text-sm px-12 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75"
+                                  onClick={() =>
+                                    handleAttendanceResponse(notification.booking_id, notification.id, "yes")
+                                  }
+                                >
+                                  Yes
+                                </button>
+                                <button
+                                  className="font-medium text-sm px-12 py-2 bg-gray-100 text-black/80 rounded-lg hover:bg-gray-200"
+                                  onClick={() =>
+                                    handleAttendanceResponse(notification.booking_id, notification.id, "no")
+                                  }
+                                >
+                                  No
+                                </button>
+                              </>
                             )}
                           </>
+                        ) : (
+                          <p className="text-sm font-medium text-gray-600">
+                            {notification.traveler_attendance === "Present" && "Traveler present"}
+                            {notification.traveler_attendance === "Waiting" && "Still waiting for response"}
+                            {notification.traveler_attendance === "Absent" && "Traveler absent"}
+                            {notification.traveler_attendance === "Pending" && "Pending response"}
+                          </p>
                         )}
                       </div>
                     )}
+
+
                   </div>
                 </div>
               </div>

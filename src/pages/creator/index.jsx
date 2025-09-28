@@ -187,6 +187,18 @@ const CreatorDashboard = () => {
     }
   };
 
+  // Handle attendance response update
+  const handleUpdateNotification = (notificationId, responseType) => {
+    setNotifications((prev) =>
+      prev.map((n) =>
+        n.id === notificationId
+          ? { ...n, is_read: true, traveler_attendance: responseType }
+          : n
+      )
+    );
+  };
+
+
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const fetchBookings = async () => {
@@ -290,7 +302,10 @@ const CreatorDashboard = () => {
                     notifications={notifications}
                     onClose={() => setShowNotifications(false)}
                     onMarkAsRead={handleMarkAsRead}
+                    onUpdateNotification={handleUpdateNotification}   // <-- this
                   />
+
+
                 )}
               </div>
             </div>
