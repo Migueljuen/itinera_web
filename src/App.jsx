@@ -1,4 +1,3 @@
-//app.jsx
 import {
   BrowserRouter as Router,
   Routes,
@@ -15,6 +14,8 @@ import BookingManagement from "./pages/creator/bookings";
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
+import ExperienceEditForm from "./pages/creator/editExperience/ExperienceEditForm";
+
 export default function App() {
   return (
     <Router>
@@ -44,7 +45,8 @@ export default function App() {
             </PublicRoute>
           }
         />
-        // Creator Routes - Protected
+
+        {/* Creator Routes - Protected */}
         <Route
           path="/owner/create"
           element={
@@ -53,6 +55,17 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
+        {/* Edit Experience Route */}
+        <Route
+          path="/owner/edit/:id"
+          element={
+            <ProtectedRoute allowedRoles={["Creator"]}>
+              <ExperienceEditForm />
+            </ProtectedRoute>
+          }
+        />
+
         <Route
           path="/owner"
           element={
@@ -66,6 +79,7 @@ export default function App() {
           <Route path="activities" element={<CreatorExperiences />} />
           <Route path="bookings" element={<BookingManagement />} />
         </Route>
+
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

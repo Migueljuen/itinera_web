@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Loader2, CheckCircle2, Circle } from "lucide-react";
 import API_URL from "../../../../constants/api";
 import { motion } from "framer-motion";
-const TagCard = ({ tag, isSelected, onToggle }) => (
+const TagCard = ({ tag, isSelected, onToggle, isEditMode = false }) => (
   <button
     onClick={() => onToggle(tag.tag_id)}
     className={`
@@ -208,6 +208,10 @@ const Step1Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
         >
           Continue
         </button>
+
+        {/* <button onClick={onNext}>
+          {isEditMode ? "Update Tags" : "Continue"}
+        </button> */}
 
       </div>
     </>

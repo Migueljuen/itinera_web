@@ -155,18 +155,7 @@ const ExperienceManagement = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedExperiences = filteredExperiences.slice(startIndex, endIndex);
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "active":
-        return "bg-[#EAFFE7] text-[#27661E] ";
-      case "draft":
-        return "bg-yellow-100 text-yellow-700";
-      case "inactive":
-        return "bg-red-100 text-red-700";
-      default:
-        return "bg-gray-100 text-gray-700";
-    }
-  };
+
 
   // Function to update experience status
   const updateExperienceStatus = async (experienceId, newStatus) => {
@@ -233,7 +222,7 @@ const ExperienceManagement = () => {
               <h1 className="text-2xl font-semibold text-gray-900">
                 Activity Management
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-black/60 mt-1">
                 Manage your experiential offerings
               </p>
             </div>
@@ -263,8 +252,8 @@ const ExperienceManagement = () => {
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
                         className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
-                            ? "bg-white text-black/80 shadow-sm/10"
-                            : "text-black/50 hover:text-black/70"
+                          ? "bg-white text-black/80 shadow-sm/10"
+                          : "text-black/50 hover:text-black/70"
                           }`}
                       >
                         {tab}
@@ -279,8 +268,8 @@ const ExperienceManagement = () => {
                       <button
                         onClick={() => setViewMode("card")}
                         className={`p-2 rounded transition-colors ${viewMode === "card"
-                            ? "bg-white text-black/80 shadow-sm"
-                            : "text-black/50 hover:text-black/70"
+                          ? "bg-white text-black/80 shadow-sm"
+                          : "text-black/50 hover:text-black/70"
                           }`}
                         title="Card view"
                       >
@@ -289,8 +278,8 @@ const ExperienceManagement = () => {
                       <button
                         onClick={() => setViewMode("table")}
                         className={`p-2 rounded transition-colors ${viewMode === "table"
-                            ? "bg-white text-black/80 shadow-sm"
-                            : "text-black/50 hover:text-black/70"
+                          ? "bg-white text-black/80 shadow-sm"
+                          : "text-black/50 hover:text-black/70"
                           }`}
                         title="Table view"
                       >
@@ -382,10 +371,10 @@ const ExperienceManagement = () => {
                         <div className="flex items-center gap-2">
                           <div
                             className={`w-2 h-2 rounded-full ${item.status === "active"
-                                ? "bg-green-500"
-                                : item.status === "inactive"
-                                  ? "bg-red-500"
-                                  : "bg-yellow-500"
+                              ? "bg-green-500"
+                              : item.status === "inactive"
+                                ? "bg-gray-500"
+                                : "bg-yellow-500"
                               }`}
                           ></div>
                           <span className="text-sm capitalize text-black/70">
@@ -405,39 +394,45 @@ const ExperienceManagement = () => {
                       </button>
 
                       {/* Dropdown */}
+
                       {openDropdownId === item.experience_id && (
-                        <div className="absolute top-full mt-1 w-32 bg-white shadow-lg/5 rounded-md z-50">
+                        <div className="absolute top-full mt-1 w-60 bg-white shadow-lg/10 rounded-md z-50 pb-4">
+                          <p className="text-sm p-4 font-medium text-black/80">General</p>
+
+                          {/* Edit button with navigation */}
                           <button
-                            onClick={() => console.log("Edit activity")}
-                            className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100"
+                            onClick={() => {
+                              navigate(`/owner/edit/${item.experience_id}`);
+                              setOpenDropdownId(null); // Close dropdown after click
+                            }}
+                            className="block w-full text-left px-4 py-1 text-sm text-black/60 hover:bg-gray-100"
                           >
                             Edit
                           </button>
+
+                          {/* View Details button */}
                           <button
-                            onClick={() => console.log("View details")}
-                            className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100"
+                            onClick={() => {
+                              console.log("View details");
+                              setOpenDropdownId(null); // Close dropdown after click
+                            }}
+                            className="block w-full text-left px-4 py-1 text-sm text-black/60 hover:bg-gray-100"
                           >
                             View Details
                           </button>
-                          <button
-                            onClick={() => console.log("Duplicate")}
-                            className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100"
-                          >
-                            Duplicate
-                          </button>
+
                           <div className="border-t border-gray-200">
+                            <p className="text-sm p-4 font-medium text-black/80">Status</p>
                             {["active", "inactive", "draft"].map((status) => (
                               <button
                                 key={status}
-                                onClick={() =>
-                                  updateExperienceStatus(
-                                    item.experience_id,
-                                    status
-                                  )
-                                }
-                                className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
+                                onClick={() => {
+                                  updateExperienceStatus(item.experience_id, status);
+                                  setOpenDropdownId(null); // Close dropdown after status change
+                                }}
+                                className="block w-full text-left px-4 py-1 text-sm text-black/60 hover:bg-gray-100 capitalize"
                               >
-                                Mark as {status}
+                                {status}
                               </button>
                             ))}
                           </div>
@@ -507,37 +502,18 @@ const ExperienceManagement = () => {
                         </div>
 
                         <div className="justify-self-center">
-                          <div className="flex flex-col gap-2 items-center relative">
-                            <button
-                              onClick={() => toggleDropdown(item.experience_id)}
-                              className={`flex items-center justify-between gap-2 px-2 py-1 rounded-md text-sm font-normal capitalize ${getStatusColor(
-                                item.status
-                              )}`}
-                            >
-                              {item.status} <ChevronDown size={16} />
-                            </button>
-
-                            {/* Dropdown */}
-                            {openDropdownId === item.experience_id && (
-                              <div className="absolute top-full mt-1 w-32 bg-white shadow-lg/5 rounded-md z-50">
-                                {["active", "inactive", "draft"].map(
-                                  (status) => (
-                                    <button
-                                      key={status}
-                                      onClick={() =>
-                                        updateExperienceStatus(
-                                          item.experience_id,
-                                          status
-                                        )
-                                      }
-                                      className="block w-full text-left p-4 text-sm text-black/80 hover:bg-gray-100 capitalize"
-                                    >
-                                      {status}
-                                    </button>
-                                  )
-                                )}
-                              </div>
-                            )}
+                          <div className="flex items-center gap-2">
+                            <div
+                              className={`w-2 h-2 rounded-full ${item.status === "active"
+                                ? "bg-green-500"
+                                : item.status === "inactive"
+                                  ? "bg-gray-500"
+                                  : "bg-yellow-500"
+                                }`}
+                            ></div>
+                            <span className="text-sm capitalize text-black/70">
+                              {item.status}
+                            </span>
                           </div>
                         </div>
 
@@ -585,8 +561,8 @@ const ExperienceManagement = () => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-2 border rounded-lg ${currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
                         }`}
                     >
                       {page}

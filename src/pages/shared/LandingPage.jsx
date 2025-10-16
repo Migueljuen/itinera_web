@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Lazy load images for better performance
-const logoImage = new URL("../../assets/images/logo.png", import.meta.url).href;
+const logoImage = new URL("../../assets/images/gala.png", import.meta.url).href;
 const mockup = new URL("../../assets/images/test2.png", import.meta.url).href;
 const mockup1 = new URL("../../assets/images/mockup1.png", import.meta.url)
   .href;
@@ -134,9 +134,8 @@ const LandingPage = () => {
       <div className="min-h-screen bg-white font-display">
         {/* Header */}
         <header
-          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${
-            scrolled ? "transform-gpu" : ""
-          }`}
+          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${scrolled ? "transform-gpu" : ""
+            }`}
         >
           <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
             <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
@@ -145,7 +144,7 @@ const LandingPage = () => {
                 <img
                   src={logoImage}
                   alt="Itinera Logo"
-                  className="w-24 cursor-pointer transition-transform will-change-transform"
+                  className="w-12 cursor-pointer transition-transform will-change-transform"
                   loading="eager"
                   decoding="async"
                 />
@@ -163,7 +162,7 @@ const LandingPage = () => {
                   href="#why"
                   className="hover:text-[#1f2937]/60 transition-colors"
                 >
-                  Why Itinera
+                  Why Tara Gala
                 </a>
                 <a
                   href="#pricing"
@@ -502,6 +501,119 @@ const LandingPage = () => {
           </div>
         </motion.section>
 
+        {/* Navigate link */}
+        <div id="pricing" className=""></div>
+
+        {/* Pricing Section */}
+        <motion.section
+          variants={fadeInUp}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.3 }}
+          className="py-24 flex justify-center w-11/12 mx-auto"
+        >
+          <div className="flex flex-col justify-center items-center w-full">
+            <div className="mb-16 flex flex-col items-center justify-center">
+              <h2 className="text-[#397ff1] font-semibold">Pricing</h2>
+              <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold text-center">
+                Simple, transparent pricing
+              </h1>
+              <p className="w-5/6 text-black/80 text-lg text-center">
+                Our pricing model is designed to be fair for everyone — travelers explore for free, hosts set their own rates, and we keep it sustainable.
+              </p>
+            </div>
+
+            <div className="grid mt-8 grid-cols-1 md:grid-cols-3 gap-8 w-full md:w-4/5">
+              {/* For Travelers */}
+              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 flex flex-col">
+                <div className="mb-6">
+                  <h3 className="text-[#1f2937] text-sm mb-4">For Travelers</h3>
+                  <div className="text-4xl font-bold text-[#397ff1] mb-2">Free</div>
+                  <p className="text-black/60 mb-4">Download and browse</p>
+                </div>
+                <div className="flex-1 space-y-4 mb-8">
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Browse unlimited activities and itineraries</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Create custom itineraries</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Book activities starting from ₱500</span>
+                  </div>
+                </div>
+                <Button onClick={handleSignIn} className="w-full">Get Started</Button>
+              </div>
+
+              {/* For Hosts */}
+              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 flex flex-col">
+                <div className="mb-6">
+                  <h3 className="text-[#1f2937] text-sm mb-4">For Hosts</h3>
+                  <div className="text-4xl font-bold text-[#397ff1] mb-2">15%</div>
+                  <p className="text-black/60 mb-4">Service fee per booking</p>
+                </div>
+                <div className="flex-1 space-y-4 mb-8">
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Set your own rates (₱500 - ₱3,000)</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Transparent fee sharing</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Reach authentic experience seekers</span>
+                  </div>
+                </div>
+                <Button onClick={handleSignIn} className="w-full">Become a Host</Button>
+              </div>
+
+              {/* Premium */}
+              <div className="bg-gradient-to-br from-[#397ff1] to-[#2563eb] text-white rounded-2xl p-8 flex flex-col relative overflow-hidden">
+                <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium">
+                  Popular
+                </div>
+                <div className="mb-6">
+                  <h3 className="text-white text-2xl font-semibold mb-2">Premium</h3>
+                  <div className="text-4xl font-bold text-white mb-2">₱299<span className="text-lg font-normal">/month</span></div>
+                  <p className="text-white/80">For frequent travelers</p>
+                </div>
+                <div className="flex-1 space-y-4 mb-8">
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
+                    <span className="text-white/90">AI-powered custom itinerary planning</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
+                    <span className="text-white/90">Exclusive eco packages</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
+                    <span className="text-white/90">Priority booking access</span>
+                  </div>
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
+                    <span className="text-white/90">All free features included</span>
+                  </div>
+                </div>
+                <button
+                  onClick={handleSignIn}
+                  className="w-full bg-white text-[#397ff1] px-6 py-3 rounded-lg font-medium hover:bg-white/90 transition-colors duration-300"
+                >
+                  Upgrade to Premium
+                </button>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Navigate link */}
+        <div id="about" className=""></div>
+
         <motion.footer
           variants={fadeInUp}
           initial="hidden"
@@ -566,10 +678,10 @@ const LandingPage = () => {
                               link === "About Us"
                                 ? "/about"
                                 : link === "Contact Us"
-                                ? "/contact"
-                                : link === "Become a host"
-                                ? "/host"
-                                : "/"
+                                  ? "/contact"
+                                  : link === "Become a host"
+                                    ? "/host"
+                                    : "/"
                             }
                           >
                             {link}

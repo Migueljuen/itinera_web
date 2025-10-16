@@ -7,7 +7,7 @@ import cat2 from "../../../../assets/images/category2.png";
 import cat3 from "../../../../assets/images/category3.png";
 import cat4 from "../../../../assets/images/category4.png";
 import { ChevronLeftIcon } from "@heroicons/react/24/outline";
-const Step01CategorySelection = ({ formData, setFormData, onNext }) => {
+const Step01CategorySelection = ({ formData, setFormData, onNext, isEditMode = false }) => {
   const navigate = useNavigate();
   const categories = [
     {
@@ -74,10 +74,9 @@ const Step01CategorySelection = ({ formData, setFormData, onNext }) => {
             onClick={() => handleCategorySelect(category)}
             className={`
               group relative px-12 py-12 rounded-xl cursor-pointer border-2 transition-all duration-200 aspect-square w-full max-h-90
-              ${
-                formData.category === category.category_id
-                  ? "border-gray-900 bg-gray-50"
-                  : "border-gray-300 hover:border-gray-900"
+              ${formData.category === category.category_id
+                ? "border-gray-900 bg-gray-50"
+                : "border-gray-300 hover:border-gray-900"
               }
             `}
           >
@@ -102,6 +101,7 @@ const Step01CategorySelection = ({ formData, setFormData, onNext }) => {
           </motion.button>
         ))}
       </div>
+
     </div>
   );
 };
