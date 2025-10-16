@@ -1,9 +1,17 @@
 import React, { useState, useRef } from "react";
-import { ArrowRight, Upload, X, FileImage, Loader2 } from "lucide-react";
+import { ArrowRight, Upload, X, FileImage, Loader2, Save } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 const units = ["Entry", "Hour", "Day", "Package"];
 
-const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
+const Step3ExperienceDetails = ({
+  formData,
+  setFormData,
+  onNext,
+  onBack,
+  isEditMode = false,
+  onSave,
+  isSaving = false,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef(null);
@@ -130,15 +138,6 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  // const isValid = () => {
-  //   return (
-  //     formData.title &&
-  //     formData.description &&
-  //     formData.price &&
-  //     units.includes(formData.unit)
-  //   );
-  // };
-
   const handleContinue = () => {
     if (!formData.title) {
       toast.error("Please enter a title.");
@@ -157,6 +156,12 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
       return;
     }
     onNext();
+  };
+
+  const handleSave = async () => {
+    if (onSave) {
+      await onSave();
+    }
   };
 
   return (
@@ -184,14 +189,36 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                   needed.
                 </p>
               </div>
-              {/* Next Button */}
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                {isEditMode && onSave && (
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-6 py-3 rounded-lg font-medium bg-[#376a63] text-white text-sm  disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={16} />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+                )}
 
-              <button
-                onClick={handleContinue}
-                className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer"
-              >
-                Continue
-              </button>
+                <button
+                  onClick={handleContinue}
+                  disabled={isSaving}
+                  className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Continue
+                </button>
+              </div>
             </div>
             {/* TWO COL */}
             <div className="flex flex-row justify-between gap-8 ">
@@ -365,10 +392,6 @@ const Step3ExperienceDetails = ({ formData, setFormData, onNext }) => {
                                   e.target.nextSibling.style.display = "flex";
                                 }}
                               />
-                              {/* Fallback if image fails to load */}
-                              {/* <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                <FileImage size={24} />
-                              </div> */}
                             </div>
 
                             {/* Remove Button */}

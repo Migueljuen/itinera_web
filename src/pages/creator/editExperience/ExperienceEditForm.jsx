@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import DashboardLayout from "../../../layouts/DashboardLayout";
@@ -137,7 +139,8 @@ const ExperienceEditForm = () => {
           travel_companions: companions,
           useExistingDestination: true,
           destination_id: data.destination_id || null,
-          destination_name: data.destination?.name || data.destination_name || "",
+          destination_name:
+            data.destination?.name || data.destination_name || "",
           city: data.destination?.city || "",
           destination_description: data.destination?.description || "",
           latitude: data.destination?.latitude?.toString() || "",
@@ -158,114 +161,40 @@ const ExperienceEditForm = () => {
 
   // Save current step
   const handleSaveCurrentStep = async () => {
-    if (!experience) return;
-
     try {
-      setIsSaving(true);
+      setLoading(true);
 
-      const formDataObj = new FormData();
-      let section = "";
+      const data = new FormData();
 
-      switch (step) {
-        case 1: // Basic details (Step2GetStarted)
-          section = "basic";
-          formDataObj.append("section", section);
-          formDataObj.append("title", formData.title);
-          formDataObj.append("description", formData.description);
-          formDataObj.append("price", Number(formData.price).toString());
-          formDataObj.append("unit", formData.unit);
-          break;
+      // Append all non-file fields
+      data.append("title", formData.title);
+      data.append("description", formData.description);
+      data.append("price", formData.price);
+      data.append("unit", formData.unit);
+      data.append("category_id", formData.category_id);
+      data.append("destination_id", formData.destination_id || "");
 
-        case 2: // Experience details
-          section = "images";
-          formDataObj.append("section", section);
-
-          if (deletedImages.length > 0) {
-            formDataObj.append("images_to_delete", JSON.stringify(deletedImages));
+      // Append all images (if any)
+      if (formData.images && formData.images.length > 0) {
+        formData.images.forEach((file, index) => {
+          // only append if it's a File (not an existing image URL)
+          if (file instanceof File) {
+            data.append("images", file);
           }
-
-          if (formData.images && formData.images.length > 0) {
-            formData.images.forEach((img) => {
-              if (img instanceof File) {
-                formDataObj.append("images", img);
-              } else if (typeof img === "object" && img.file instanceof File) {
-                formDataObj.append("images", img.file);
-              }
-            });
-          }
-          break;
-
-        case 3: // Availability & Companions
-          section = "availability";
-          formDataObj.append("section", section);
-          formDataObj.append(
-            "availability",
-            JSON.stringify(formData.availability)
-          );
-          formDataObj.append("travel_companion", formData.travel_companion);
-          formDataObj.append(
-            "travel_companions",
-            JSON.stringify(formData.travel_companions || [])
-          );
-          break;
-
-        case 4: // Destination
-          section = "destination";
-          formDataObj.append("section", section);
-          if (formData.useExistingDestination && formData.destination_id) {
-            formDataObj.append("destination_id", formData.destination_id.toString());
-          } else {
-            formDataObj.append("destination_name", formData.destination_name);
-            formDataObj.append("city", formData.city);
-            formDataObj.append(
-              "destination_description",
-              formData.destination_description
-            );
-            formDataObj.append("latitude", formData.latitude);
-            formDataObj.append("longitude", formData.longitude);
-          }
-          break;
+        });
       }
 
-      const response = await fetch(`${API_URL}/experience/${id}/section`, {
-        method: "PUT",
-        headers: {
-          Accept: "application/json",
-        },
-        body: formDataObj,
+      const response = await axios.put(`${API_URL}/experience/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || "Failed to save changes");
-      }
-
-      window.alert("Changes saved successfully!");
-
-      // Update experience state
-      if (step === 3) {
-        setExperience({
-          ...experience,
-          title: formData.title,
-          description: formData.description,
-          price: formData.price,
-          unit: formData.unit,
-        });
-      } else if (step === 4) {
-        setExperience({
-          ...experience,
-          images: formData.images.filter((img) => typeof img === "string"),
-        });
-        setDeletedImages([]);
-      }
-    } catch (err) {
-      console.error("Save error:", err);
-      window.alert(
-        err instanceof Error ? err.message : "Failed to save changes"
-      );
+      toast.success("Changes saved successfully!");
+      console.log("Update response:", response.data);
+    } catch (error) {
+      console.error("Save error:", error.response?.data || error.message);
+      toast.error("Failed to save changes.");
     } finally {
-      setIsSaving(false);
+      setLoading(false);
     }
   };
 
@@ -293,15 +222,22 @@ const ExperienceEditForm = () => {
           formData.destination_name !== experience.destination?.name ||
           formData.city !== experience.destination?.city ||
           formData.destination_description !==
-          experience.destination?.description
+            experience.destination?.description
         );
       default:
         return false;
     }
   };
 
-  const handleNext = () => setStep((prev) => Math.min(prev + 1, 4));
-  const handleBack = () => setStep((prev) => Math.max(prev - 1, 3));
+  const handleNext = () => {
+    console.log("handleNext called, current step:", step);
+    setStep((prev) => Math.min(prev + 1, 4));
+  };
+
+  const handleBack = () => {
+    console.log("handleBack called, current step:", step);
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
 
   const renderStep = () => {
     if (!experience) return null;
@@ -315,6 +251,8 @@ const ExperienceEditForm = () => {
             onNext={handleNext}
             onBack={handleBack}
             isEditMode={true}
+            onSave={handleSaveCurrentStep}
+            isSaving={isSaving}
           />
         );
       case 2:
@@ -328,6 +266,8 @@ const ExperienceEditForm = () => {
             experience={experience}
             deletedImages={deletedImages}
             setDeletedImages={setDeletedImages}
+            onSave={handleSaveCurrentStep}
+            isSaving={isSaving}
           />
         );
       case 3:
@@ -338,6 +278,8 @@ const ExperienceEditForm = () => {
             onNext={handleNext}
             onBack={handleBack}
             isEditMode={true}
+            onSave={handleSaveCurrentStep}
+            isSaving={isSaving}
           />
         );
       case 4:
@@ -349,6 +291,8 @@ const ExperienceEditForm = () => {
             onBack={handleBack}
             isEditMode={true}
             experience={experience}
+            onSave={handleSaveCurrentStep}
+            isSaving={isSaving}
           />
         );
       default:
@@ -389,7 +333,7 @@ const ExperienceEditForm = () => {
     <div className="min-h-screen">
       <div className="mx-auto">
         <div className="flex-1 min-h-screen w-full grid place-items-center font-display">
-          {step < 4 ? (
+          {step < 2 ? (
             <LayoutGroup>
               <AnimatePresence mode="wait">
                 <motion.div
