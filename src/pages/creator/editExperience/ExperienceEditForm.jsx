@@ -9,8 +9,6 @@ import { useAuth } from "../../../contexts/AuthContext";
 import API_URL from "../../../constants/api";
 
 // Step components (reuse from create)
-// import Step01CategorySelection from "../createExperience/steps/Step01CategorySelection";
-// import Step1Tag from "../createExperience/steps/Step1Tag";
 import Step2GetStarted from "../createExperience/steps/Step2GetStarted";
 import Step3ExperienceDetails from "../createExperience/steps/Step3ExperienceDetails";
 import Step4AvailabilityCompanion from "../createExperience/steps/Step4AvailabilityCompanion";
@@ -47,8 +45,8 @@ const ExperienceEditForm = () => {
     images: [],
   });
 
-  // Track deleted images
-  const [deletedImages, setDeletedImages] = useState([]);
+  // Track deleted image IDs (not URLs)
+  const [deletedImageIds, setDeletedImageIds] = useState([]);
 
   // Load experience data
   useEffect(() => {
@@ -63,6 +61,16 @@ const ExperienceEditForm = () => {
         // Fetch experience data
         const response = await fetch(`${API_URL}/experience/${id}`);
         const data = await response.json();
+
+        console.log("=== INITIAL LOAD DEBUG ===");
+        console.log("Full API response:", data);
+        console.log("data.images:", data.images);
+        console.log("Type of data.images:", typeof data.images);
+        console.log("Is Array:", Array.isArray(data.images));
+        if (data.images && data.images.length > 0) {
+          console.log("First image:", data.images[0]);
+          console.log("First image keys:", Object.keys(data.images[0]));
+        }
 
         if (!response.ok) {
           throw new Error(data.message || "Failed to load experience");
@@ -126,6 +134,36 @@ const ExperienceEditForm = () => {
           companions = [data.travel_companion];
         }
 
+        // Transform existing images to include metadata
+        let imageData = [];
+        if (data.images && Array.isArray(data.images)) {
+          console.log("Initial images from API:", JSON.stringify(data.images, null, 2));
+          imageData = data.images.map((img, index) => {
+            console.log("Transforming image:", img);
+
+            // Handle two formats:
+            // 1. String: "/uploads/experiences/filename.jpg"
+            // 2. Object: {image_id: 1, image_url: "uploads/experiences/filename.jpg"}
+            if (typeof img === 'string') {
+              // String format - from initial load
+              return {
+                image_id: null, // No ID available yet
+                image_url: img.startsWith('/') ? img.slice(1) : img, // Remove leading slash
+                isExisting: true,
+                tempId: `temp-${index}`, // Temporary ID for React keys
+              };
+            } else {
+              // Object format - from save response
+              return {
+                image_id: img.image_id,
+                image_url: img.image_url,
+                isExisting: true,
+              };
+            }
+          });
+          console.log("Transformed imageData:", JSON.stringify(imageData, null, 2));
+        }
+
         // Populate form data
         setFormData({
           category_id: data.category_id || 0,
@@ -145,7 +183,7 @@ const ExperienceEditForm = () => {
           destination_description: data.destination?.description || "",
           latitude: data.destination?.latitude?.toString() || "",
           longitude: data.destination?.longitude?.toString() || "",
-          images: data.images || [],
+          images: imageData, // Use transformed image data
         });
       } catch (error) {
         console.error("Error loading experience:", error);
@@ -162,7 +200,7 @@ const ExperienceEditForm = () => {
   // Save current step
   const handleSaveCurrentStep = async () => {
     try {
-      setLoading(true);
+      setIsSaving(true);
 
       const data = new FormData();
 
@@ -174,14 +212,26 @@ const ExperienceEditForm = () => {
       data.append("category_id", formData.category_id);
       data.append("destination_id", formData.destination_id || "");
 
-      // Append all images (if any)
-      if (formData.images && formData.images.length > 0) {
-        formData.images.forEach((file, index) => {
-          // only append if it's a File (not an existing image URL)
-          if (file instanceof File) {
-            data.append("images", file);
-          }
+      // Handle new image uploads
+      const newImages = formData.images.filter(img =>
+        img.file && img.file instanceof File
+      );
+
+      if (newImages.length > 0) {
+        newImages.forEach((img) => {
+          data.append("images", img.file);
         });
+      }
+
+      // Send deleted image IDs
+      if (deletedImageIds.length > 0) {
+        console.log("Sending deletedImageIds:", deletedImageIds);
+        data.append("images_to_delete", JSON.stringify(deletedImageIds));
+      }
+
+      console.log("FormData contents:");
+      for (let pair of data.entries()) {
+        console.log(pair[0], pair[1]);
       }
 
       const response = await axios.put(`${API_URL}/experience/${id}`, data, {
@@ -190,11 +240,35 @@ const ExperienceEditForm = () => {
 
       toast.success("Changes saved successfully!");
       console.log("Update response:", response.data);
+      console.log("Response images:", JSON.stringify(response.data.images, null, 2));
+
+      // Update local state with new image data from response
+      if (response.data.images && Array.isArray(response.data.images)) {
+        const updatedImages = response.data.images.map(img => {
+          console.log("Processing image from response:", JSON.stringify(img, null, 2));
+          return {
+            image_id: img.image_id,
+            image_url: img.image_url, // Keep the URL exactly as backend sends it
+            isExisting: true,
+          };
+        });
+        console.log("Updated images array:", JSON.stringify(updatedImages, null, 2));
+        setFormData(prev => ({ ...prev, images: updatedImages }));
+
+        // Update experience state as well
+        setExperience(prev => ({
+          ...prev,
+          images: response.data.images
+        }));
+      }
+
+      // Clear deleted images after successful save
+      setDeletedImageIds([]);
     } catch (error) {
       console.error("Save error:", error.response?.data || error.message);
-      toast.error("Failed to save changes.");
+      toast.error(error.response?.data?.message || "Failed to save changes.");
     } finally {
-      setLoading(false);
+      setIsSaving(false);
     }
   };
 
@@ -212,8 +286,8 @@ const ExperienceEditForm = () => {
         );
       case 2:
         return (
-          deletedImages.length > 0 ||
-          formData.images?.some((img) => img instanceof File)
+          deletedImageIds.length > 0 ||
+          formData.images?.some((img) => !img.isExisting && img.file instanceof File)
         );
       case 3:
         return true; // availability or companion changes
@@ -222,7 +296,7 @@ const ExperienceEditForm = () => {
           formData.destination_name !== experience.destination?.name ||
           formData.city !== experience.destination?.city ||
           formData.destination_description !==
-            experience.destination?.description
+          experience.destination?.description
         );
       default:
         return false;
@@ -264,8 +338,8 @@ const ExperienceEditForm = () => {
             onBack={handleBack}
             isEditMode={true}
             experience={experience}
-            deletedImages={deletedImages}
-            setDeletedImages={setDeletedImages}
+            deletedImageIds={deletedImageIds}
+            setDeletedImageIds={setDeletedImageIds}
             onSave={handleSaveCurrentStep}
             isSaving={isSaving}
           />
