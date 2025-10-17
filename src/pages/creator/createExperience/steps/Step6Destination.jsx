@@ -8,10 +8,19 @@ import {
   ArrowRight,
   ArrowLeft,
   Navigation,
+  Save,
 } from "lucide-react";
 import toast, { Toaster } from "react-hot-toast";
 
-const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
+const Step6Destination = ({
+  formData,
+  setFormData,
+  onNext,
+  onBack,
+  isEditMode = false,
+  onSave,
+  isSaving = false,
+}) => {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -419,6 +428,12 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
     onNext();
   };
 
+  const handleSave = async () => {
+    if (onSave) {
+      await onSave();
+    }
+  };
+
   return (
     <>
       <Toaster
@@ -455,8 +470,29 @@ const Step6Destination = ({ formData, setFormData, onNext, onBack }) => {
                   Previous Step
                 </button>
 
+                {isEditMode && onSave && (
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-6 py-3 rounded-lg font-medium bg-[#376a63] text-white text-sm disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2 max-h-[44px]"
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={16} />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+                )}
+
                 <button
                   onClick={handleContinue}
+                  disabled={isSaving}
                   className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Continue

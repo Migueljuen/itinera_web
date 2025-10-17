@@ -15,6 +15,7 @@ import {
   Calendar,
   Clock,
   Trash2,
+  Save,
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -76,10 +77,6 @@ const TimePickerWrapper = ({
   return (
     <div className={`relative ${className}`}>
       <div className="flex items-center">
-        {/* <Clock
-          size={16}
-          className="absolute left-3 text-gray-400 z-10 pointer-events-none"
-        /> */}
         <DatePicker
           selected={timeValue}
           onChange={(time) => {
@@ -139,6 +136,9 @@ const Step4AvailabilityCompanion = ({
   setFormData,
   onNext,
   onBack,
+  isEditMode = false,
+  onSave,
+  isSaving = false,
 }) => {
   const [selectedDays, setSelectedDays] = useState([]);
   const [start, setStart] = useState("");
@@ -255,24 +255,6 @@ const Step4AvailabilityCompanion = ({
   const selectedCompanions = formData.travel_companions || [];
   const availabilityCount = (formData.availability || []).length;
 
-  const canProceed = selectedCompanions.length > 0;
-
-  // const isValid = () => {
-  //   const selectedCompanions = formData.travel_companions || [];
-  //   const availability = formData.availability || [];
-
-  //   if (selectedCompanions.length === 0) {
-  //     toast.error("Please select at least one travel companion");
-  //     return false;
-  //   }
-
-  //   if (availability.length === 0) {
-  //     toast.error("Please add at least one availability slot");
-  //     return false;
-  //   }
-
-  //   return true;
-  // };
   const handleContinue = () => {
     if (!formData.availability || formData.availability.length === 0) {
       toast.error("Please set at least one availability slot.");
@@ -284,8 +266,13 @@ const Step4AvailabilityCompanion = ({
       return;
     }
 
-    // ✅ If all good, proceed
     onNext();
+  };
+
+  const handleSave = async () => {
+    if (onSave) {
+      await onSave();
+    }
   };
 
   return (
@@ -315,7 +302,7 @@ const Step4AvailabilityCompanion = ({
                 </p>
               </div>
 
-              {/* Navigation Buttons */}
+              {/* Action Buttons */}
               <div className="flex flex-col sm:flex-row gap-x-4">
                 <button
                   onClick={onBack}
@@ -325,9 +312,30 @@ const Step4AvailabilityCompanion = ({
                   Previous Step
                 </button>
 
+                {isEditMode && onSave && (
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="px-6 py-3 rounded-lg font-medium bg-[#376a63] text-white text-sm disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2 max-h-[44px]"
+                  >
+                    {isSaving ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save size={16} />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+                )}
+
                 <button
                   onClick={handleContinue}
-                  className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px]"
+                  disabled={isSaving}
+                  className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed max-h-[44px]"
                 >
                   Continue
                 </button>
