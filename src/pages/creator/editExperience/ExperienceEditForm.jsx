@@ -203,7 +203,7 @@ const ExperienceEditForm = () => {
           travel_companions: companions,
           useExistingDestination: true,
           destination_id:
-            data.destination_id || data.destination?.destination_id, // ✅ FIX: Check both places
+            data.destination_id || data.destination?.destination_id,
           destination_name:
             data.destination?.name || data.destination_name || "",
           city: data.destination?.city || "",
@@ -233,6 +233,30 @@ const ExperienceEditForm = () => {
       console.log("Current experience state:", experience);
       console.log("Current step:", step);
 
+      // Validate destination data before saving (Step 4)
+      if (step === 4) {
+        if (!formData.destination_name?.trim()) {
+          toast.error("Please enter a destination name.");
+          setIsSaving(false);
+          return;
+        }
+        if (!formData.city?.trim()) {
+          toast.error("Please enter the city.");
+          setIsSaving(false);
+          return;
+        }
+        if (!formData.destination_description?.trim()) {
+          toast.error("Please enter a destination description.");
+          setIsSaving(false);
+          return;
+        }
+        if (!formData.latitude || !formData.longitude) {
+          toast.error("Please select a location on the map.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
       const data = new FormData();
 
       // Append all non-file fields
@@ -244,8 +268,11 @@ const ExperienceEditForm = () => {
 
       // Destination fields
       if (formData.destination_id) {
+        console.log("Sending existing destination_id:", formData.destination_id);
         data.append("destination_id", formData.destination_id);
       }
+
+      // Always send destination details so backend can update them
       data.append("destination_name", formData.destination_name || "");
       data.append("city", formData.city || "");
       data.append(
@@ -254,6 +281,11 @@ const ExperienceEditForm = () => {
       );
       data.append("latitude", formData.latitude || "");
       data.append("longitude", formData.longitude || "");
+
+      // Flag to force update of existing destination
+      if (step === 4 && formData.destination_id) {
+        data.append("update_destination", "true");
+      }
 
       // Add availability data
       if (formData.availability && formData.availability.length > 0) {
@@ -363,9 +395,10 @@ const ExperienceEditForm = () => {
         }));
       }
 
-      // Update destination fields
+      // Update destination fields - backend always returns destination object
       if (destination) {
         console.log("Updating destination:", destination);
+        // Always use the returned destination data from backend
         setFormData((prev) => ({
           ...prev,
           destination_id: destination.destination_id,
@@ -407,7 +440,7 @@ const ExperienceEditForm = () => {
           availability: updatedAvailability,
           tags: updatedTags,
         });
-        console.log("Updated experience state");
+        console.log("Updated experience state with destination:", destination);
       }
 
       // Clear deleted images after successful save
@@ -453,13 +486,13 @@ const ExperienceEditForm = () => {
           )
         );
       case 3:
-        return true; // availability or companion changes
+        return true;
       case 4:
         return (
           formData.destination_name !== experience.destination?.name ||
           formData.city !== experience.destination?.city ||
           formData.destination_description !==
-            experience.destination?.description
+          experience.destination?.description
         );
       default:
         return false;
