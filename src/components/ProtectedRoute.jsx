@@ -21,13 +21,17 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user?.role)) {
-    // Traveler trying to access creator-only route
-    if (user?.role === "Traveler") {
-      return <Navigate to="/traveler/dashboard" replace />;
+    // Role-based redirection
+    switch (user?.role) {
+      case "Traveler":
+        return <Navigate to="/traveler/dashboard" replace />;
+      case "Creator":
+        return <Navigate to="/creator" replace />;
+      case "Admin":
+        return <Navigate to="/admin" replace />;
+      default:
+        return <Navigate to="/" replace />;
     }
-
-    // Any other mismatched role
-    return <Navigate to="/" replace />;
   }
 
   return children;

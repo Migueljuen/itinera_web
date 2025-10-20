@@ -44,16 +44,23 @@ function Login() {
       console.log("Login result:", result);
 
       if (result.success) {
-        if (result.user.role === "Creator") {
+        const userRole = result.user.role;
+
+        // Route based on user role
+        if (userRole === "Creator") {
           // Use the wasFirstLogin flag from backend
           if (result.wasFirstLogin) {
             toast.success("Welcome! Let's set up your first activity 🎉");
-            navigate("/owner/create", { replace: true });
+            navigate("/creator/create", { replace: true });
           } else {
-            // toast.success("Login successful! Redirecting...");
-            navigate("/owner");
+            toast.success("Login successful!");
+            navigate("/creator", { replace: true });
           }
+        } else if (userRole === "Admin") {
+          toast.success("Welcome back, Admin!");
+          navigate("/admin", { replace: true });
         } else {
+          // Handle any other roles or invalid roles
           toast.error("Access denied! Invalid user role.");
         }
       } else {

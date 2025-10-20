@@ -257,9 +257,8 @@ const Signup = () => {
                     <Circle className="text-gray-400" size={14} />
                   )}
                   <span
-                    className={`text-xs ${
-                      passwordMeetsLength ? "text-green-600" : "text-gray-500"
-                    }`}
+                    className={`text-xs ${passwordMeetsLength ? "text-green-600" : "text-gray-500"
+                      }`}
                   >
                     At least 6 characters
                   </span>
@@ -271,9 +270,8 @@ const Signup = () => {
                     <Circle className="text-gray-400" size={14} />
                   )}
                   <span
-                    className={`text-xs ${
-                      passwordsMatch ? "text-green-600" : "text-gray-500"
-                    }`}
+                    className={`text-xs ${passwordsMatch ? "text-green-600" : "text-gray-500"
+                      }`}
                   >
                     Passwords match
                   </span>

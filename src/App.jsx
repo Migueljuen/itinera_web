@@ -8,7 +8,9 @@ import LandingPage from "./pages/shared/LandingPage";
 import Login from "./pages/shared/Login";
 import Signup from "./pages/shared/signup";
 import DashboardLayout from "./layouts/DashboardLayout";
+import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import CreatorDashboard from "./pages/creator/index";
+import AdminDashboard from "./pages/admin/index";
 import CreatorExperiences from "./pages/creator/activities";
 import BookingManagement from "./pages/creator/bookings";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -80,6 +82,18 @@ export default function App() {
           <Route path="bookings" element={<BookingManagement />} />
         </Route>
 
+        {/* Admin routes */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminDashboardLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboard />} />
+
+        </Route>
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
