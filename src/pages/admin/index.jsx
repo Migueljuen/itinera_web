@@ -10,8 +10,17 @@ import CalendarView from "../../components/Calendar";
 import RecentBooking from "../../components/RecentBooking";
 import dummyNotifications from "../../constants/dummyNotif";
 import NotificationDropdown from "../../components/NotificationDropdown";
+import PendingApprovalSection from "../../components/PendingApprovalSection";
 import toast, { Toaster } from "react-hot-toast";
-import { PaperAirplaneIcon, ArrowDownRightIcon, BellIcon as BellOutline, UsersIcon, UserPlusIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import {
+  PaperAirplaneIcon,
+  ArrowDownRightIcon,
+  BellIcon as BellOutline,
+  UsersIcon,
+  UserPlusIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
 import { BellIcon as BellSolid } from "@heroicons/react/24/solid";
 
 import axios from "axios";
@@ -199,7 +208,6 @@ const AdminDashboard = () => {
     );
   };
 
-
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const fetchBookings = async () => {
@@ -236,13 +244,17 @@ const AdminDashboard = () => {
   }, [user]);
 
   const confirmedEvents = bookings.map((b) => {
-    const start = dayjs.utc(b.booking_date).tz("Asia/Manila").hour(
-      parseInt(b.start_time.split(":")[0])
-    ).minute(parseInt(b.start_time.split(":")[1]));
+    const start = dayjs
+      .utc(b.booking_date)
+      .tz("Asia/Manila")
+      .hour(parseInt(b.start_time.split(":")[0]))
+      .minute(parseInt(b.start_time.split(":")[1]));
 
-    const end = dayjs.utc(b.booking_date).tz("Asia/Manila").hour(
-      parseInt(b.end_time.split(":")[0])
-    ).minute(parseInt(b.end_time.split(":")[1]));
+    const end = dayjs
+      .utc(b.booking_date)
+      .tz("Asia/Manila")
+      .hour(parseInt(b.end_time.split(":")[0]))
+      .minute(parseInt(b.end_time.split(":")[1]));
 
     return {
       id: b.booking_id,
@@ -251,7 +263,6 @@ const AdminDashboard = () => {
       end: end.toDate(),
     };
   });
-
 
   return (
     <div className="flex flex-col ">
@@ -265,7 +276,9 @@ const AdminDashboard = () => {
             <h1 className="text-2xl font-semibold text-gray-900 capitalize">
               Admin Dashboard
             </h1>
-            <p className="  text-black/60">Manage users and activity approval here.</p>
+            <p className="  text-black/60">
+              Manage users and activity approval here.
+            </p>
           </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4 border-r border-gray-400 px-4">
@@ -279,10 +292,11 @@ const AdminDashboard = () => {
               {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
-                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                    : "hover:bg-gray-100 active:bg-gray-200"
-                    }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
+                    showNotifications
+                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                      : "hover:bg-gray-100 active:bg-gray-200"
+                  }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -304,10 +318,8 @@ const AdminDashboard = () => {
                     notifications={notifications}
                     onClose={() => setShowNotifications(false)}
                     onMarkAsRead={handleMarkAsRead}
-                    onUpdateNotification={handleUpdateNotification}   // <-- this
+                    onUpdateNotification={handleUpdateNotification} // <-- this
                   />
-
-
                 )}
               </div>
             </div>
@@ -338,7 +350,7 @@ const AdminDashboard = () => {
       </header>
 
       {/* MAIN GRID */}
-      <div className="flex flex-1 lg:flex-col xl:flex-row w-full  xl:border-none gap-8  ">
+      <div className="flex flex-1 flex-col w-full  xl:border-none gap-8  ">
         {/* Overview */}
 
         <div className="flex gap-4 w-full">
@@ -402,7 +414,19 @@ const AdminDashboard = () => {
             </span>
           </div>
         </div>
+        {/* recent activities and chart */}
+        <div className="flex gap-4 w-full">
+          {/* pending activities for approval */}
+          <PendingApprovalSection />
 
+          {/* chart */}
+          <div className="bg-white flex-1 h-90 px-6 shadow-sm flex flex-col justify-start rounded-2xl">
+            <h1 className="text-lg font-medium text-black/80 py-4 border-b border-gray-200">
+              Activities booked
+            </h1>
+            {/* <BarChartTest /> */}
+          </div>
+        </div>
       </div>
     </div>
   );
