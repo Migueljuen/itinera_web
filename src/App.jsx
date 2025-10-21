@@ -17,6 +17,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
 import ExperienceEditForm from "./pages/creator/editExperience/ExperienceEditForm";
+import Settings from "./pages/creator/settings";
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ export default function App() {
           }
         />
 
+
         {/* Edit Experience Route */}
         <Route
           path="/owner/edit/:id"
@@ -78,6 +80,7 @@ export default function App() {
         >
           <Route index element={<CreatorDashboard />} />
           <Route path="dashboard" element={<CreatorDashboard />} />
+          <Route path="settings" element={<Settings />} />
           <Route path="activities" element={<CreatorExperiences />} />
           <Route path="bookings" element={<BookingManagement />} />
         </Route>

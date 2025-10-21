@@ -238,11 +238,10 @@ const BookingManagement = () => {
                       <button
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
-                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                          selectedTab === tab
-                            ? "bg-white text-black/80 shadow-sm/10"
-                            : "text-black/50 hover:text-black/70"
-                        }`}
+                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
+                          ? "bg-white text-black/80 shadow-sm/10"
+                          : "text-black/50 hover:text-black/70"
+                          }`}
                       >
                         {tab === "Confirmed" ? "Upcoming" : tab}
                       </button>
@@ -293,11 +292,10 @@ const BookingManagement = () => {
                         <div className="grid grid-cols-[120px_240px_300px] gap-4">
                           {/* DAY NUMBER AND DAY OF WEEK */}
                           <div
-                            className={`text-center px-4 border-r border-gray-300 ${
-                              dayjs(booking.booking_date).isSame(dayjs(), "day")
-                                ? "text-[#3A81F3]"
-                                : "text-black/60"
-                            }`}
+                            className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
+                              ? "text-[#3A81F3]"
+                              : "text-black/60"
+                              }`}
                           >
                             <p className="text-xl">
                               {booking.day_of_week.slice(0, 3)}
@@ -356,20 +354,18 @@ const BookingManagement = () => {
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                       </div>
 
                       {/* Expanded Content (Sliding Section) */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                          isExpanded
-                            ? "max-h-[500px] opacity-100 mt-4"
-                            : "max-h-0 opacity-0"
-                        }`}
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
+                          ? "max-h-[500px] opacity-100 mt-4"
+                          : "max-h-0 opacity-0"
+                          }`}
                       >
                         <div className="border-t border-gray-200 pt-4 px-8 text-sm text-black/70 space-y-4 flex justify-between">
                           {/* Traveler Details */}
@@ -457,7 +453,7 @@ const BookingManagement = () => {
 
                           {/* Actions */}
                           <div>
-                            <button className="px-4 py-2 bg-[#3A81F3] text-white/90 rounded-lg hover:bg-[#3A81F3]/75 ">
+                            <button className="px-6 py-2 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75 ">
                               Contact Traveler
                             </button>
                           </div>
@@ -496,11 +492,10 @@ const BookingManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
                     >
                       {page}
                     </button>

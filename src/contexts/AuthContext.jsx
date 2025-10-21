@@ -70,8 +70,6 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  // NEW: Dashboard animation state
-  // const [shouldAnimateDashboard, setShouldAnimateDashboard] = useState(false);
 
   // Logout function
   const logout = useCallback(async () => {

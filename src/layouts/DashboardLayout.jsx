@@ -160,9 +160,8 @@ const DashboardLayout = ({ children }) => {
             <div className="flex items-center gap-2">
               <ChevronDown
                 size={16}
-                className={`text-gray-400 transition-transform ${
-                  item.isExpanded ? "rotate-180" : ""
-                }`}
+                className={`text-gray-400 transition-transform ${item.isExpanded ? "rotate-180" : ""
+                  }`}
               />
             </div>
           </button>
@@ -180,10 +179,9 @@ const DashboardLayout = ({ children }) => {
                   <NavLink
                     to={subItem.path}
                     className={({ isActive }) =>
-                      `block px-6 py-2 text-sm rounded-lg transition-colors ml-4 whitespace-nowrap ${
-                        isActive
-                          ? "bg-gray-100 text-primary"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      `block px-6 py-2 text-sm rounded-lg transition-colors ml-4 whitespace-nowrap ${isActive
+                        ? "bg-gray-100 text-primary"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`
                     }
                   >
@@ -209,8 +207,7 @@ const DashboardLayout = ({ children }) => {
           }
         }}
         className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative ${
-            isActive ? "bg-green-50 text-green-600" : " hover:bg-gray-100"
+          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative ${isActive ? "bg-green-50 text-green-600" : " hover:bg-gray-100"
           }`
         }
       >
@@ -249,9 +246,8 @@ const DashboardLayout = ({ children }) => {
 
         {/* Sidebar */}
         <aside
-          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="flex flex-col min-h-screen">
             {/* Logo Section */}
@@ -296,7 +292,10 @@ const DashboardLayout = ({ children }) => {
             {/* Bottom Section */}
             <div className="p-4   space-y-1">
               <p className="pl-4 text-black/60 text-xs font-medium">SETTINGS</p>
-              <button className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
+              <button
+                onClick={() => navigate('/owner/settings')}
+                className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+              >
                 <Settings size={20} className="text-gray-500" />
                 <span className="font-medium">Settings</span>
               </button>
