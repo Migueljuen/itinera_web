@@ -72,23 +72,26 @@ const Step1Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
   }, [formData.category_id]);
 
   const toggleTag = (tagId) => {
-    const currentTags = formData.selectedTags || [];
-    if (currentTags.includes(tagId)) {
+    const currentTags = formData.tags || [];
+    const tagExists = currentTags.some(tag => tag.tag_id === tagId);
+
+    if (tagExists) {
+      // Remove the tag
       setFormData({
         ...formData,
-        selectedTags: currentTags.filter((id) => id !== tagId),
+        tags: currentTags.filter((tag) => tag.tag_id !== tagId),
       });
     } else {
+      // Add the full tag object
+      const tagToAdd = availableTags.find(tag => tag.tag_id === tagId);
       setFormData({
         ...formData,
-        tags: [...currentTags, tagId],
+        tags: [...currentTags, tagToAdd],
       });
     }
   };
-
   const selectedTags = formData.tags || [];
   const canProceed = selectedTags.length > 0;
-
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-6 py-8">
@@ -182,7 +185,7 @@ const Step1Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
             <TagCard
               key={tag.tag_id}
               tag={tag}
-              isSelected={selectedTags.includes(tag.tag_id)}
+              isSelected={selectedTags.some(t => t.tag_id === tag.tag_id)}
               onToggle={toggleTag}
             />
           ))}

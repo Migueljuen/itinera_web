@@ -1,12 +1,8 @@
-// CHILD ELEMENT / SUBMIT SCREEN / STEP 6
-
-import { useNavigate } from "react-router-dom";
 import React from "react";
 import { FileImage, Clock } from "lucide-react";
 import { ArrowLeft } from "lucide-react";
-const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
-  const navigate = useNavigate();
 
+const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
   console.log("Form Data in ReviewSubmit:", formData);
   // Get travel companions array
   const companions = formData.travel_companions || [];
@@ -75,11 +71,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
           return (
             <div
               key={index}
-              className={`flex flex-col justify-between h-full
-                                relative p-3 my-auto    bg-gray-50 rounded-lg  text-center
-                             border-gray-300
-                                }
-                            `}
+              className="flex flex-col justify-between h-full relative p-3 my-auto rounded-lg text-center border-gray-300"
             >
               {/* Time slots */}
               {hasAvailability ? (
@@ -87,7 +79,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                   {hasAvailability.slice(0, 2).map((slot, slotIndex) => (
                     <div
                       key={slotIndex}
-                      className="text-[10.5px] bg-black/5 rounded py-1 text-black/60 "
+                      className="text-[10.5px] rounded py-1 text-black/60"
                       title={`${convertToStandardTime(
                         slot.start_time
                       )} - ${convertToStandardTime(slot.end_time)}`}
@@ -138,36 +130,37 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               <button
                 onClick={onBack}
                 disabled={isSubmitting}
-                className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ArrowLeft size={20} />
                 Previous Step
               </button>
 
               <button
-                onClick={() => {
-                  onSubmit("draft");
-                  navigate("/dashboard");
-                }}
+                onClick={() => onSubmit("draft")}
                 disabled={isSubmitting}
-                className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors"
+                className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
-                  <div className=" border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin"></div>
                 ) : (
                   "Save as Draft"
                 )}
               </button>
 
               <button
-                onClick={() => {
-                  onSubmit("active");
-                  navigate("/dashboard");
-                }}
+                onClick={() => onSubmit("pending")}
                 disabled={isSubmitting}
-                className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer"
+                className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Publish Activity
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Submitting...
+                  </div>
+                ) : (
+                  "Submit for Review"
+                )}
               </button>
             </div>
           </div>
@@ -179,11 +172,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 Weekly Availability
               </h3>
               {formData.availability && formData.availability.length > 0 ? (
-                <div className="rounded-lg   p-4">
+                <div className="rounded-lg p-4">
                   {renderAvailabilityCalendar()}
                 </div>
               ) : (
-                <div className="w-full px-4 py-2 text-sm text-gray-500 rounded-xl border border-gray-300 bg-gray-50 text-center">
+                <div className="w-full px-4 py-2 text-sm text-gray-500 rounded-xl border border-gray-300 text-center">
                   No availability set
                 </div>
               )}
@@ -196,27 +189,27 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
             <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
               {/* Basic Details Section */}
               <div className="pb-4 text-left">
-                <h3 className="font-medium py-2  text-black/90">
+                <h3 className="font-medium py-2 text-black/90">
                   Basic Details
                 </h3>
-                <div className="space-y-4 mt-4">
-                  <div className="flex flex-row justify-between gap-4 ">
+                <div className="space-y-4 mt-4 px-4">
+                  <div className="flex flex-row justify-between gap-4">
                     {/* LEFT */}
                     <div className="flex-1 space-y-8">
                       <div>
                         <label className="text-sm text-black/60">
                           Activity title
                         </label>
-                        <div className="w-full px-4 py-2 mt-2 text-sm text-black/80 rounded-sm border border-gray-300">
+                        <div className="w-full px-4 py-2 mt-2 text-sm text-black/80 rounded-sm">
                           {formData.title || "Not specified"}
                         </div>
                       </div>
-                      <div>
+                      <div className="flex-1 flex flex-col">
                         <label className="text-sm text-black/60">
-                          Price per {formData.unit}
+                          Short Description of the activity
                         </label>
-                        <div className="w-full px-4 py-2 mt-2 text-sm text-black/80 rounded-sm border border-gray-300">
-                          ₱{formData.price || "0"}
+                        <div className="w-full px-4 py-2 mt-2 flex-1 text-sm text-black/80 rounded-sm">
+                          {formData.description || "No description provided"}
                         </div>
                       </div>
                     </div>
@@ -224,41 +217,41 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     {/* RIGHT */}
                     <div className="flex-1 flex flex-col">
                       <label className="text-sm text-black/60">
-                        Short Description of the activity
+                        Price per {formData.unit}
                       </label>
-                      <div className="w-full px-4 py-2 mt-2 flex-1 text-sm text-black/80 rounded-sm border border-gray-300">
-                        {formData.description || "No description provided"}
+                      <div className="w-full px-4 py-2 mt-2 text-sm text-black/80 rounded-sm">
+                        ₱{formData.price || "0"}
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="  text-left">
-                <h3 className="font-medium py-2  text-black/90">
+              <div className="border-t border-gray-200 text-left">
+                <h3 className="font-medium py-2 text-black/90">
                   Category and Tag
                 </h3>
                 {/* Category Section */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="pb-4  pt-4 text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-4">
+                  <div className="pb-4 pt-4 text-left">
                     <label className="text-sm text-black/60">Category</label>
-                    <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm border border-gray-300 ">
+                    <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm">
                       {formData.category_name || "Not selected"}
                     </div>
                   </div>
 
                   {/* Tags Section */}
-                  <div className="pb-4 pt-4 ">
+                  <div className="pb-4 pt-4">
                     <label className="text-sm text-black/60">Tag</label>
                     {formData.tags && formData.tags.length > 0 ? (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {formData.tags.map((tagId, index) => (
+                        {formData.tags.map((tag, index) => (
                           <div
                             key={index}
-                            className="px-6 py-2 rounded-sm bg-black/80 text-white"
+                            className="px-6 py-1 rounded-full bg-blue-100 text-blue-600"
                           >
-                            <span className="text-sm font-medium">
-                              Tag {tagId}
+                            <span className="text-xs font-medium">
+                              {tag.name || `Tag ${tag.tag_id}`}
                             </span>
                           </div>
                         ))}
@@ -282,9 +275,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     {companions.map((companion, index) => (
                       <div
                         key={index}
-                        className="px-6 py-2 rounded-sm bg-black/80 text-white"
+                        className="px-6 py-1 rounded-full bg-blue-100 text-blue-600"
                       >
-                        <span className="text-sm font-medium">{companion}</span>
+                        <span className="text-xs font-medium">{companion}</span>
                       </div>
                     ))}
                   </div>
@@ -305,38 +298,29 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 </h3>
 
                 <div className="space-y-4 text-left">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 px-4">
                     <div>
-                      <label className=" text-sm text-black/60 ">Name</label>
-                      <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm border border-gray-300 ">
+                      <label className="text-sm text-black/60">Name</label>
+                      <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm">
                         {formData.destination_name || "Not specified"}
                       </div>
                     </div>
                     <div>
-                      <label className="text-sm text-black/60 ">City</label>
-                      <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm border border-gray-300 ">
+                      <label className="text-sm text-black/60">City</label>
+                      <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm">
                         {formData.city || "Not specified"}
                       </div>
                     </div>
                   </div>
-                  <div>
-                    <label className="text-sm text-black/60 ">
+                  <div className="px-4">
+                    <label className="text-sm text-black/60">
                       Description or Landmark
                     </label>
-                    <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm border border-gray-300  min-h-[80px]">
+                    <div className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm min-h-[80px]">
                       {formData.destination_description ||
                         "No description provided"}
                     </div>
                   </div>
-                  {/* <div>
-                                            <label className="block text-sm font-medium text-gray-500 mb-1">Coordinates</label>
-                                            <div className="w-full px-4 py-2 text-sm text-gray-800 rounded-xl border border-gray-300 bg-gray-50">
-                                                {formData.latitude && formData.longitude
-                                                    ? `${formData.latitude}, ${formData.longitude}`
-                                                    : "Not specified"
-                                                }
-                                            </div>
-                                        </div> */}
                 </div>
               </div>
 
@@ -345,7 +329,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 <h3 className="font-medium py-2 text-left text-black/90">
                   Images
                 </h3>
-                <div className="max-h-64 overflow-y-auto">
+                <div className="max-h-64 overflow-y-auto px-4">
                   {formData.images && formData.images.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3">
                       {formData.images.map((img, index) => {

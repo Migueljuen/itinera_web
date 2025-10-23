@@ -4,6 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { Toaster } from "react-hot-toast"; // ✅ Add this
 import LandingPage from "./pages/shared/LandingPage";
 import Login from "./pages/shared/Login";
 import Signup from "./pages/shared/signup";
@@ -22,6 +23,16 @@ import Settings from "./pages/creator/settings";
 export default function App() {
   return (
     <Router>
+      {/* ✅ Global Toaster (only one needed in the entire app) */}
+      <Toaster
+        position="top-center"
+        containerStyle={{ zIndex: 999999 }}
+        toastOptions={{
+          duration: 4000,
+          style: { background: "#363636", color: "#fff" },
+        }}
+      />
+
       <Routes>
         {/* Public Routes - Redirect to dashboard if already logged in */}
         <Route
@@ -59,7 +70,6 @@ export default function App() {
           }
         />
 
-
         {/* Edit Experience Route */}
         <Route
           path="/owner/edit/:id"
@@ -95,8 +105,8 @@ export default function App() {
           }
         >
           <Route index element={<AdminDashboard />} />
-
         </Route>
+
         {/* Catch all - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

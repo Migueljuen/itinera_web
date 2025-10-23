@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -155,6 +155,9 @@ const ExperienceManagement = () => {
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedExperiences = filteredExperiences.slice(startIndex, endIndex);
 
+  const handleCreateListing = useCallback(() => {
+    navigate("/owner/create");
+  }, [navigate]);
 
 
   // Function to update experience status
@@ -231,9 +234,11 @@ const ExperienceManagement = () => {
                 <Download size={16} />
                 Export
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer">
+              <button
+                onClick={handleCreateListing}
+                className="flex items-center gap-2 px-4 py-2 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer">
                 <Plus size={16} />
-                Add Experience
+                Create Listing
               </button>
             </div>
           </div>
@@ -247,7 +252,7 @@ const ExperienceManagement = () => {
                 <div className="flex justify-between items-center">
                   {/* Tab Navigation */}
                   <div className="flex bg-gray-50 rounded-lg w-fit p-2">
-                    {["All", "Active", "Inactive", "Draft"].map((tab) => (
+                    {["All", "Active", "Inactive", "Draft", "Pending"].map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
@@ -324,10 +329,10 @@ const ExperienceManagement = () => {
                     key={item.experience_id}
                     className="py-6 mb-4 flex items-center justify-between border rounded-xl border-gray-300 hover:bg-gray-50"
                   >
-                    <div className="grid grid-cols-[80px_280px_220px] gap-4">
+                    <div className="grid grid-cols-[100px_300px_220px] gap-4">
                       {/* Activity Image */}
-                      <div className="text-center px-4 border-r border-gray-300">
-                        <div className="w-16 h-16 bg-gray-200 rounded-lg mx-auto flex items-center justify-center overflow-hidden">
+                      <div className="text-center px-4">
+                        <div className="w-24 h-24 bg-gray-200 rounded-lg mx-auto flex items-center justify-center overflow-hidden">
                           <img
                             src={`${API_URL}/${item.images[0]}`}
                             alt={item.title}
@@ -427,15 +432,21 @@ const ExperienceManagement = () => {
                               <button
                                 key={status}
                                 onClick={() => {
+                                  if (item.status === "pending") return; // prevent change
                                   updateExperienceStatus(item.experience_id, status);
-                                  setOpenDropdownId(null); // Close dropdown after status change
+                                  setOpenDropdownId(null);
                                 }}
-                                className="block w-full text-left px-4 py-1 text-sm text-black/60 hover:bg-gray-100 capitalize"
+                                disabled={item.status === "pending"} // disable button
+                                className={`block w-full text-left px-4 py-1 text-sm capitalize ${item.status === "pending"
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-black/60 hover:bg-gray-100"
+                                  }`}
                               >
                                 {status}
                               </button>
                             ))}
                           </div>
+
                         </div>
                       )}
                     </div>

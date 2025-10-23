@@ -294,7 +294,7 @@ const BookingManagement = () => {
                           <div
                             className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
                               ? "text-[#3A81F3]"
-                              : "text-black/60"
+                              : "text-black/70"
                               }`}
                           >
                             <p className="text-xl">

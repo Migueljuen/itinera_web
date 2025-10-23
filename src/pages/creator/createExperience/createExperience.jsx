@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ProgressBar from "../../../components/ProgressBar";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import toast, { Toaster } from "react-hot-toast";
 // Step components (web versions)
 import Step01CategorySelection from "./steps/Step01CategorySelection";
 import Step1Tag from "./steps/Step1Tag";
@@ -13,19 +15,21 @@ import ReviewSubmit from "./steps/Step8Review";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useAuth } from "../../../contexts/AuthContext";
 import API_URL from "../../../constants/api";
+
 const ExperienceCreationForm = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const stepCount = 7;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { user } = useAuth();
   const [formData, setFormData] = useState({
-    category_id: 0, // New field for category selection
+    category_id: 0,
     title: "",
     description: "",
     price: "",
     unit: "",
     availability: [],
-    tags: [], // Keep existing tags field for backward compatibility
+    tags: [],
     travel_companion: "",
     travel_companions: [],
     useExistingDestination: false,
@@ -125,28 +129,37 @@ const ExperienceCreationForm = () => {
     return true;
   };
 
-  const handleSubmit = async (status = "draft") => {
+  const handleSubmit = async (status = "pending") => {
     console.log("Submitting formData:", formData);
 
     if (!validateFormData()) {
-      window.alert("Please fill out all required fields.");
+      toast.error("Please fill out all required fields.");
       return;
     }
 
     try {
       setIsSubmitting(true);
 
+      // Show loading toast
+      const loadingToast = toast.loading(
+        status === "pending"
+          ? "Submitting experience for approval..."
+          : "Saving draft..."
+      );
+
       const formDataObj = new FormData();
 
       formDataObj.append("creator_id", user.user_id);
-      formDataObj.append("category", formData.category_id); // Add category to submission
+      formDataObj.append("category_id", formData.category_id);
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
       formDataObj.append("price", Number(formData.price).toString());
       formDataObj.append("unit", formData.unit);
       formDataObj.append("status", status);
-      formDataObj.append("tags", JSON.stringify(formData.tags));
-      // formDataObj.append("selectedTags", JSON.stringify(formData.selectedTags)); // Add selected tags
+
+      const tagIds = formData.tags.map(tag => tag.tag_id || tag);
+      formDataObj.append("tags", JSON.stringify(tagIds));
+
       formDataObj.append(
         "travel_companions",
         JSON.stringify(formData.travel_companions || [])
@@ -208,20 +221,28 @@ const ExperienceCreationForm = () => {
 
       const responseData = await response.json();
 
+      // Dismiss loading toast
+      toast.dismiss(loadingToast);
+
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to create experience");
       }
 
       const successMessage =
-        status === "active"
-          ? "Experience published successfully!"
+        status === "pending"
+          ? "Experience submitted for approval! 🎉"
           : "Experience saved as draft successfully!";
 
-      window.alert(successMessage);
-      // Add navigation or reset logic here
+      toast.success(successMessage);
+
+      setTimeout(() => {
+        navigate("/owner/dashboard"); // correct path
+      }, 2500); // slightly longer delay so toast shows
+
+
     } catch (err) {
       console.error("Submit error:", err);
-      window.alert(
+      toast.error(
         err instanceof Error ? err.message : "Failed to submit experience"
       );
     } finally {
@@ -303,33 +324,39 @@ const ExperienceCreationForm = () => {
   };
 
   return (
-    <div className="min-h-screen">
-      <div className=" mx-auto">
-        <div className="flex-1 min-h-screen w-full  grid place-items-center font-display ">
-          {step < 4 ? (
-            // Animate only for steps 1 and 2
-            <LayoutGroup>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={step}
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -40 }}
-                  transition={{ duration: 0.4, ease: "easeInOut" }}
-                  className="w-full"
-                >
-                  {renderStep()}
-                </motion.div>
-              </AnimatePresence>
-            </LayoutGroup>
-          ) : (
-            // Step 3+: render normally inside dashboard
-            <DashboardLayout>{renderStep()}</DashboardLayout>
-          )}
+    <>
+      <button onClick={() => toast.success("It works globally!")}>
+        Test Toast
+      </button>
+
+
+      <div className="min-h-screen">
+        <div className="mx-auto">
+          <div className="flex-1 min-h-screen w-full grid place-items-center font-display">
+            {step < 4 ? (
+              <LayoutGroup>
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={step}
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -40 }}
+                    transition={{ duration: 0.4, ease: "easeInOut" }}
+                    className="w-full"
+                  >
+                    {renderStep()}
+                  </motion.div>
+                </AnimatePresence>
+              </LayoutGroup>
+            ) : (
+              <DashboardLayout>{renderStep()}</DashboardLayout>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
+
 };
 
 export default ExperienceCreationForm;

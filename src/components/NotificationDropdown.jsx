@@ -23,7 +23,16 @@ const NotificationDropdown = ({ notifications, setNotifications, onClose, onMark
   const [attendanceResponses, setAttendanceResponses] = useState({});
 
   const formatTime = (timeStr) => {
-    return formatDistanceToNow(new Date(timeStr), { addSuffix: true }).replace(/^about\s/, "");
+    if (!timeStr) return "Unknown time";
+
+    const date = new Date(timeStr);
+
+    // Check if date is valid
+    if (isNaN(date.getTime())) {
+      return "Unknown time";
+    }
+
+    return formatDistanceToNow(date, { addSuffix: true }).replace(/^about\s/, "");
   };
   const handleAttendanceResponse = async (bookingId, notificationId, responseType) => {
     try {
