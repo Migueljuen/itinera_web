@@ -1,75 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MapPinIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { useAuth } from "../contexts/AuthContext";
+import API_URL from "../constants/api";
+import axios from "axios";
 
 const PendingApprovalSection = () => {
-  // Dummy data for pending activities
-  const [pendingActivities, setPendingActivities] = useState([
-    {
-      id: 1,
-      title: "Island Hopping Adventure",
-      destination: "El Nido, Palawan",
-      creator: "Maria Santos",
-      creatorImage: null,
-      price: 2500,
-      unit: "person",
-      submittedDate: "2025-10-18",
-      image: null,
-      status: "pending",
-    },
-    {
-      id: 2,
-      title: "Surfing Lessons for Beginners",
-      destination: "Siargao Island",
-      creator: "Juan Dela Cruz",
-      creatorImage: null,
-      price: 1500,
-      unit: "person",
-      submittedDate: "2025-10-19",
-      image: null,
-      status: "pending",
-    },
-    {
-      id: 3,
-      title: "Mountain Hiking Experience",
-      destination: "Mt. Pulag, Benguet",
-      creator: "Carlos Reyes",
-      creatorImage: null,
-      price: 3500,
-      unit: "person",
-      submittedDate: "2025-10-20",
-      image: null,
-      status: "pending",
-    },
-    {
-      id: 4,
-      title: "Scuba Diving Package",
-      destination: "Moalboal, Cebu",
-      creator: "Ana Garcia",
-      creatorImage: null,
-      price: 4200,
-      unit: "person",
-      submittedDate: "2025-10-21",
-      image: null,
-      status: "pending",
-    },
-  ]);
+  const { user } = useAuth();
+  const [pendingActivities, setPendingActivities] = useState([]);
+  const [loading, setLoading] = useState(false);
 
-  const handleApprove = (id) => {
-    console.log(`Approved activity ${id}`);
-    setPendingActivities((prev) =>
-      prev.filter((activity) => activity.id !== id)
-    );
+  // Fetch pending experiences
+  const fetchPendingExperiences = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/experience/pending`);
+
+      console.log("Pending experiences:", response.data);
+      setPendingActivities(response.data || []);
+    } catch (error) {
+      console.error("Error fetching pending experiences:", error);
+      setPendingActivities([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = (id) => {
-    console.log(`Rejected activity ${id}`);
-    setPendingActivities((prev) =>
-      prev.filter((activity) => activity.id !== id)
-    );
-  };
+  // Fetch on component mount
+  useEffect(() => {
+    fetchPendingExperiences();
+  }, []);
 
   const handleViewDetails = (id) => {
     console.log(`View details for activity ${id}`);
+    // Navigate to details page or open modal
+    // navigate(`/admin/experience/${id}`);
   };
 
   return (
@@ -86,7 +50,12 @@ const PendingApprovalSection = () => {
 
       {/* Activities List */}
       <div className="flex flex-col px-6 py-4 gap-3 max-h-[400px] overflow-y-auto">
-        {pendingActivities.length === 0 ? (
+        {loading ? (
+          <div className="py-8 text-center">
+            <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-gray-500 mt-2">Loading pending activities...</p>
+          </div>
+        ) : pendingActivities.length === 0 ? (
           <div className="py-8 text-center">
             <p className="text-gray-500">No pending activities</p>
           </div>
@@ -99,12 +68,17 @@ const PendingApprovalSection = () => {
               {/* Left Section - Image & Details */}
               <div className="flex items-center gap-4 flex-1">
                 {/* Activity Image */}
-                <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0">
-                  {activity.image ? (
+                <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {activity.images && activity.images.length > 0 ? (
                     <img
-                      src={activity.image}
+                      src={`${API_URL}/${activity.images[0]}`}
                       alt={activity.title}
-                      className="object-cover w-full h-full rounded-lg"
+                      className="object-cover w-full h-full"
+                      onError={(e) => {
+                        e.target.style.display = "none";
+                        e.target.parentElement.innerHTML =
+                          '<span class="text-gray-400 text-xs">No image</span>';
+                      }}
                     />
                   ) : (
                     <span className="text-gray-400 text-xs">No image</span>
@@ -112,21 +86,30 @@ const PendingApprovalSection = () => {
                 </div>
 
                 {/* Activity Info */}
-                <div className="flex flex-col gap-1 min-w-0">
+                <div className="flex flex-col gap-1 min-w-0 flex-1">
                   <h3 className="font-medium text-sm text-black/80 truncate">
                     {activity.title}
                   </h3>
                   <div className="flex items-center gap-2">
                     <MapPinIcon className="w-4 h-4 text-black/60 flex-shrink-0" />
                     <span className="text-sm text-black/60 truncate">
-                      {activity.destination}
+                      {activity.destination_name}
+                      {activity.location && `, ${activity.location}`}
                     </span>
                   </div>
-                  <div className="text-xs text-black/50">
-                    By {activity.creator} •{" "}
-                    {new Date(activity.submittedDate).toLocaleDateString(
-                      "en-US",
-                      { month: "short", day: "numeric", year: "numeric" }
+                  <div className="flex items-center gap-2 text-xs text-black/50">
+                    {/* <span className="font-medium text-black">
+                      ₱{Number(activity.price).toLocaleString()} /{" "}
+                      {activity.unit}
+                    </span> */}
+                    {activity.tags && activity.tags.length > 0 && (
+                      <>
+                        <span className="truncate">
+                          {activity.tags.slice(0, 2).join(", ")}
+                          {activity.tags.length > 2 &&
+                            ` +${activity.tags.length - 2}`}
+                        </span>
+                      </>
                     )}
                   </div>
                 </div>
@@ -141,7 +124,7 @@ const PendingApprovalSection = () => {
                   <ChevronRightIcon className="w-5 h-5" />
                 </button>
                 {/* Tooltip */}
-                <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 text-black/80 text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-black/70 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   View details
                 </div>
               </div>

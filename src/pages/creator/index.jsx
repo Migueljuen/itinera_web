@@ -8,7 +8,6 @@ import BarChartTest from "../../components/BarChart";
 import SubscriptionBanner from "../../components/SubscriptionBanner";
 import CalendarView from "../../components/Calendar";
 import RecentBooking from "../../components/RecentBooking";
-import dummyNotifications from "../../constants/dummyNotif";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import toast, { Toaster } from "react-hot-toast";
 import { BellIcon as BellOutline } from "@heroicons/react/24/outline";
@@ -47,8 +46,8 @@ const CreatorDashboard = () => {
         );
 
         if (!token) {
-          console.error("No auth token found - setting dummy notifications");
-          setNotifications(dummyNotifications);
+          console.error("No auth token found - setting empty notifications");
+          setNotifications([]);
           return;
         }
 
@@ -90,24 +89,23 @@ const CreatorDashboard = () => {
           response.notifications?.length || 0
         );
 
-        // 6. Set notifications
-        if (response.success && response.notifications) {
-          console.log("Setting notifications from API");
-          setNotifications(
-            response.notifications.length > 0
-              ? response.notifications
-              : dummyNotifications
+        // 6. Set notifications - FIXED: Use actual response even if empty
+        if (response.success && response.notifications !== undefined) {
+          console.log(
+            "Setting notifications from API:",
+            response.notifications.length
           );
+          setNotifications(response.notifications);
         } else {
-          console.log("API response invalid, using dummy data");
-          setNotifications(dummyNotifications);
+          console.log("API response invalid, setting empty array");
+          setNotifications([]);
         }
       } catch (err) {
         console.error("=== FETCH ERROR ===");
         console.error("Error details:", err);
         console.error("Error message:", err.message);
-        console.error("Setting dummy notifications as fallback");
-        setNotifications(dummyNotifications);
+        console.error("Setting empty notifications as fallback");
+        setNotifications([]);
       }
 
       console.log("=== END FETCH DEBUG ===");
@@ -115,6 +113,7 @@ const CreatorDashboard = () => {
 
     fetchNotifications();
   }, []);
+
   useEffect(() => {
     console.log("User ID:", user?.id);
     console.log("Notifications:", notifications);
@@ -198,7 +197,6 @@ const CreatorDashboard = () => {
     );
   };
 
-
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const fetchBookings = async () => {
@@ -235,13 +233,17 @@ const CreatorDashboard = () => {
   }, [user]);
 
   const confirmedEvents = bookings.map((b) => {
-    const start = dayjs.utc(b.booking_date).tz("Asia/Manila").hour(
-      parseInt(b.start_time.split(":")[0])
-    ).minute(parseInt(b.start_time.split(":")[1]));
+    const start = dayjs
+      .utc(b.booking_date)
+      .tz("Asia/Manila")
+      .hour(parseInt(b.start_time.split(":")[0]))
+      .minute(parseInt(b.start_time.split(":")[1]));
 
-    const end = dayjs.utc(b.booking_date).tz("Asia/Manila").hour(
-      parseInt(b.end_time.split(":")[0])
-    ).minute(parseInt(b.end_time.split(":")[1]));
+    const end = dayjs
+      .utc(b.booking_date)
+      .tz("Asia/Manila")
+      .hour(parseInt(b.end_time.split(":")[0]))
+      .minute(parseInt(b.end_time.split(":")[1]));
 
     return {
       id: b.booking_id,
@@ -250,7 +252,6 @@ const CreatorDashboard = () => {
       end: end.toDate(),
     };
   });
-
 
   return (
     <div className="flex flex-col ">
@@ -277,10 +278,11 @@ const CreatorDashboard = () => {
               {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
-                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                    : "hover:bg-gray-100 active:bg-gray-200"
-                    }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
+                    showNotifications
+                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                      : "hover:bg-gray-100 active:bg-gray-200"
+                  }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -302,10 +304,8 @@ const CreatorDashboard = () => {
                     notifications={notifications}
                     onClose={() => setShowNotifications(false)}
                     onMarkAsRead={handleMarkAsRead}
-                    onUpdateNotification={handleUpdateNotification}   // <-- this
+                    onUpdateNotification={handleUpdateNotification}
                   />
-
-
                 )}
               </div>
             </div>
@@ -336,9 +336,9 @@ const CreatorDashboard = () => {
       </header>
 
       {/* MAIN GRID */}
-      <div className="flex flex-1 lg:flex-col xl:flex-row w-full  xl:border-none gap-8  ">
+      <div className="flex flex-1 lg:flex-col xl:flex-row w-full xl:border-none gap-8">
         {/* LEFT COLUMN */}
-        <div className="flex flex-col flex-[0.7]  xl:bg-white gap-8 ">
+        <div className="flex flex-col flex-[0.7] xl:bg-white gap-8">
           {!isSubscribed && <SubscriptionBanner />}
           <div className="flex-1 min-h-[600px]">
             <CalendarView events={confirmedEvents} />
@@ -347,12 +347,12 @@ const CreatorDashboard = () => {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="  xl:bg-white flex-[0.3] lg:w-full min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300  flex flex-col  items-start justify-start ">
-          <h1 className="text-xl font-semibold  p-8 text-gray-900 ">
+        <div className="xl:bg-white flex-[0.3] lg:w-full min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300 flex flex-col items-start justify-start">
+          <h1 className="text-xl font-semibold p-8 text-gray-900">
             Booking Statistic
           </h1>
           <BarChartTest />
-          <h1 className="text-xl font-semibold p-8 text-gray-900 ">
+          <h1 className="text-xl font-semibold p-8 text-gray-900">
             Recent Bookings
           </h1>
           <RecentBooking />
@@ -361,4 +361,5 @@ const CreatorDashboard = () => {
     </div>
   );
 };
+
 export default CreatorDashboard;

@@ -10,7 +10,7 @@ import Step2GetStarted from "./steps/Step2GetStarted";
 import Step3ExperienceDetails from "./steps/Step3ExperienceDetails";
 import Step4AvailabilityCompanion from "./steps/Step4AvailabilityCompanion";
 import Step6Destination from "./steps/Step6Destination";
-
+import SuccessModal from "../../../components/SuccessModal";
 import ReviewSubmit from "./steps/Step8Review";
 import DashboardLayout from "../../../layouts/DashboardLayout";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -21,6 +21,8 @@ const ExperienceCreationForm = () => {
   const [step, setStep] = useState(1);
   const stepCount = 7;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submissionStatus, setSubmissionStatus] = useState("pending");
   const { user } = useAuth();
   const [formData, setFormData] = useState({
     category_id: 0,
@@ -157,7 +159,7 @@ const ExperienceCreationForm = () => {
       formDataObj.append("unit", formData.unit);
       formDataObj.append("status", status);
 
-      const tagIds = formData.tags.map(tag => tag.tag_id || tag);
+      const tagIds = formData.tags.map((tag) => tag.tag_id || tag);
       formDataObj.append("tags", JSON.stringify(tagIds));
 
       formDataObj.append(
@@ -228,18 +230,8 @@ const ExperienceCreationForm = () => {
         throw new Error(responseData.message || "Failed to create experience");
       }
 
-      const successMessage =
-        status === "pending"
-          ? "Experience submitted for approval! 🎉"
-          : "Experience saved as draft successfully!";
-
-      toast.success(successMessage);
-
-      setTimeout(() => {
-        navigate("/owner/dashboard"); // correct path
-      }, 2500); // slightly longer delay so toast shows
-
-
+      setSubmissionStatus(status);
+      setShowSuccessModal(true);
     } catch (err) {
       console.error("Submit error:", err);
       toast.error(
@@ -252,6 +244,11 @@ const ExperienceCreationForm = () => {
 
   const handleNext = () => setStep((prev) => Math.min(prev + 1, stepCount));
   const handleBack = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    navigate("/owner/dashboard");
+  };
 
   const renderStep = () => {
     switch (step) {
@@ -325,11 +322,6 @@ const ExperienceCreationForm = () => {
 
   return (
     <>
-      <button onClick={() => toast.success("It works globally!")}>
-        Test Toast
-      </button>
-
-
       <div className="min-h-screen">
         <div className="mx-auto">
           <div className="flex-1 min-h-screen w-full grid place-items-center font-display">
@@ -354,9 +346,15 @@ const ExperienceCreationForm = () => {
           </div>
         </div>
       </div>
+
+      {/* Success Modal */}
+      <SuccessModal
+        isOpen={showSuccessModal}
+        onClose={handleModalClose}
+        status={submissionStatus}
+      />
     </>
   );
-
 };
 
 export default ExperienceCreationForm;

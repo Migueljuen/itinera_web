@@ -40,7 +40,28 @@ const AdminDashboard = () => {
   const notificationRef = useRef(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [stats, setStats] = useState({
+    activeExperiences: { count: 0, percentageChange: null },
+    pendingExperiences: { count: 0 },
+    activeCreators: { count: 0, percentageChange: null },
+    pendingCreators: { count: 0 },
+  });
   const isSubscribed = 0;
+
+  const fetchDashboardStats = async () => {
+    try {
+      const response = await axios.get(`${API_URL}/users/admin/stats`);
+      if (response.data.success) {
+        setStats(response.data.stats);
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -100,24 +121,20 @@ const AdminDashboard = () => {
           response.notifications?.length || 0
         );
 
-        // 6. Set notifications
-        if (response.success && response.notifications) {
+        // 6. Set notifications - FIXED
+        if (response.success && response.notifications !== undefined) {
           console.log("Setting notifications from API");
-          setNotifications(
-            response.notifications.length > 0
-              ? response.notifications
-              : dummyNotifications
-          );
+          setNotifications(response.notifications);
         } else {
-          console.log("API response invalid, using dummy data");
-          setNotifications(dummyNotifications);
+          console.log("API response invalid, setting empty array");
+          setNotifications([]);
         }
       } catch (err) {
         console.error("=== FETCH ERROR ===");
         console.error("Error details:", err);
         console.error("Error message:", err.message);
-        console.error("Setting dummy notifications as fallback");
-        setNotifications(dummyNotifications);
+        console.error("Setting empty notifications as fallback");
+        setNotifications([]);
       }
 
       console.log("=== END FETCH DEBUG ===");
@@ -155,6 +172,7 @@ const AdminDashboard = () => {
 
       if (!token) {
         console.error("No auth token found");
+        setNotifications([]);
         return;
       }
 
@@ -354,7 +372,7 @@ const AdminDashboard = () => {
         {/* Overview */}
 
         <div className="flex gap-4 w-full">
-          {/* card dummy data */}
+          {/* Active Activities */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
               <PaperAirplaneIcon className="w-6 h-6 text-green-600" />
@@ -362,29 +380,37 @@ const AdminDashboard = () => {
             </span>
             <span className="flex justify-between">
               <div className="flex gap-2">
-                <p className="text-3xl font-semibold text-black/80">132</p>
-                <span className="flex">
-                  <ChevronUpIcon className="w-4 h-4 text-green-600" />
-                  <p className="text-sm text-green-600">+20%</p>
-                </span>
+                <p className="text-3xl font-semibold text-black/80">
+                  {stats.activeExperiences.count}
+                </p>
+                {stats.activeExperiences.percentageChange && (
+                  <span className="flex">
+                    <ChevronUpIcon className="w-4 h-4 text-green-600" />
+                    <p className="text-sm text-green-600">
+                      +{stats.activeExperiences.percentageChange}%
+                    </p>
+                  </span>
+                )}
               </div>
               <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
             </span>
           </div>
 
-          {/* card dummy data */}
+          {/* Pending Activities */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
               <PaperAirplaneIcon className="w-6 h-6 text-orange-600" />
               <p className="font-medium text-black/80">Pending Activities</p>
             </span>
             <span className="flex justify-between">
-              <p className="text-3xl font-semibold text-black/80">4</p>
+              <p className="text-3xl font-semibold text-black/80">
+                {stats.pendingExperiences.count}
+              </p>
               <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
             </span>
           </div>
 
-          {/* card dummy data */}
+          {/* Active Creators */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
               <UsersIcon className="w-6 h-6 text-purple-800" />
@@ -392,36 +418,45 @@ const AdminDashboard = () => {
             </span>
             <span className="flex justify-between">
               <div className="flex gap-2">
-                <p className="text-3xl font-semibold text-black/80">132</p>
-                <span className="flex">
-                  <ChevronDownIcon className="w-4 h-4 text-orange-600" />
-                  <p className="text-sm text-orange-600">20%</p>
-                </span>
+                <p className="text-3xl font-semibold text-black/80">
+                  {stats.activeCreators.count}
+                </p>
+                {stats.activeCreators.percentageChange && (
+                  <span className="flex">
+                    <ChevronDownIcon className="w-4 h-4 text-orange-600" />
+                    <p className="text-sm text-orange-600">
+                      {stats.activeCreators.percentageChange}%
+                    </p>
+                  </span>
+                )}
               </div>
               <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
             </span>
           </div>
 
-          {/* card dummy data */}
+          {/* Pending Creators */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
               <UserPlusIcon className="w-6 h-6 text-green-600" />
               <p className="font-medium text-black/80">Pending creators</p>
             </span>
             <span className="flex justify-between">
-              <p className="text-3xl font-semibold text-black/80">2</p>
+              <p className="text-3xl font-semibold text-black/80">
+                {stats.pendingCreators.count}
+              </p>
               <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
             </span>
           </div>
         </div>
+
         {/* recent activities and chart */}
         <div className="flex gap-4 w-full">
           {/* pending activities for approval */}
           <PendingApprovalSection />
 
           {/* chart */}
-          <div className="bg-white flex-1 h-90 px-6 shadow-sm flex flex-col justify-start rounded-2xl">
-            <h1 className="text-lg font-medium text-black/80 py-4 border-b border-gray-200">
+          <div className="bg-white flex-1 h-90 shadow-sm flex flex-col justify-start rounded-2xl">
+            <h1 className="text-lg font-medium px-6  text-black/80 py-4 border-b border-gray-200">
               Activities booked
             </h1>
             {/* <BarChartTest /> */}
