@@ -107,10 +107,11 @@ const TimePickerWrapper = ({
 const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
-    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
-      ? "border-gray-900 bg-[#376a63]/5"
-      : "border-gray-200 bg-white hover:border-gray-900"
-      }`}
+    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${
+      isSelected
+        ? "border-gray-900 bg-[#376a63]/5"
+        : "border-gray-200 bg-white hover:border-gray-900"
+    }`}
   >
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -396,10 +397,11 @@ const Step4AvailabilityCompanion = ({
                           className={`min-w-[45px] text-center font-medium px-2 py-2 text-xs whitespace-nowrap transition-colors rounded-full space-x-4
        
         ${index !== daysOfWeek.length - 1 ? "" : ""} 
-        ${selectedDays.includes(day)
-                              ? "bg-blue-100 text-blue-600 "
-                              : "bg-white border-white text-black/80 hover:bg-gray-50"
-                            }`}
+        ${
+          selectedDays.includes(day)
+            ? "bg-blue-100 text-blue-600 "
+            : "bg-white border-white text-black/80 hover:bg-gray-50"
+        }`}
                         >
                           {daysShort[index]}
                         </button>
@@ -432,10 +434,11 @@ const Step4AvailabilityCompanion = ({
                       type="button"
                       onClick={addAvailability}
                       disabled={!start || !end || selectedDays.length === 0}
-                      className={`w-full py-3 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
-                        ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        }`}
+                      className={`w-full py-3 rounded-xl font-medium text-sm transition-colors ${
+                        start && end && selectedDays.length > 0
+                          ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
                     >
                       Add to Selected Days
                     </button>
@@ -503,7 +506,7 @@ const Step4AvailabilityCompanion = ({
                               {item.time_slots.map((slot, i) => (
                                 <div
                                   key={`${item.day_of_week}-${i}`}
-                                  className="flex justify-between items-center py-4 px-2 border-b border-gray-300"
+                                  className="flex justify-between items-center py-4 px-2 "
                                 >
                                   <span className="text-black/80 text-sm">
                                     {formatTimeForDisplay(slot.start_time)} -{" "}
