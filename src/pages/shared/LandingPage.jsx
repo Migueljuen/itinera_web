@@ -134,8 +134,9 @@ const LandingPage = () => {
       <div className="min-h-screen bg-white font-display">
         {/* Header */}
         <header
-          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${scrolled ? "transform-gpu" : ""
-            }`}
+          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${
+            scrolled ? "transform-gpu" : ""
+          }`}
         >
           <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
             <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
@@ -162,7 +163,7 @@ const LandingPage = () => {
                   href="#why"
                   className="hover:text-[#1f2937]/60 transition-colors"
                 >
-                  Why Tara Gala
+                  Why Itinera
                 </a>
                 <a
                   href="#pricing"
@@ -519,7 +520,9 @@ const LandingPage = () => {
                 Simple, transparent pricing
               </h1>
               <p className="w-5/6 text-black/80 text-lg text-center">
-                Our pricing model is designed to be fair for everyone — travelers explore for free, hosts set their own rates, and we keep it sustainable.
+                Our pricing model is designed to be fair for everyone —
+                travelers explore for free, hosts set their own rates, and we
+                keep it sustainable.
               </p>
             </div>
 
@@ -528,48 +531,68 @@ const LandingPage = () => {
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 flex flex-col">
                 <div className="mb-6">
                   <h3 className="text-[#1f2937] text-sm mb-4">For Travelers</h3>
-                  <div className="text-4xl font-bold text-[#397ff1] mb-2">Free</div>
+                  <div className="text-4xl font-bold text-[#397ff1] mb-2">
+                    Free
+                  </div>
                   <p className="text-black/60 mb-4">Download and browse</p>
                 </div>
                 <div className="flex-1 space-y-4 mb-8">
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Browse unlimited activities and itineraries</span>
+                    <span className="text-black/80">
+                      Browse unlimited activities and itineraries
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Create custom itineraries</span>
+                    <span className="text-black/80">
+                      Create custom itineraries
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Book activities starting from ₱500</span>
+                    <span className="text-black/80">
+                      Book activities starting from ₱500
+                    </span>
                   </div>
                 </div>
-                <Button onClick={handleSignIn} className="w-full">Get Started</Button>
+                <Button onClick={handleSignIn} className="w-full">
+                  Get Started
+                </Button>
               </div>
 
               {/* For Hosts */}
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 flex flex-col">
                 <div className="mb-6">
                   <h3 className="text-[#1f2937] text-sm mb-4">For Hosts</h3>
-                  <div className="text-4xl font-bold text-[#397ff1] mb-2">15%</div>
+                  <div className="text-4xl font-bold text-[#397ff1] mb-2">
+                    15%
+                  </div>
                   <p className="text-black/60 mb-4">Service fee per booking</p>
                 </div>
                 <div className="flex-1 space-y-4 mb-8">
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Set your own rates (₱500 - ₱3,000)</span>
+                    <span className="text-black/80">
+                      Set your own rates (₱500 - ₱3,000)
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Transparent fee sharing</span>
+                    <span className="text-black/80">
+                      Transparent fee sharing
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Reach authentic experience seekers</span>
+                    <span className="text-black/80">
+                      Reach authentic experience seekers
+                    </span>
                   </div>
                 </div>
-                <Button onClick={handleSignIn} className="w-full">Become a Host</Button>
+                <Button onClick={handleSignIn} className="w-full">
+                  Become a Host
+                </Button>
               </div>
 
               {/* Premium */}
@@ -578,26 +601,38 @@ const LandingPage = () => {
                   Popular
                 </div>
                 <div className="mb-6">
-                  <h3 className="text-white text-2xl font-semibold mb-2">Premium</h3>
-                  <div className="text-4xl font-bold text-white mb-2">₱299<span className="text-lg font-normal">/month</span></div>
+                  <h3 className="text-white text-2xl font-semibold mb-2">
+                    Premium
+                  </h3>
+                  <div className="text-4xl font-bold text-white mb-2">
+                    ₱299<span className="text-lg font-normal">/month</span>
+                  </div>
                   <p className="text-white/80">For frequent travelers</p>
                 </div>
                 <div className="flex-1 space-y-4 mb-8">
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
-                    <span className="text-white/90">AI-powered custom itinerary planning</span>
+                    <span className="text-white/90">
+                      AI-powered custom itinerary planning
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
-                    <span className="text-white/90">Exclusive eco packages</span>
+                    <span className="text-white/90">
+                      Exclusive eco packages
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
-                    <span className="text-white/90">Priority booking access</span>
+                    <span className="text-white/90">
+                      Priority booking access
+                    </span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-white mt-1 flex-shrink-0" />
-                    <span className="text-white/90">All free features included</span>
+                    <span className="text-white/90">
+                      All free features included
+                    </span>
                   </div>
                 </div>
                 <button
@@ -678,10 +713,10 @@ const LandingPage = () => {
                               link === "About Us"
                                 ? "/about"
                                 : link === "Contact Us"
-                                  ? "/contact"
-                                  : link === "Become a host"
-                                    ? "/host"
-                                    : "/"
+                                ? "/contact"
+                                : link === "Become a host"
+                                ? "/host"
+                                : "/"
                             }
                           >
                             {link}
