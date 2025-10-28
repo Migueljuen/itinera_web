@@ -220,16 +220,7 @@ const Step3ExperienceDetails = ({
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-        }}
-      />
+
       <div className="min-h-screen w-full">
         <div className="mx-auto">
           <div className="text-center py-2">
@@ -277,7 +268,7 @@ const Step3ExperienceDetails = ({
             {/* TWO COL */}
             <div className="flex flex-row justify-between gap-8">
               {/* LEFT */}
-              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit">
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-1 h-fit bg-white">
                 {/* Title Input */}
                 <div className="pb-4">
                   <label className="block font-medium py-2 text-left text-black/90">
@@ -297,15 +288,36 @@ const Step3ExperienceDetails = ({
 
                 {/* Description Input */}
                 <div className="pb-4">
-                  <label className="block font-medium py-2 text-left">
-                    Give a short description of your activity
+                  <label className="block font-medium py-2 text-left text-black/90">
+                    Description
                   </label>
+                  <p className="text-left text-sm text-black/60 mb-4">
+                    Give a short description of the activity you offer.
+                  </p>
                   <textarea
                     placeholder="Short description of the activity"
                     value={formData.description}
                     onChange={(e) => handleChange("description", e.target.value)}
                     className="w-full p-4 text-sm text-gray-800 h-32 rounded-sm border border-gray-300 resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     rows={4}
+                  />
+                </div>
+
+                {/* Notes Input */}
+                <div className="pb-4">
+                  <label className="block font-medium py-2 text-left text-black/90">
+                    Additional Notes
+                    <span className="text-gray-400 text-sm font-normal ml-2">(Optional)</span>
+                  </label>
+                  <p className="text-left text-sm text-black/60 mb-4">
+                    Add helpful reminders or requirements for participants (e.g., bring sunscreen, wear comfortable shoes).
+                  </p>
+                  <textarea
+                    placeholder="E.g. Bring sunscreen, comfortable shoes recommended, etc."
+                    value={formData.notes}
+                    onChange={(e) => handleChange("notes", e.target.value)}
+                    className="w-full p-4 text-sm text-gray-800 h-24 rounded-sm border border-gray-300 resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                    rows={3}
                   />
                 </div>
 

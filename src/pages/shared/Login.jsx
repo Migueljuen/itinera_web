@@ -75,16 +75,7 @@ function Login() {
   };
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-        }}
-      />
+
       <ChevronLeftIcon
         className="h-6 cursor-pointer hover:text-black/80 absolute top-10 left-10"
         onClick={() => navigate("/")}

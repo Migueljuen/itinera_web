@@ -436,16 +436,7 @@ const Step6Destination = ({
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-        }}
-      />
+
       <div className="min-h-screen w-full">
         <div className="mx-auto">
           <div className="text-center py-2">

@@ -28,6 +28,7 @@ const ExperienceCreationForm = () => {
     category_id: 0,
     title: "",
     description: "",
+    notes: "",
     price: "",
     unit: "",
     availability: [],
@@ -155,6 +156,7 @@ const ExperienceCreationForm = () => {
       formDataObj.append("category_id", formData.category_id);
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
+      formDataObj.append("notes", formData.notes);
       formDataObj.append("price", Number(formData.price).toString());
       formDataObj.append("unit", formData.unit);
       formDataObj.append("status", status);

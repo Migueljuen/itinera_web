@@ -105,16 +105,7 @@ const Signup = () => {
 
   return (
     <>
-      <Toaster
-        position="top-center"
-        toastOptions={{
-          duration: 4000,
-          style: {
-            background: "#363636",
-            color: "#fff",
-          },
-        }}
-      />
+
       <ChevronLeftIcon
         className="h-8 cursor-pointer hover:text-black/90 absolute top-10 left-10"
         onClick={() => navigate("/login")}

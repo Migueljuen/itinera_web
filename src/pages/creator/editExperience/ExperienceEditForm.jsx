@@ -29,6 +29,7 @@ const ExperienceEditForm = () => {
     category_id: 0,
     title: "",
     description: "",
+    notes: "",
     price: "",
     unit: "",
     availability: [],
@@ -62,17 +63,7 @@ const ExperienceEditForm = () => {
         const response = await fetch(`${API_URL}/experience/${id}`);
         const data = await response.json();
 
-        console.log("=== INITIAL LOAD DEBUG ===");
-        console.log("Full API response:", data);
-        console.log("data.destination_id:", data.destination_id);
-        console.log("data.destination:", data.destination);
-        console.log(
-          "data.destination?.destination_id:",
-          data.destination?.destination_id
-        );
-        console.log("data.images:", data.images);
-        console.log("Type of data.images:", typeof data.images);
-        console.log("Is Array:", Array.isArray(data.images));
+
         if (data.images && data.images.length > 0) {
           console.log("First image:", data.images[0]);
           console.log("First image keys:", Object.keys(data.images[0]));
@@ -175,26 +166,14 @@ const ExperienceEditForm = () => {
             JSON.stringify(imageData, null, 2)
           );
         }
-        console.log("=== SETTING FORM DATA ===");
-        console.log(
-          "destination_id value:",
-          data.destination_id || data.destination?.destination_id
-        );
-        console.log("Breakdown:");
-        console.log("  data.destination_id:", data.destination_id);
-        console.log(
-          "  data.destination?.destination_id:",
-          data.destination?.destination_id
-        );
-        console.log(
-          "  Result of OR:",
-          data.destination_id || data.destination?.destination_id
-        );
+
         // Populate form data
         setFormData({
           category_id: data.category_id || 0,
           title: data.title || "",
           description: data.description || "",
+          notes: data.notes || "",
+
           price: data.price || "",
           unit: data.unit || "",
           availability: transformedAvailability,
@@ -262,6 +241,7 @@ const ExperienceEditForm = () => {
       // Append all non-file fields
       data.append("title", formData.title);
       data.append("description", formData.description);
+      data.append("notes", formData.notes);
       data.append("price", formData.price);
       data.append("unit", formData.unit);
       data.append("category_id", formData.category_id);
@@ -427,6 +407,7 @@ const ExperienceEditForm = () => {
           ...prev,
           title: updatedExperience.title,
           description: updatedExperience.description,
+          notes: updatedExperience.notes,
           price: updatedExperience.price,
           unit: updatedExperience.unit,
           category_id: updatedExperience.category_id,
@@ -475,6 +456,7 @@ const ExperienceEditForm = () => {
         return (
           formData.title !== experience.title ||
           formData.description !== experience.description ||
+          formData.notes !== experience.notes ||
           formData.price !== experience.price ||
           formData.unit !== experience.unit
         );

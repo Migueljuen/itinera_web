@@ -234,6 +234,14 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           {formData.description || "No description provided"}
                         </div>
                       </div>
+                      <div className="flex space-x-8">
+                        <label className="text-sm font-medium text-black/80">
+                          Additional Notes
+                        </label>
+                        <div className="text-sm text-[#0e63be]">
+                          {formData.notes || "No additional notes provided"}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
