@@ -108,8 +108,8 @@ const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
     className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
-        ? "border-gray-900 bg-[#376a63]/5"
-        : "border-gray-200 bg-white hover:border-gray-900"
+      ? "border-gray-900 bg-[#376a63]/5"
+      : "border-gray-200 bg-white hover:border-gray-900"
       }`}
   >
     <div className="flex items-start justify-between">
@@ -388,7 +388,7 @@ const Step4AvailabilityCompanion = ({
        
         ${index !== daysOfWeek.length - 1 ? "" : ""} 
         ${selectedDays.includes(day)
-                              ? "bg-blue-100 text-blue-600 "
+                              ? "bg-blue-100 text-[#0e63be] "
                               : "bg-white border-white text-black/80 hover:bg-gray-50"
                             }`}
                         >
@@ -424,8 +424,8 @@ const Step4AvailabilityCompanion = ({
                       onClick={addAvailability}
                       disabled={!start || !end || selectedDays.length === 0}
                       className={`w-full py-3 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
-                          ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
                     >
                       Add to Selected Days
@@ -462,7 +462,7 @@ const Step4AvailabilityCompanion = ({
                           >
                             <div className="flex items-center flex-1">
                               <div className="bg-blue-100 p-1 rounded-lg mr-2 w-12 flex items-center justify-center">
-                                <span className="text-blue-600 font-semibold text-xs">
+                                <span className="text-[#0e63be] font-semibold text-xs">
                                   {item.day_of_week
                                     .substring(0, 3)
                                     .toUpperCase()}

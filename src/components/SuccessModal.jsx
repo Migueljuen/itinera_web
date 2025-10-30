@@ -6,14 +6,12 @@ const SuccessModal = ({ isOpen, onClose, status }) => {
 
   const isPending = status === "pending";
   const title = isPending
-    ? "Experience Submitted Successfully!"
-    : "Draft Saved Successfully!";
+    ? "Submitted Successfully"
+    : "Draft Saved Successfully";
 
   const message = isPending ? (
     <>
-      Your experience has been submitted for review. Our team will review it
-      within <span className="font-semibold text-black/80">24–48 hours</span>{" "}
-      and notify you once it’s approved.
+      Your experience has been submitted for review.
     </>
   ) : (
     <>
@@ -24,15 +22,15 @@ const SuccessModal = ({ isOpen, onClose, status }) => {
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center font-display">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/30 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden animate-in fade-in zoom-in duration-300">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-xl w-full mx-4 overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Close button */}
         <button
           onClick={onClose}
@@ -42,57 +40,58 @@ const SuccessModal = ({ isOpen, onClose, status }) => {
         </button>
 
         {/* Content */}
-        <div className="p-8 text-center">
+        <div className="p-8 text-left">
           {/* Success Icon */}
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-start mb-6">
             <div className="bg-green-100 rounded-full p-4">
               <CheckCircle size={24} className="text-green-600" />
             </div>
           </div>
 
           {/* Title */}
-          <h2 className="text-lg font-semibold text-black/80 mb-4">{title}</h2>
+          <h2 className="text-xl font-semibold text-black/80 mb-2">{title}</h2>
 
           {/* Message */}
-          <p className="text-black/70 mb-8 text-sm leading-relaxed">
+          <p className="text-black/50 mb-8 text-base leading-relaxed">
             {message}
           </p>
 
-          <div className="text-left space-y-4 mb-8">
+          <div className="text-left space-y-4 mb-12">
             <div>
               <h3 className="font-semibold text-black/80">
-                Submission Details
+                What to expect:
               </h3>
             </div>
 
             <div>
-              <ol className="border-l border-gray-200 text-sm text-gray-700 space-y-2">
-                <li className="pl-4 relative  text-sm leading-relaxed text-black/70 ">
-                  Submitted:{" "}
-                  {new Date().toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                    year: "numeric",
-                  })}
+              <ol className=" text-black/50 text-sm space-y-2 list-disc list-inside">
+                <li className="pl-1   ">
+                  Your submission is now under review.
                 </li>
+                <li className="pl-1">
+                  We'll verify that everything meets our standards.
 
-                <li className="pl-4 relative  text-sm leading-relaxed text-black/70">
-                  Under Review
                 </li>
-                <li className="pl-4 relative text-sm leading-relaxed text-black/70">
-                  Within 24-48 hours
+                <li className="pl-1   ">
+                  Expect approval within <span className="font-medium text-black/80">24–48 hours</span>.
+
                 </li>
               </ol>
             </div>
           </div>
 
+
           {/* Action Button */}
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75 w-full"
+            className="px-6 py-3 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75 w-full"
           >
             Go to Dashboard
           </button>
+          <p className="text-black/50 mt-4 text-sm text-center leading-relaxed">
+            You can track your submission status anytime from your dashboard.
+          </p>
+
         </div>
       </div>
     </div>

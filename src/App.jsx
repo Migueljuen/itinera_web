@@ -23,7 +23,7 @@ import Settings from "./pages/creator/settings";
 export default function App() {
   return (
     <Router>
-      {/* ✅ Global Toaster (only one needed in the entire app) */}
+
       <Toaster
         position="top-center"
         containerStyle={{ zIndex: 999999 }}
