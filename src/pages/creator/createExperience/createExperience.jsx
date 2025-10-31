@@ -144,7 +144,7 @@ const ExperienceCreationForm = () => {
       setIsSubmitting(true);
 
       // Show loading toast
-      const loadingToast = toast.loading(
+      const loadingToastId = toast.loading(
         status === "pending"
           ? "Submitting experience for approval..."
           : "Saving draft..."
@@ -226,16 +226,21 @@ const ExperienceCreationForm = () => {
       const responseData = await response.json();
 
       // Dismiss loading toast
-      toast.dismiss(loadingToast);
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+
+      toast.dismiss(loadingToastId);
 
       if (!response.ok) {
         throw new Error(responseData.message || "Failed to create experience");
       }
 
-      setSubmissionStatus(status);
-      setShowSuccessModal(true);
+      setTimeout(() => {
+        setSubmissionStatus(status);
+        setShowSuccessModal(true);
+      }, 600);
     } catch (err) {
       console.error("Submit error:", err);
+      toast.dismiss(); // remove any active loading toast
       toast.error(
         err instanceof Error ? err.message : "Failed to submit experience"
       );

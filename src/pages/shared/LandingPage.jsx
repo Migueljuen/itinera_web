@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Lazy load images for better performance
-const logoImage = new URL("../../assets/images/gala.png", import.meta.url).href;
+const logoImage = new URL("../../assets/images/logo.png", import.meta.url).href;
 const mockup = new URL("../../assets/images/test2.png", import.meta.url).href;
 const mockup1 = new URL("../../assets/images/mockup1.png", import.meta.url)
   .href;
