@@ -1,11 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 import { FileImage, Clock } from "lucide-react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Settings2 } from "lucide-react";
 
 const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
   console.log("Form Data in ReviewSubmit:", formData);
+
   // Get travel companions array
   const companions = formData.travel_companions || [];
+
+  // State for editing
+  const [isEditingBasicDetails, setIsEditingBasicDetails] = useState(false);
+  const [isEditingLocation, setIsEditingLocation] = useState(false);
+  const [editedData, setEditedData] = useState({
+    title: formData.title || "",
+    price: formData.price || "",
+    description: formData.description || "",
+    notes: formData.notes || ""
+  });
+  const [editedLocation, setEditedLocation] = useState({
+    destination_name: formData.destination_name || "",
+    city: formData.city || "",
+    destination_description: formData.destination_description || ""
+  });
+
+  // Handle edit toggle
+  const handleEditBasicDetails = () => {
+    if (isEditingBasicDetails) {
+      // Save changes
+      Object.assign(formData, editedData);
+    }
+    setIsEditingBasicDetails(!isEditingBasicDetails);
+  };
+
+  const handleEditLocation = () => {
+    if (isEditingLocation) {
+      // Save changes
+      Object.assign(formData, editedLocation);
+    }
+    setIsEditingLocation(!isEditingLocation);
+  };
+
+  const handleInputChange = (field, value) => {
+    setEditedData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
+  const handleLocationChange = (field, value) => {
+    setEditedLocation(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return "0 Bytes";
@@ -198,15 +245,24 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               {/* Basic Details Section */}
               <div className="text-left">
                 <div className="mb-4">
-                  <h3 className="font-medium text-black/90 text-base mb-1">
-                    Basic Details
-                  </h3>
+                  <div className="flex justify-between">
+                    <h3 className="font-medium text-black/90 text-base mb-1">
+                      Basic Details
+                    </h3>
+
+                    <button
+                      onClick={handleEditBasicDetails}
+                      className="hover:bg-gray-100 p-1.5 rounded transition-colors"
+                    >
+                      <Settings2 size={16} className="text-black/60" />
+                    </button>
+                  </div>
                   <p className="text-sm text-black/60">
                     Review the core information about your activity including
-                    title, description, and pricing.
+                    title, description<br></br> and pricing.
                   </p>
                 </div>
-                <div className=" mt-8 ">
+                <div className="mt-8">
                   <div className="flex flex-row justify-between gap-4">
                     {/* LEFT */}
                     <div className="flex-1 space-y-4">
@@ -214,33 +270,72 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         <label className="text-sm font-medium text-black/80">
                           Activity title
                         </label>
-                        <div className="text-sm text-[#0e63be] ">
-                          {formData.title}
-                        </div>
+                        {isEditingBasicDetails ? (
+                          <input
+                            type="text"
+                            value={editedData.title}
+                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                          />
+                        ) : (
+                          <div className="text-sm text-[#0e63be]">
+                            {formData.title}
+                          </div>
+                        )}
                       </div>
                       <div className="flex space-x-8">
                         <label className="text-sm font-medium text-black/80">
                           Pricing per {formData.unit}
                         </label>
-                        <div className="text-sm text-[#0e63be] ">
-                          ₱{formData.price || "0"}
-                        </div>
+                        {isEditingBasicDetails ? (
+                          <input
+                            type="number"
+                            value={editedData.price}
+                            onChange={(e) => handleInputChange('price', e.target.value)}
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            placeholder="0"
+                          />
+                        ) : (
+                          <div className="text-sm text-[#0e63be]">
+                            ₱{formData.price || "0"}
+                          </div>
+                        )}
                       </div>
                       <div className="flex space-x-8">
                         <label className="text-sm font-medium text-black/80">
                           Short Description of the activity
                         </label>
-                        <div className="text-sm text-[#0e63be]">
-                          {formData.description || "No description provided"}
-                        </div>
+                        {isEditingBasicDetails ? (
+                          <input
+                            type="text"
+                            value={editedData.description}
+                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            placeholder="No description provided"
+                          />
+                        ) : (
+                          <div className="text-sm text-[#0e63be]">
+                            {formData.description || "No description provided"}
+                          </div>
+                        )}
                       </div>
                       <div className="flex space-x-8">
                         <label className="text-sm font-medium text-black/80">
                           Additional Notes
                         </label>
-                        <div className="text-sm text-[#0e63be]">
-                          {formData.notes || "No additional notes provided"}
-                        </div>
+                        {isEditingBasicDetails ? (
+                          <input
+                            type="text"
+                            value={editedData.notes}
+                            onChange={(e) => handleInputChange('notes', e.target.value)}
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            placeholder="No additional notes provided"
+                          />
+                        ) : (
+                          <div className="text-sm text-[#0e63be]">
+                            {formData.notes || "No additional notes provided"}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -259,7 +354,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 </div>
                 {/* Category Section */}
                 <div className="flex-1 space-y-4">
-                  <div className="flex space-x-8  mt-8 ">
+                  <div className="flex space-x-8 mt-8">
                     <label className="text-sm font-medium text-black/80">
                       Category
                     </label>
@@ -284,7 +379,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         ))}
                       </div>
                     ) : (
-                      <div className="w-full px-4 py-2 text-sm text-black/60 rounded-sm  ">
+                      <div className="w-full px-4 py-2 text-sm text-black/60 rounded-sm">
                         No tags selected
                       </div>
                     )}
@@ -295,16 +390,19 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               {/* Travel Companions Section */}
               <div className="border-t border-gray-200 pt-6">
                 <div className="mb-4">
-                  <h3 className="font-medium text-left text-black/90 text-base mb-1">
-                    This activity is best suited for
-                  </h3>
+                  <div className="flex justify-between">
+                    <h3 className="font-medium text-left text-black/90 text-base mb-1">
+                      This activity is best suited for
+                    </h3>
+                    <Settings2 size={16} className="text-black/60" />
+                  </div>
                   <p className="text-sm text-black/60 text-left">
                     Let customers know who would enjoy this activity the most,
                     from solo travelers to families.
                   </p>
                 </div>
                 {companions.length > 0 ? (
-                  <div className="flex flex-wrap gap-2 ">
+                  <div className="flex flex-wrap gap-2">
                     {companions.map((companion, index) => (
                       <div
                         key={index}
@@ -327,9 +425,17 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               {/* Destination Section */}
               <div>
                 <div className="mb-4">
-                  <h3 className="font-medium text-left text-black/90 text-base mb-1">
-                    Location of the activity
-                  </h3>
+                  <div className="flex justify-between">
+                    <h3 className="font-medium text-left text-black/90 text-base mb-1">
+                      Location of the activity
+                    </h3>
+                    <button
+                      onClick={handleEditLocation}
+                      className="hover:bg-gray-100 p-1.5 rounded transition-colors"
+                    >
+                      <Settings2 size={16} className="text-black/60" />
+                    </button>
+                  </div>
                   <p className="text-sm text-black/60 text-left">
                     Verify the location details where customers will experience
                     this activity.
@@ -338,31 +444,61 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
 
                 <div className="space-y-4 text-left">
                   <div className="flex-1 space-y-4">
-                    <div className="flex space-x-8  mt-8 ">
+                    <div className="flex space-x-8 mt-8">
                       <label className="text-sm font-medium text-black/80">
                         Name
                       </label>
-                      <div className="text-sm text-[#0e63be]">
-                        {formData.destination_name || "Not specified"}
-                      </div>
+                      {isEditingLocation ? (
+                        <input
+                          type="text"
+                          value={editedLocation.destination_name}
+                          onChange={(e) => handleLocationChange('destination_name', e.target.value)}
+                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                          placeholder="Not specified"
+                        />
+                      ) : (
+                        <div className="text-sm text-[#0e63be]">
+                          {formData.destination_name || "Not specified"}
+                        </div>
+                      )}
                     </div>
-                    <div className="flex space-x-8  ">
+                    <div className="flex space-x-8">
                       <label className="text-sm font-medium text-black/80">
                         City
                       </label>
-                      <div className="text-sm text-[#0e63be]">
-                        {formData.city || "Not specified"}
-                      </div>
+                      {isEditingLocation ? (
+                        <input
+                          type="text"
+                          value={editedLocation.city}
+                          onChange={(e) => handleLocationChange('city', e.target.value)}
+                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                          placeholder="Not specified"
+                        />
+                      ) : (
+                        <div className="text-sm text-[#0e63be]">
+                          {formData.city || "Not specified"}
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="flex space-x-8  ">
+                  <div className="flex space-x-8">
                     <label className="text-sm font-medium text-black/80">
                       Description or Landmark
                     </label>
-                    <div className="text-sm text-[#0e63be]">
-                      {formData.destination_description ||
-                        "No description provided"}
-                    </div>
+                    {isEditingLocation ? (
+                      <input
+                        type="text"
+                        value={editedLocation.destination_description}
+                        onChange={(e) => handleLocationChange('destination_description', e.target.value)}
+                        className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                        placeholder="No description provided"
+                      />
+                    ) : (
+                      <div className="text-sm text-[#0e63be]">
+                        {formData.destination_description ||
+                          "No description provided"}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -370,9 +506,12 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               {/* Images Section */}
               <div className="border-t border-gray-200 pt-6">
                 <div className="mb-4">
-                  <h3 className="font-medium text-left text-black/90 text-base mb-1">
-                    Images
-                  </h3>
+                  <div className="flex justify-between">
+                    <h3 className="font-medium text-left text-black/90 text-base mb-1">
+                      Images
+                    </h3>
+                    <Settings2 size={16} className="text-black/60" />
+                  </div>
                   <p className="text-sm text-black/60 text-left">
                     Visual content helps customers understand what to expect
                     from your activity.
