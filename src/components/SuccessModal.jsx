@@ -84,7 +84,7 @@ const SuccessModal = ({ isOpen, onClose, status }) => {
           {/* Action Button */}
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75 w-full"
+            className="px-6 py-3 bg-black/80 text-white hover:bg-black/70text-base rounded-lg  w-full"
           >
             Go to Dashboard
           </button>

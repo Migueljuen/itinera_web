@@ -1,6 +1,39 @@
 import React, { useState } from "react";
-import { FileImage, Clock } from "lucide-react";
+import { FileImage, Clock, X, Plus } from "lucide-react";
 import { ArrowLeft, Settings2 } from "lucide-react";
+
+const TRAVEL_COMPANIONS = [
+  {
+    id: "Solo",
+    label: "Solo",
+    description: "Perfect for solo travelers",
+  },
+  {
+    id: "Partner",
+    label: "Couple",
+    description: "Romantic experiences for two",
+  },
+  {
+    id: "Family",
+    label: "Family",
+    description: "Great for families with kids",
+  },
+  {
+    id: "Friends",
+    label: "Friends",
+    description: "Fun group activities",
+  },
+  {
+    id: "Group",
+    label: "Large Group",
+    description: "Suitable for bigger groups",
+  },
+  {
+    id: "Any",
+    label: "Anyone",
+    description: "Works for all group sizes",
+  },
+];
 
 const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
   console.log("Form Data in ReviewSubmit:", formData);
@@ -11,6 +44,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
   // State for editing
   const [isEditingBasicDetails, setIsEditingBasicDetails] = useState(false);
   const [isEditingLocation, setIsEditingLocation] = useState(false);
+  const [isEditingCompanions, setIsEditingCompanions] = useState(false);
   const [editedData, setEditedData] = useState({
     title: formData.title || "",
     price: formData.price || "",
@@ -22,6 +56,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
     city: formData.city || "",
     destination_description: formData.destination_description || ""
   });
+  const [editedCompanions, setEditedCompanions] = useState([...companions]);
 
   // Handle edit toggle
   const handleEditBasicDetails = () => {
@@ -40,6 +75,14 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
     setIsEditingLocation(!isEditingLocation);
   };
 
+  const handleEditCompanions = () => {
+    if (isEditingCompanions) {
+      // Save changes
+      formData.travel_companions = [...editedCompanions];
+    }
+    setIsEditingCompanions(!isEditingCompanions);
+  };
+
   const handleInputChange = (field, value) => {
     setEditedData(prev => ({
       ...prev,
@@ -52,6 +95,14 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const removeCompanion = (companionToRemove) => {
+    setEditedCompanions(prev => prev.filter(c => c !== companionToRemove));
+  };
+
+  const addCompanion = (companionToAdd) => {
+    setEditedCompanions(prev => [...prev, companionToAdd]);
   };
 
   const formatFileSize = (bytes) => {
@@ -394,28 +445,85 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     <h3 className="font-medium text-left text-black/90 text-base mb-1">
                       This activity is best suited for
                     </h3>
-                    <Settings2 size={16} className="text-black/60" />
+                    <button
+                      onClick={handleEditCompanions}
+                      className="hover:bg-gray-100 p-1.5 rounded transition-colors"
+                    >
+                      <Settings2 size={16} className="text-black/60" />
+                    </button>
                   </div>
                   <p className="text-sm text-black/60 text-left">
                     Let customers know who would enjoy this activity the most,
                     from solo travelers to families.
                   </p>
                 </div>
-                {companions.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
-                    {companions.map((companion, index) => (
-                      <div
-                        key={index}
-                        className="px-6 py-1 rounded-full bg-blue-100 text-[#0e63be]"
-                      >
-                        <span className="text-xs font-medium">{companion}</span>
+
+                {isEditingCompanions ? (
+                  <div className="space-y-4">
+                    {/* Selected companions */}
+                    {editedCompanions.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {editedCompanions.map((companion, index) => (
+                          <div
+                            key={index}
+                            className="relative px-6 py-1 rounded-full bg-blue-100 text-[#0e63be] pr-8"
+                          >
+                            <span className="text-xs font-medium">{companion}</span>
+                            <button
+                              onClick={() => removeCompanion(companion)}
+                              className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-red-400 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    ) : (
+                      <div className="w-full px-4 py-2 text-sm text-black/60 rounded-xl border border-gray-300 bg-gray-50">
+                        No companions selected
+                      </div>
+                    )}
+
+                    {/* Available companions to add */}
+                    {TRAVEL_COMPANIONS.filter(tc => !editedCompanions.includes(tc.label)).length > 0 && (
+                      <div className="mt-4">
+                        <p className="text-xs text-black/60 mb-2">Add more:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {TRAVEL_COMPANIONS.filter(tc => !editedCompanions.includes(tc.label)).map((companion) => (
+                            <button
+                              key={companion.id}
+                              onClick={() => addCompanion(companion.label)}
+                              className="relative px-6 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-[#0e63be] transition-colors pr-8"
+                            >
+                              <span className="text-xs font-medium">{companion.label}</span>
+                              <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-blue-400 text-white rounded-full text-xs">
+                                +
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="w-full px-4 py-2 text-sm text-black/60 rounded-xl border border-gray-300 bg-gray-50">
-                    No companions selected
-                  </div>
+                  <>
+                    {companions.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {companions.map((companion, index) => (
+                          <div
+                            key={index}
+                            className="px-6 py-1 rounded-full bg-blue-100 text-[#0e63be]"
+                          >
+                            <span className="text-xs font-medium">{companion}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="w-full px-4 py-2 text-sm text-black/60 rounded-xl border border-gray-300 bg-gray-50">
+                        No companions selected
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>
