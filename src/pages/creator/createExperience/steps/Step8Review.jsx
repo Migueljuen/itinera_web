@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { FileImage, Clock, X, Plus } from "lucide-react";
-import { ArrowLeft, Settings2 } from "lucide-react";
+import { ArrowLeft, Settings2, FileImage, Check } from "lucide-react";
 
 const TRAVEL_COMPANIONS = [
   {
@@ -305,19 +304,23 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                       onClick={handleEditBasicDetails}
                       className="hover:bg-gray-100 p-1.5 rounded transition-colors"
                     >
-                      <Settings2 size={16} className="text-black/60" />
+                      {isEditingBasicDetails ? (
+                        <Check size={16} className="text-green-600" />
+                      ) : (
+                        <Settings2 size={16} className="text-black/60" />
+                      )}
                     </button>
                   </div>
                   <p className="text-sm text-black/60">
                     Review the core information about your activity including
-                    title, description<br></br> and pricing.
+                    title, description and pricing.
                   </p>
                 </div>
                 <div className="mt-8">
                   <div className="flex flex-row justify-between gap-4">
                     {/* LEFT */}
                     <div className="flex-1 space-y-4">
-                      <div className="flex space-x-8">
+                      <div className="flex space-x-8 items-center min-h-[24px]">
                         <label className="text-sm font-medium text-black/80">
                           Activity title
                         </label>
@@ -326,15 +329,15 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="text"
                             value={editedData.title}
                             onChange={(e) => handleInputChange('title', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
+                          <div className="text-sm text-[#0e63be] pb-1">
                             {formData.title}
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8">
+                      <div className="flex space-x-8 items-center min-h-[24px]">
                         <label className="text-sm font-medium text-black/80">
                           Pricing per {formData.unit}
                         </label>
@@ -343,16 +346,16 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="number"
                             value={editedData.price}
                             onChange={(e) => handleInputChange('price', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                             placeholder="0"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
+                          <div className="text-sm text-[#0e63be] pb-1">
                             ₱{formData.price || "0"}
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8">
+                      <div className="flex space-x-8 items-center min-h-[24px]">
                         <label className="text-sm font-medium text-black/80">
                           Short Description of the activity
                         </label>
@@ -361,16 +364,16 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="text"
                             value={editedData.description}
                             onChange={(e) => handleInputChange('description', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                             placeholder="No description provided"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
+                          <div className="text-sm text-[#0e63be] pb-1">
                             {formData.description || "No description provided"}
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8">
+                      <div className="flex space-x-8 items-center min-h-[24px]">
                         <label className="text-sm font-medium text-black/80">
                           Additional Notes
                         </label>
@@ -379,11 +382,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="text"
                             value={editedData.notes}
                             onChange={(e) => handleInputChange('notes', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                             placeholder="No additional notes provided"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
+                          <div className="text-sm text-[#0e63be] pb-1">
                             {formData.notes || "No additional notes provided"}
                           </div>
                         )}
@@ -449,7 +452,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                       onClick={handleEditCompanions}
                       className="hover:bg-gray-100 p-1.5 rounded transition-colors"
                     >
-                      <Settings2 size={16} className="text-black/60" />
+                      {isEditingCompanions ? (
+                        <Check size={16} className="text-green-600" />
+                      ) : (
+                        <Settings2 size={16} className="text-black/60" />
+                      )}
                     </button>
                   </div>
                   <p className="text-sm text-black/60 text-left">
@@ -541,7 +548,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                       onClick={handleEditLocation}
                       className="hover:bg-gray-100 p-1.5 rounded transition-colors"
                     >
-                      <Settings2 size={16} className="text-black/60" />
+                      {isEditingLocation ? (
+                        <Check size={16} className="text-green-600" />
+                      ) : (
+                        <Settings2 size={16} className="text-black/60" />
+                      )}
                     </button>
                   </div>
                   <p className="text-sm text-black/60 text-left">
@@ -552,7 +563,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
 
                 <div className="space-y-4 text-left">
                   <div className="flex-1 space-y-4">
-                    <div className="flex space-x-8 mt-8">
+                    <div className="flex space-x-8 mt-8 items-center min-h-[24px]">
                       <label className="text-sm font-medium text-black/80">
                         Name
                       </label>
@@ -561,11 +572,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           type="text"
                           value={editedLocation.destination_name}
                           onChange={(e) => handleLocationChange('destination_name', e.target.value)}
-                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                           placeholder="Not specified"
                         />
                       ) : (
-                        <div className="text-sm text-[#0e63be]">
+                        <div className="text-sm text-[#0e63be] pb-1">
                           {formData.destination_name || "Not specified"}
                         </div>
                       )}
@@ -614,12 +625,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               {/* Images Section */}
               <div className="border-t border-gray-200 pt-6">
                 <div className="mb-4">
-                  <div className="flex justify-between">
-                    <h3 className="font-medium text-left text-black/90 text-base mb-1">
-                      Images
-                    </h3>
-                    <Settings2 size={16} className="text-black/60" />
-                  </div>
+                  <h3 className="font-medium text-left text-black/90 text-base mb-1">
+                    Images
+                  </h3>
                   <p className="text-sm text-black/60 text-left">
                     Visual content helps customers understand what to expect
                     from your activity.

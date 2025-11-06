@@ -4,7 +4,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-import { Toaster } from "react-hot-toast"; // ✅ Add this
+import { Toaster } from "react-hot-toast";
 import LandingPage from "./pages/shared/LandingPage";
 import Login from "./pages/shared/Login";
 import Signup from "./pages/shared/signup";
@@ -28,7 +28,7 @@ export default function App() {
         position="top-center"
         containerStyle={{ zIndex: 999999 }}
         toastOptions={{
-          duration: 4000,
+          duration: 3000,
           style: { background: "#363636", color: "#fff" },
         }}
       />

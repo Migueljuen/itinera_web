@@ -46,7 +46,7 @@ const NotificationDropdown = ({ notifications, setNotifications, onClose, onMark
         [bookingId]: responseType,
       }));
 
-      // ✅ update parent notifications state
+      //  update parent notifications state
       if (typeof onUpdateNotification === "function") {
         onUpdateNotification(notificationId, responseType);
       }
