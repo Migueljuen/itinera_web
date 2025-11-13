@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Search,
   Plus,
@@ -29,11 +29,11 @@ import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import toast, { Toaster } from "react-hot-toast";
 import dayjs from "dayjs";
-import { div } from "framer-motion/client";
 
 const BookingManagement = () => {
   const navigate = useNavigate();
   const { user, token } = useAuth();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = useState("All");
@@ -42,6 +42,7 @@ const BookingManagement = () => {
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [expandedBookingId, setExpandedBookingId] = useState(null);
+  const bookingRefs = useRef({});
 
   const ITEMS_PER_PAGE = 10;
 
@@ -96,6 +97,43 @@ const BookingManagement = () => {
       fetchBookings();
     }
   }, [user]);
+
+  // Handle selected booking from URL parameter
+  useEffect(() => {
+    const selectedId = searchParams.get("selectedId");
+
+    if (selectedId && bookings.length > 0) {
+      const bookingId = parseInt(selectedId);
+      const booking = bookings.find(b => b.booking_id === bookingId);
+
+      if (booking) {
+        // Expand the booking
+        setExpandedBookingId(bookingId);
+
+        // Set the appropriate tab based on booking status
+        const status = booking.status;
+        if (isOngoing(booking) || status?.toLowerCase() === "ongoing") {
+          setSelectedTab("Ongoing");
+        } else if (status?.toLowerCase() === "confirmed") {
+          setSelectedTab("Confirmed");
+        } else if (status?.toLowerCase() === "completed") {
+          setSelectedTab("Completed");
+        } else if (status?.toLowerCase() === "cancelled") {
+          setSelectedTab("Cancelled");
+        } else {
+          setSelectedTab("All");
+        }
+
+        // Scroll to the booking after a short delay to ensure rendering
+        setTimeout(() => {
+          bookingRefs.current[bookingId]?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        }, 300);
+      }
+    }
+  }, [searchParams, bookings]);
 
   // Reset to first page when tab or search changes
   useEffect(() => {
@@ -189,7 +227,6 @@ const BookingManagement = () => {
 
   return (
     <>
-
       <div className="min-h-screen">
         <div className="">
           {/* Header */}
@@ -218,7 +255,7 @@ const BookingManagement = () => {
               <div className="bg-white rounded-lg mb-6">
                 <div className="flex justify-between">
                   {/* Tab Navigation */}
-                  <div className="flex   bg-gray-50  rounded-lg w-fit p-2">
+                  <div className="flex bg-gray-50 rounded-lg w-fit p-2">
                     {[
                       "All",
                       "Confirmed",
@@ -230,8 +267,8 @@ const BookingManagement = () => {
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
                         className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
-                          ? "bg-white text-black/80 shadow-sm/10"
-                          : "text-black/50 hover:text-black/70"
+                            ? "bg-white text-black/80 shadow-sm/10"
+                            : "text-black/50 hover:text-black/70"
                           }`}
                       >
                         {tab === "Confirmed" ? "Upcoming" : tab}
@@ -254,8 +291,6 @@ const BookingManagement = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Table Header Row */}
             </div>
 
             {/* Table Body */}
@@ -276,7 +311,9 @@ const BookingManagement = () => {
                   return (
                     <div
                       key={booking.booking_id}
-                      className="py-6 mb-4 border rounded-xl border-gray-300 bg-white  transition"
+                      ref={(el) => (bookingRefs.current[booking.booking_id] = el)}
+                      className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                        }`}
                     >
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-2">
@@ -284,8 +321,8 @@ const BookingManagement = () => {
                           {/* DAY NUMBER AND DAY OF WEEK */}
                           <div
                             className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
-                              ? "text-[#3A81F3]"
-                              : "text-black/70"
+                                ? "text-[#3A81F3]"
+                                : "text-black/70"
                               }`}
                           >
                             <p className="text-xl">
@@ -354,8 +391,8 @@ const BookingManagement = () => {
                       {/* Expanded Content (Sliding Section) */}
                       <div
                         className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
-                          ? "max-h-[500px] opacity-100 mt-4"
-                          : "max-h-0 opacity-0"
+                            ? "max-h-[500px] opacity-100 mt-4"
+                            : "max-h-0 opacity-0"
                           }`}
                       >
                         <div className="border-t border-gray-200 pt-4 px-8 text-sm text-black/70 space-y-4 flex justify-between">
@@ -484,8 +521,8 @@ const BookingManagement = () => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-2 border rounded-lg ${currentPage === page
-                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                        : "border-gray-300 hover:bg-gray-50"
+                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                          : "border-gray-300 hover:bg-gray-50"
                         }`}
                     >
                       {page}

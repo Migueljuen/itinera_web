@@ -337,7 +337,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8 items-center min-h-[24px]">
+                      <div className="flex space-x-8">
                         <label className="text-sm font-medium text-black/80">
                           Pricing per {formData.unit}
                         </label>
@@ -346,16 +346,16 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="number"
                             value={editedData.price}
                             onChange={(e) => handleInputChange('price', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="0"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be] pb-1">
+                          <div className="text-sm text-[#0e63be]">
                             ₱{formData.price || "0"}
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8 items-center min-h-[24px]">
+                      <div className="flex space-x-8">
                         <label className="text-sm font-medium text-black/80">
                           Short Description of the activity
                         </label>
@@ -364,16 +364,16 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="text"
                             value={editedData.description}
                             onChange={(e) => handleInputChange('description', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No description provided"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be] pb-1">
+                          <div className="text-sm text-[#0e63be]">
                             {formData.description || "No description provided"}
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8 items-center min-h-[24px]">
+                      <div className="flex space-x-8">
                         <label className="text-sm font-medium text-black/80">
                           Additional Notes
                         </label>
@@ -382,11 +382,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             type="text"
                             value={editedData.notes}
                             onChange={(e) => handleInputChange('notes', e.target.value)}
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
+                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No additional notes provided"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be] pb-1">
+                          <div className="text-sm text-[#0e63be]">
                             {formData.notes || "No additional notes provided"}
                           </div>
                         )}
@@ -563,7 +563,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
 
                 <div className="space-y-4 text-left">
                   <div className="flex-1 space-y-4">
-                    <div className="flex space-x-8 mt-8 items-center min-h-[24px]">
+                    <div className="flex space-x-8 mt-8">
                       <label className="text-sm font-medium text-black/80">
                         Name
                       </label>
@@ -572,11 +572,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           type="text"
                           value={editedLocation.destination_name}
                           onChange={(e) => handleLocationChange('destination_name', e.target.value)}
-                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
+                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                           placeholder="Not specified"
                         />
                       ) : (
-                        <div className="text-sm text-[#0e63be] pb-1">
+                        <div className="text-sm text-[#0e63be]">
                           {formData.destination_name || "Not specified"}
                         </div>
                       )}
