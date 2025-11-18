@@ -20,6 +20,8 @@ import {
   UserPlusIcon,
   ChevronUpIcon,
   ChevronDownIcon,
+  ClockIcon,
+  PresentationChartLineIcon,
 } from "@heroicons/react/24/outline";
 import { BellIcon as BellSolid } from "@heroicons/react/24/solid";
 
@@ -300,21 +302,13 @@ const AdminDashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4 border-r border-gray-400 px-4">
-              {/* <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center">
-                <img
-                  src={envelope}
-                  alt="Inbox"
-                  className="w-5 cursor-pointer"
-                />
-              </div> */}
-              {/* Notification Bell */}
+
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
-                    showNotifications
-                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                      : "hover:bg-gray-100 active:bg-gray-200"
-                  }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
+                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                    : "hover:bg-gray-100 active:bg-gray-200"
+                    }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -336,7 +330,7 @@ const AdminDashboard = () => {
                     notifications={notifications}
                     onClose={() => setShowNotifications(false)}
                     onMarkAsRead={handleMarkAsRead}
-                    onUpdateNotification={handleUpdateNotification} // <-- this
+                    onUpdateNotification={handleUpdateNotification}
                   />
                 )}
               </div>
@@ -375,7 +369,7 @@ const AdminDashboard = () => {
           {/* Active Activities */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
-              <PaperAirplaneIcon className="w-6 h-6 text-green-600" />
+              <PresentationChartLineIcon className="w-6 h-6 text-black/60" />
               <p className="font-medium text-black/80">Active Activities</p>
             </span>
             <span className="flex justify-between">
@@ -399,7 +393,7 @@ const AdminDashboard = () => {
           {/* Pending Activities */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
-              <PaperAirplaneIcon className="w-6 h-6 text-orange-600" />
+              <ClockIcon className="w-6 h-6 text-black/60" />
               <p className="font-medium text-black/80">Pending Activities</p>
             </span>
             <span className="flex justify-between">
@@ -413,7 +407,7 @@ const AdminDashboard = () => {
           {/* Active Creators */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
-              <UsersIcon className="w-6 h-6 text-purple-800" />
+              <UsersIcon className="w-6 h-6 text-black/60" />
               <p className="font-medium text-black/80">Active Creators</p>
             </span>
             <span className="flex justify-between">
@@ -437,7 +431,7 @@ const AdminDashboard = () => {
           {/* Pending Creators */}
           <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
             <span className="flex gap-4">
-              <UserPlusIcon className="w-6 h-6 text-green-600" />
+              <UserPlusIcon className="w-6 h-6 text-black/60" />
               <p className="font-medium text-black/80">Pending creators</p>
             </span>
             <span className="flex justify-between">
@@ -455,12 +449,12 @@ const AdminDashboard = () => {
           <PendingApprovalSection />
 
           {/* chart */}
-          <div className="bg-white flex-1 h-90 shadow-sm flex flex-col justify-start rounded-2xl">
+          {/* <div className="bg-white flex-1 h-90 shadow-sm flex flex-col justify-start rounded-2xl">
             <h1 className="text-lg font-medium px-6  text-black/80 py-4 border-b border-gray-200">
               Activities booked
             </h1>
-            {/* <BarChartTest /> */}
-          </div>
+         
+          </div> */}
         </div>
       </div>
     </div>

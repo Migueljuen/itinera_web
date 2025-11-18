@@ -298,7 +298,7 @@ const AdminDashboardLayout = ({ children }) => {
         </aside>
 
         {/* Main Content */}
-        <div className="lg:ml-64 min-h-screen flex flex-col bg-gray-50">
+        <div className="lg:ml-64 min-h-screen flex flex-col bg-white">
           {/* Page Content */}
           <main className="p-4 lg:p-8 flex-1 flex flex-col">
             {children || <Outlet />}

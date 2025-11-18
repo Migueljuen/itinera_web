@@ -484,7 +484,9 @@ const Step6Destination = ({
                 <button
                   onClick={handleContinue}
                   disabled={isSaving}
-                  className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed"
+                  className=
+
+                  {`px-8 py-3 rounded-lg ${isEditMode ? "hidden" : ""} font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer max-h-[44px] disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   Continue
                 </button>
