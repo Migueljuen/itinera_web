@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -73,6 +73,11 @@ function Login() {
       setIsSubmitting(false);
     }
   };
+
+  const handleForgot = useCallback(() => {
+    navigate("/forgot");
+  }, [navigate]);
+
   return (
     <>
 
@@ -143,10 +148,13 @@ function Login() {
             <div className="flex px-6 justify-end">
               <button
                 type="button"
+
+                onClick={handleForgot}
                 className="text-blue-400 text-sm font-medium hover:text-blue-500 transition-colors"
               >
                 Forgot Password?
               </button>
+
             </div>
 
             {/* Login Button */}

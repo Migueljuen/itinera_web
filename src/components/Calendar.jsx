@@ -17,7 +17,7 @@ export default function CalendarView({ events }) {
   };
 
   return (
-    <div className="bg-white w-[780px] rounded-4xl p-8 relative z-10 flex flex-col h-full border border-gray-300">
+    <div className="bg-white  rounded-4xl p-8 relative z-10 flex flex-col h-full border border-gray-300">
       {/* Calendar fills remaining space */}
       <div className="flex-1">
         <Calendar

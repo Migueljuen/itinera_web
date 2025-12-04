@@ -19,6 +19,9 @@ import PublicRoute from "./components/PublicRoute";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
 import ExperienceEditForm from "./pages/creator/editExperience/ExperienceEditForm";
 import Settings from "./pages/creator/settings";
+import ForgotPassword from "./pages/shared/forgot";
+import VerifyOtp from "./pages/shared/verify-otp";
+import ResetPassword from "./pages/shared/reset-password";
 
 export default function App() {
   return (
@@ -40,6 +43,33 @@ export default function App() {
           element={
             <PublicRoute>
               <LandingPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/forgot"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+
+
+        <Route
+          path="/verify-otp"
+          element={
+            <PublicRoute>
+              <VerifyOtp />
             </PublicRoute>
           }
         />

@@ -134,9 +134,8 @@ const LandingPage = () => {
       <div className="min-h-screen bg-white font-display">
         {/* Header */}
         <header
-          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${
-            scrolled ? "transform-gpu" : ""
-          }`}
+          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${scrolled ? "transform-gpu" : ""
+            }`}
         >
           <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
             <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
@@ -145,7 +144,7 @@ const LandingPage = () => {
                 <img
                   src={logoImage}
                   alt="Itinera Logo"
-                  className="w-12 cursor-pointer transition-transform will-change-transform"
+                  className="w-24 cursor-pointer transition-transform will-change-transform"
                   loading="eager"
                   decoding="async"
                 />
@@ -713,10 +712,10 @@ const LandingPage = () => {
                               link === "About Us"
                                 ? "/about"
                                 : link === "Contact Us"
-                                ? "/contact"
-                                : link === "Become a host"
-                                ? "/host"
-                                : "/"
+                                  ? "/contact"
+                                  : link === "Become a host"
+                                    ? "/host"
+                                    : "/"
                             }
                           >
                             {link}
