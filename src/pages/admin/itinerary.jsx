@@ -47,12 +47,15 @@ const ItineraryManagement = () => {
   const fetchItineraries = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/admin/itineraries`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await axios.get(
+        `${API_URL}/admin/itineraries`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       setItineraries(response.data.itineraries || []);
     } catch (error) {
@@ -79,7 +82,7 @@ const ItineraryManagement = () => {
 
     if (selectedId && itineraries.length > 0) {
       const itineraryId = parseInt(selectedId);
-      const itinerary = itineraries.find((i) => i.itinerary_id === itineraryId);
+      const itinerary = itineraries.find(i => i.itinerary_id === itineraryId);
 
       if (itinerary) {
         // Expand the itinerary
@@ -103,7 +106,7 @@ const ItineraryManagement = () => {
         setTimeout(() => {
           itineraryRefs.current[itineraryId]?.scrollIntoView({
             behavior: "smooth",
-            block: "center",
+            block: "center"
           });
         }, 300);
       }
@@ -139,7 +142,9 @@ const ItineraryManagement = () => {
       itinerary.traveler_last_name
         ?.toLowerCase()
         .includes(searchText.toLowerCase()) ||
-      itinerary.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+      itinerary.title
+        ?.toLowerCase()
+        .includes(searchText.toLowerCase()) ||
       itinerary.itinerary_id?.toString().includes(searchText.toLowerCase());
 
     const matchesTab =
@@ -192,18 +197,23 @@ const ItineraryManagement = () => {
     }
   };
 
-  // Calculate earnings breakdown
-  const calculateEarnings = (itinerary) => {
+  // Get earnings summary from backend (already calculated per activity)
+  const getEarningsSummary = (itinerary) => {
+    if (itinerary.earnings_summary) {
+      return itinerary.earnings_summary;
+    }
+
+    // Fallback calculation if backend doesn't provide it
     const totalAmount = parseFloat(itinerary.total_amount || 0);
-    const commissionRate = 0.15; // 15% commission
+    const commissionRate = 0.15;
     const platformEarning = totalAmount * commissionRate;
     const creatorEarning = totalAmount - platformEarning;
 
     return {
-      totalAmount,
-      platformEarning,
-      creatorEarning,
-      commissionRate: commissionRate * 100,
+      total_amount: totalAmount,
+      platform_commission: platformEarning,
+      creators_payout: creatorEarning,
+      commission_rate: commissionRate * 100,
     };
   };
 
@@ -239,21 +249,18 @@ const ItineraryManagement = () => {
                 <div className="flex justify-between">
                   {/* Tab Navigation */}
                   <div className="flex bg-gray-50 rounded-lg w-fit p-2">
-                    {["All", "Pending", "Paid", "Unpaid", "Partial"].map(
-                      (tab) => (
-                        <button
-                          key={tab}
-                          onClick={() => setSelectedTab(tab)}
-                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                            selectedTab === tab
-                              ? "bg-white text-black/80 shadow-sm"
-                              : "text-black/50 hover:text-black/70"
+                    {["All", "Pending", "Paid", "Unpaid", "Partial"].map((tab) => (
+                      <button
+                        key={tab}
+                        onClick={() => setSelectedTab(tab)}
+                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
+                            ? "bg-white text-black/80 shadow-sm"
+                            : "text-black/50 hover:text-black/70"
                           }`}
-                        >
-                          {tab}
-                        </button>
-                      )
-                    )}
+                      >
+                        {tab}
+                      </button>
+                    ))}
                   </div>
                   {/* Search */}
                   <div className="relative h-fit">
@@ -286,23 +293,20 @@ const ItineraryManagement = () => {
                 </div>
               ) : (
                 paginatedItineraries.map((itinerary) => {
-                  const isExpanded =
-                    expandedItineraryId === itinerary.itinerary_id;
-                  const earnings = calculateEarnings(itinerary);
+                  const isExpanded = expandedItineraryId === itinerary.itinerary_id;
+                  const earnings = getEarningsSummary(itinerary);
+                  const creatorPayouts = itinerary.creator_payouts || [];
 
                   return (
                     <div
                       key={itinerary.itinerary_id}
-                      ref={(el) =>
-                        (itineraryRefs.current[itinerary.itinerary_id] = el)
-                      }
-                      className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${
-                        isExpanded ? "ring-2 ring-blue-400" : ""
-                      }`}
+                      ref={(el) => (itineraryRefs.current[itinerary.itinerary_id] = el)}
+                      className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                        }`}
                     >
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-4">
-                        <div className="grid grid-cols-[100px_320px_280px_180px] gap-4">
+                        <div className="grid grid-cols-[100px_200px_280px_180px] gap-4">
                           {/* Itinerary ID */}
                           <div className="text-center px-4 border-r border-gray-300">
                             <p className="text-xs text-gray-500">ID</p>
@@ -312,22 +316,23 @@ const ItineraryManagement = () => {
                           </div>
 
                           {/* Date Range */}
-                          <div className="text-sm font-medium text-black/60   flex flex-row justify-between ">
-                            <div className="flex items-center gap-2  w-full justify-center">
+                          <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-center">
+                            <div className="flex items-center gap-2">
                               <Calendar size={16} className="text-black/60" />
                               <span>{formatDate(itinerary.start_date)}</span>
                             </div>
-                            <div className="flex items-center ">
-                              <span className="">-</span>
+                            <div className="flex items-center gap-2 mt-1">
+                              <div className="w-4" /> {/* Spacer */}
+                              <span className="text-xs text-gray-500">to</span>
                             </div>
-                            <div className="flex items-center  gap-2 w-full justify-center">
+                            <div className="flex items-center gap-2">
                               <Calendar size={16} className="text-black/60" />
                               <span>{formatDate(itinerary.end_date)}</span>
                             </div>
                           </div>
 
                           {/* Itinerary Title & Traveler */}
-                          <div className="flex flex-col justify-center px-4 ">
+                          <div className="flex flex-col justify-center px-4">
                             <span className="font-semibold text-sm text-black/80">
                               {itinerary.title}
                             </span>
@@ -342,8 +347,7 @@ const ItineraryManagement = () => {
                                 <User size={16} className="text-gray-400" />
                               )}
                               <span className="text-xs text-gray-600">
-                                {itinerary.traveler_first_name}{" "}
-                                {itinerary.traveler_last_name}
+                                {itinerary.traveler_first_name} {itinerary.traveler_last_name}
                               </span>
                             </div>
                           </div>
@@ -375,9 +379,7 @@ const ItineraryManagement = () => {
                                   },
                                 };
 
-                                const status = statusMap[
-                                  itinerary.payment_status
-                                ] || {
+                                const status = statusMap[itinerary.payment_status] || {
                                   label: itinerary.payment_status,
                                   color: "text-gray-600 bg-gray-100",
                                   dot: "bg-gray-600",
@@ -387,16 +389,14 @@ const ItineraryManagement = () => {
                                   <p
                                     className={`text-xs w-fit px-3 py-1 flex items-center rounded-xl gap-2 ${status.color}`}
                                   >
-                                    <div
-                                      className={`size-2 rounded-full ${status.dot}`}
-                                    ></div>
+                                    <div className={`size-2 rounded-full ${status.dot}`}></div>
                                     {status.label}
                                   </p>
                                 );
                               })()}
                             </div>
                             <p className="text-lg font-semibold text-black/80 mt-1">
-                              ₱{earnings.totalAmount.toFixed(2)}
+                              ₱{earnings.total_amount.toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -404,29 +404,25 @@ const ItineraryManagement = () => {
                         {/* Expand Button */}
                         <button
                           onClick={() =>
-                            setExpandedItineraryId(
-                              isExpanded ? null : itinerary.itinerary_id
-                            )
+                            setExpandedItineraryId(isExpanded ? null : itinerary.itinerary_id)
                           }
                           className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
                         >
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                       </div>
 
                       {/* Expanded Content */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                          isExpanded
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
                             ? "max-h-[800px] opacity-100 mt-6"
                             : "max-h-0 opacity-0"
-                        }`}
+                          }`}
                       >
                         <div className="border-t border-gray-200 pt-6 px-8">
                           <div className="grid grid-cols-2 gap-8">
@@ -441,8 +437,7 @@ const ItineraryManagement = () => {
                                 <div className="space-y-2 text-sm">
                                   <p className="text-black/60">
                                     <span className="font-medium">Name:</span>{" "}
-                                    {itinerary.traveler_first_name}{" "}
-                                    {itinerary.traveler_last_name}
+                                    {itinerary.traveler_first_name} {itinerary.traveler_last_name}
                                   </p>
                                   <p className="text-black/60">
                                     <span className="font-medium">Email:</span>{" "}
@@ -467,11 +462,8 @@ const ItineraryManagement = () => {
                                     {itinerary.title}
                                   </p>
                                   <p className="text-black/60">
-                                    <span className="font-medium">
-                                      Duration:
-                                    </span>{" "}
-                                    {formatDate(itinerary.start_date)} -{" "}
-                                    {formatDate(itinerary.end_date)}
+                                    <span className="font-medium">Duration:</span>{" "}
+                                    {formatDate(itinerary.start_date)} - {formatDate(itinerary.end_date)}
                                   </p>
                                   <p className="text-black/60">
                                     <span className="font-medium">Status:</span>{" "}
@@ -479,9 +471,7 @@ const ItineraryManagement = () => {
                                   </p>
                                   {itinerary.notes && (
                                     <p className="text-black/60">
-                                      <span className="font-medium">
-                                        Notes:
-                                      </span>{" "}
+                                      <span className="font-medium">Notes:</span>{" "}
                                       {itinerary.notes}
                                     </p>
                                   )}
@@ -489,9 +479,7 @@ const ItineraryManagement = () => {
                               </div>
 
                               {/* Payment Proof */}
-                              {(itinerary.proof_image ||
-                                itinerary.down_payment_proof ||
-                                itinerary.remaining_payment_proof) && (
+                              {(itinerary.proof_image || itinerary.down_payment_proof || itinerary.remaining_payment_proof) && (
                                 <div>
                                   <h4 className="font-semibold text-black/80 mb-3 flex items-center gap-2">
                                     <ImageIcon size={18} />
@@ -500,9 +488,7 @@ const ItineraryManagement = () => {
                                   <div className="space-y-3">
                                     {itinerary.proof_image && (
                                       <div>
-                                        <p className="text-xs text-gray-500 mb-1">
-                                          Full Payment
-                                        </p>
+                                        <p className="text-xs text-gray-500 mb-1">Full Payment</p>
                                         <img
                                           src={`${API_URL}${itinerary.proof_image}`}
                                           alt="Payment Proof"
@@ -512,9 +498,7 @@ const ItineraryManagement = () => {
                                     )}
                                     {itinerary.down_payment_proof && (
                                       <div>
-                                        <p className="text-xs text-gray-500 mb-1">
-                                          Down Payment
-                                        </p>
+                                        <p className="text-xs text-gray-500 mb-1">Down Payment</p>
                                         <img
                                           src={`${API_URL}${itinerary.down_payment_proof}`}
                                           alt="Down Payment Proof"
@@ -524,9 +508,7 @@ const ItineraryManagement = () => {
                                     )}
                                     {itinerary.remaining_payment_proof && (
                                       <div>
-                                        <p className="text-xs text-gray-500 mb-1">
-                                          Remaining Payment
-                                        </p>
+                                        <p className="text-xs text-gray-500 mb-1">Remaining Payment</p>
                                         <img
                                           src={`${API_URL}${itinerary.remaining_payment_proof}`}
                                           alt="Remaining Payment Proof"
@@ -542,18 +524,17 @@ const ItineraryManagement = () => {
                             {/* Right Column - Payment Breakdown */}
                             <div className="space-y-6">
                               {/* Earnings Breakdown */}
-                              <div className=" rounded-xl p-6 border border-gray-200">
+                              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
                                 <h4 className="font-semibold text-black/80 mb-4 flex items-center gap-2">
+                                  <DollarSign size={18} />
                                   Earnings Breakdown
                                 </h4>
                                 <div className="space-y-4">
                                   {/* Total Amount */}
-                                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                                    <span className="text-sm text-black/60">
-                                      Total Amount
-                                    </span>
+                                  <div className="flex justify-between items-center pb-3 border-b border-blue-200">
+                                    <span className="text-sm text-black/60">Total Amount</span>
                                     <span className="text-lg font-semibold text-black/80">
-                                      ₱{earnings.totalAmount.toFixed(2)}
+                                      ₱{earnings.total_amount.toFixed(2)}
                                     </span>
                                   </div>
 
@@ -564,30 +545,98 @@ const ItineraryManagement = () => {
                                         Platform Commission
                                       </span>
                                       <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                                        {earnings.commissionRate}%
+                                        {earnings.commission_rate}%
                                       </span>
                                     </div>
                                     <p className="text-2xl font-bold text-blue-600">
-                                      ₱{earnings.platformEarning.toFixed(2)}
+                                      ₱{earnings.platform_commission.toFixed(2)}
                                     </p>
                                   </div>
 
-                                  {/* Creator Earning */}
+                                  {/* Total Creator Payouts */}
                                   <div className="bg-white rounded-lg p-4">
                                     <div className="flex justify-between items-center mb-2">
                                       <span className="text-sm font-medium text-black/70">
-                                        Creator Payout
+                                        Total Creator Payouts
                                       </span>
                                       <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                                        {100 - earnings.commissionRate}%
+                                        {100 - earnings.commission_rate}%
                                       </span>
                                     </div>
                                     <p className="text-2xl font-bold text-green-600">
-                                      ₱{earnings.creatorEarning.toFixed(2)}
+                                      ₱{earnings.creators_payout.toFixed(2)}
                                     </p>
                                   </div>
                                 </div>
                               </div>
+
+                              {/* Creator Payouts Breakdown */}
+                              {creatorPayouts.length > 0 && (
+                                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                                  <h4 className="font-semibold text-black/80 mb-4">
+                                    Creator Payouts ({creatorPayouts.length})
+                                  </h4>
+                                  <div className="space-y-4">
+                                    {creatorPayouts.map((creator) => (
+                                      <div key={creator.creator_id} className="bg-white rounded-lg p-4 border border-gray-200">
+                                        <div className="flex justify-between items-start mb-3">
+                                          <div>
+                                            <p className="font-semibold text-sm text-black/80">
+                                              {creator.creator_name}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                              {creator.activities.length} activity{creator.activities.length > 1 ? 'ies' : ''}
+                                            </p>
+                                          </div>
+                                          <div className="text-right">
+                                            <p className="text-lg font-bold text-green-600">
+                                              ₱{creator.total_net.toFixed(2)}
+                                            </p>
+                                            <p className="text-xs text-gray-500">
+                                              Net payout
+                                            </p>
+                                          </div>
+                                        </div>
+
+                                        {/* Activities list */}
+                                        <div className="border-t border-gray-100 pt-3 space-y-2">
+                                          {creator.activities.map((activity, idx) => (
+                                            <div key={idx} className="flex justify-between text-xs">
+                                              <span className="text-gray-600">
+                                                {activity.experience_title}
+                                              </span>
+                                              <div className="text-right">
+                                                <span className="text-gray-800 font-medium">
+                                                  ₱{activity.payout.toFixed(2)}
+                                                </span>
+                                                <span className="text-gray-400 ml-2">
+                                                  (₱{activity.price.toFixed(2)} - ₱{activity.commission.toFixed(2)})
+                                                </span>
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+
+                                        {/* Summary */}
+                                        <div className="border-t border-gray-100 mt-3 pt-3 text-xs text-gray-600">
+                                          <div className="flex justify-between">
+                                            <span>Gross Amount:</span>
+                                            <span>₱{creator.total_gross.toFixed(2)}</span>
+                                          </div>
+                                          <div className="flex justify-between text-red-600">
+                                            <span>Commission (15%):</span>
+                                            <span>-₱{creator.total_commission.toFixed(2)}</span>
+                                          </div>
+                                          <div className="flex justify-between font-semibold text-black/80 mt-1">
+                                            <span>Net Payout:</span>
+                                            <span>₱{creator.total_net.toFixed(2)}</span>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
 
                               {/* Payment Information */}
                               <div>
@@ -596,42 +645,22 @@ const ItineraryManagement = () => {
                                 </h4>
                                 <div className="space-y-2 text-sm">
                                   <p className="text-black/60">
-                                    <span className="font-medium">
-                                      Payment Type:
-                                    </span>{" "}
-                                    {itinerary.payment_type === "full"
-                                      ? "Full Payment"
-                                      : "Partial Payment"}
+                                    <span className="font-medium">Payment Type:</span>{" "}
+                                    {itinerary.payment_type === "full" ? "Full Payment" : "Partial Payment"}
                                   </p>
                                   <p className="text-black/60">
-                                    <span className="font-medium">
-                                      Amount Paid:
-                                    </span>{" "}
-                                    ₱
-                                    {parseFloat(
-                                      itinerary.amount_paid || 0
-                                    ).toFixed(2)}
+                                    <span className="font-medium">Amount Paid:</span>{" "}
+                                    ₱{parseFloat(itinerary.amount_paid || 0).toFixed(2)}
                                   </p>
                                   {itinerary.payment_type === "partial" && (
                                     <>
                                       <p className="text-black/60">
-                                        <span className="font-medium">
-                                          Down Payment:
-                                        </span>{" "}
-                                        ₱
-                                        {parseFloat(
-                                          itinerary.down_payment_amount || 0
-                                        ).toFixed(2)}
+                                        <span className="font-medium">Down Payment:</span>{" "}
+                                        ₱{parseFloat(itinerary.down_payment_amount || 0).toFixed(2)}
                                       </p>
                                       <p className="text-black/60">
-                                        <span className="font-medium">
-                                          Remaining Balance:
-                                        </span>{" "}
-                                        ₱
-                                        {(
-                                          earnings.totalAmount -
-                                          parseFloat(itinerary.amount_paid || 0)
-                                        ).toFixed(2)}
+                                        <span className="font-medium">Remaining Balance:</span>{" "}
+                                        ₱{(earnings.total_amount - parseFloat(itinerary.amount_paid || 0)).toFixed(2)}
                                       </p>
                                     </>
                                   )}
@@ -643,31 +672,26 @@ const ItineraryManagement = () => {
                                 {itinerary.payment_status === "Pending" && (
                                   <>
                                     <button
-                                      onClick={() =>
-                                        handleApprovePayment(
-                                          itinerary.itinerary_id,
-                                          itinerary.payment_id
-                                        )
-                                      }
-                                      disabled={
-                                        processingPayment ===
-                                        itinerary.itinerary_id
-                                      }
+                                      onClick={() => handleApprovePayment(itinerary.itinerary_id, itinerary.payment_id)}
+                                      disabled={processingPayment === itinerary.itinerary_id}
                                       className="w-full px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                       <CheckCircle size={18} />
-                                      {processingPayment ===
-                                      itinerary.itinerary_id
+                                      {processingPayment === itinerary.itinerary_id
                                         ? "Processing..."
                                         : "Approve Payment"}
                                     </button>
-                                    <button className="w-full px-6 py-3 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 flex items-center justify-center gap-2">
+                                    <button
+                                      className="w-full px-6 py-3 bg-red-100 text-red-700 font-medium rounded-lg hover:bg-red-200 flex items-center justify-center gap-2"
+                                    >
                                       <XCircle size={18} />
                                       Reject Payment
                                     </button>
                                   </>
                                 )}
-                                <button className="w-full px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200">
+                                <button
+                                  className="w-full px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200"
+                                >
                                   View Full Itinerary
                                 </button>
                               </div>
@@ -687,18 +711,13 @@ const ItineraryManagement = () => {
             <div className="mt-6 flex justify-between items-center">
               <div className="text-sm text-gray-600">
                 Showing {startIndex + 1}-
-                {Math.min(
-                  startIndex + ITEMS_PER_PAGE,
-                  filteredItineraries.length
-                )}{" "}
+                {Math.min(startIndex + ITEMS_PER_PAGE, filteredItineraries.length)}{" "}
                 of {filteredItineraries.length} itineraries
               </div>
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
+                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
                   className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
@@ -711,11 +730,10 @@ const ItineraryManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
                           ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
                           : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       {page}
                     </button>
