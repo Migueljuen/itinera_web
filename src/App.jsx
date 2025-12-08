@@ -12,6 +12,7 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import CreatorDashboard from "./pages/creator/index";
 import AdminDashboard from "./pages/admin/index";
+import ItineraryManagement from "./pages/admin/itinerary.jsx";
 import CreatorExperiences from "./pages/creator/activities";
 import BookingManagement from "./pages/creator/bookings";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,7 +27,6 @@ import ResetPassword from "./pages/shared/reset-password";
 export default function App() {
   return (
     <Router>
-
       <Toaster
         position="top-center"
         containerStyle={{ zIndex: 999999 }}
@@ -63,7 +63,6 @@ export default function App() {
             </PublicRoute>
           }
         />
-
 
         <Route
           path="/verify-otp"
@@ -127,7 +126,7 @@ export default function App() {
 
         {/* Admin routes */}
         <Route
-          path="/admin"
+          path="/"
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <AdminDashboardLayout />
@@ -135,6 +134,7 @@ export default function App() {
           }
         >
           <Route index element={<AdminDashboard />} />
+          <Route path="itineraries" element={<ItineraryManagement />} />
         </Route>
 
         {/* Catch all - redirect to home */}
