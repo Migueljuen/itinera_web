@@ -198,7 +198,7 @@ const ItineraryManagement = () => {
       return itinerary.earnings_summary;
     }
 
-    // Fallback calculation if backend doesn't provide it
+    // Fallback calculation
     const totalAmount = parseFloat(itinerary.total_amount || 0);
     const commissionRate = 0.15;
     const platformEarning = totalAmount * commissionRate;
@@ -437,35 +437,68 @@ const ItineraryManagement = () => {
                             <div className="space-y-6">
                               {/* Creator Payouts Breakdown */}
                               {creatorPayouts.length > 0 && (
-                                <div className=" rounded-xl p-6 border border-gray-200">
-                                  <h4 className="font-semibold text-black/80 mb-4">
-                                    Activities booked
-                                  </h4>
+                                <div className="rounded-xl p-6 border border-gray-200">
+                                  <div className="flex justify-between">
+                                    <h4 className="font-semibold text-black/80 mb-4">
+                                      Activities booked
+                                    </h4>
+                                    <div className="flex gap-2 items-center">
+                                      {/* GA - Gross Amount */}
+                                      <div className="relative group flex items-center justify-end">
+                                        <span className="text-xs font-medium text-right text-black/50">
+                                          GA
+                                        </span>
+                                        <div
+                                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 
+                        bg-gray-50 text-black/60 text-xs rounded px-2 py-1 opacity-0 
+                        group-hover:opacity-100 transition-opacity pointer-events-none"
+                                        >
+                                          Gross Amount
+                                        </div>
+                                      </div>
+                                      <div className=""> </div>
+                                      {/* PC - Commission */}
+                                      <div className="relative group flex items-center justify-end">
+                                        <span className="w-20 text-xs text-left text-black/60">
+                                          PC
+                                        </span>
+                                        <div
+                                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 
+                        bg-gray-50 text-black/60 text-xs rounded px-2 py-1 opacity-0 
+                        group-hover:opacity-100 transition-opacity pointer-events-none"
+                                        >
+                                          Platform Commission
+                                        </div>
+                                      </div>
+
+                                      {/* NP - Net Payout */}
+                                      <div className="relative group flex items-center justify-end">
+                                        <span className="w-20 text-right text-black/50 font-medium text-xs">
+                                          NP
+                                        </span>
+                                        <div
+                                          className="absolute bottom-full mb-2 left-1/2 transform -translate-x-1/2 
+                        bg-gray-50 text-black/60 text-xs rounded px-2 py-1 opacity-0 
+                        group-hover:opacity-100 transition-opacity pointer-events-none"
+                                        >
+                                          Net Payout
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
                                   <div className="space-y-4">
                                     {creatorPayouts.map((creator) => (
                                       <div
                                         key={creator.creator_id}
-                                        className="bg-white rounded-lg  "
+                                        className="bg-white"
                                       >
-                                        {/* <div className="flex justify-between items-start mb-3">
-                                          <div>
-                                            <p className="text-sm text-black/60">
-                                              Total Cost
-                                            </p>
-                                          </div>
-                                          <div className="text-right">
-                                            <p className="text-lg font-bold text-[#397ff1]">
-                                              ₱{creator.total_gross.toFixed(2)}
-                                            </p>
-                                          </div>
-                                        </div> */}
-
                                         <div className="border-t border-gray-100 py-4 space-y-3">
                                           {creator.activities.map(
                                             (activity, idx) => (
                                               <div
                                                 key={idx}
-                                                className="flex justify-between text-sm "
+                                                className="flex justify-between text-sm"
                                               >
                                                 <span className="text-black/80">
                                                   {activity.experience_title}
@@ -474,7 +507,7 @@ const ItineraryManagement = () => {
                                                   <span className="w-20 text-right text-black/80">
                                                     ₱{activity.price.toFixed(2)}
                                                   </span>
-                                                  <span className="text-black/60 ">
+                                                  <span className="text-black/60">
                                                     -
                                                   </span>
                                                   <span className="w-20 text-xs text-left text-[#397ff1]">
@@ -494,7 +527,7 @@ const ItineraryManagement = () => {
                                         </div>
 
                                         {/* Summary */}
-                                        <div className="border-t  border-gray-100 mt-3 pt-3 text-xs text-gray-600">
+                                        <div className="border-t border-gray-100 mt-3 pt-3 text-xs text-gray-600">
                                           <div className="flex justify-between">
                                             <span>Gross Amount:</span>
                                             <span>
@@ -708,7 +741,7 @@ const ItineraryManagement = () => {
                                       </p>
                                       <p className="text-black/60">
                                         <span className="font-medium">
-                                          Remaining Balance:
+                                          Balance after approval :
                                         </span>{" "}
                                         ₱
                                         {(
@@ -716,11 +749,11 @@ const ItineraryManagement = () => {
                                           parseFloat(itinerary.amount_paid || 0)
                                         ).toFixed(2)}
                                       </p>
-                                      <p className="text-[#397ff1]">
-                                        View Payment Proof
-                                      </p>
                                     </>
                                   )}
+                                  <p className="text-[#397ff1]">
+                                    View Payment Proof
+                                  </p>
                                 </div>
                               </div>
 

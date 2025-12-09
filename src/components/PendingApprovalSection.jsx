@@ -63,13 +63,9 @@ const PendingApprovalSection = () => {
   return (
     <div className="bg-white flex-1 flex flex-col ">
       {/* Header */}
-      <div className="flex justify-between ">
-        <h1 className="text-lg font-medium text-black/80 py-4">
-          Pending for approval
-        </h1>
-        {/* <h1 className="text-sm font-medium text-[#397ff1] py-4 cursor-pointer hover:text-[#2d6bd4]">
-          See all ({pendingActivities.length})
-        </h1> */}
+      <div className="flex-1 lg:flex-none">
+        <h1 className="text-xl font-semibold text-gray-900 ">Review needed</h1>
+        <p className="  text-black/60">Awaiting review and confirmation</p>
       </div>
 
       {/* Activities List */}
@@ -88,7 +84,7 @@ const PendingApprovalSection = () => {
             {paginatedActivities.map((item) => (
               <div
                 key={item.experience_id || item.id}
-                className="py-6 mb-4 flex items-center justify-between border rounded-xl border-gray-300 hover:bg-gray-50"
+                className="py-6 mb-4 flex items-center justify-between border rounded-xl border-gray-200 hover:bg-gray-50"
               >
                 <div className="grid grid-cols-[100px_300px_220px] gap-4">
                   {/* Activity Image */}
@@ -144,7 +140,6 @@ const PendingApprovalSection = () => {
                         /{item.unit}
                       </span>
                     </div>
-
                   </div>
                 </div>
 
@@ -168,10 +163,11 @@ const PendingApprovalSection = () => {
                 <button
                   onClick={handlePrevPage}
                   disabled={currentPage === 1}
-                  className={`p-2 rounded-md ${currentPage === 1
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-black/70 hover:bg-gray-100"
-                    }`}
+                  className={`p-2 rounded-md ${
+                    currentPage === 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-black/70 hover:bg-gray-100"
+                  }`}
                 >
                   <ChevronLeft size={20} />
                 </button>
@@ -180,10 +176,11 @@ const PendingApprovalSection = () => {
                   <button
                     key={index + 1}
                     onClick={() => handlePageChange(index + 1)}
-                    className={`px-3 py-1 rounded-md text-sm ${currentPage === index + 1
-                      ? "bg-[#397ff1] text-white"
-                      : "text-black/70 hover:bg-gray-100"
-                      }`}
+                    className={`px-3 py-1 rounded-md text-sm ${
+                      currentPage === index + 1
+                        ? "bg-[#397ff1] text-white"
+                        : "text-black/70 hover:bg-gray-100"
+                    }`}
                   >
                     {index + 1}
                   </button>
@@ -192,10 +189,11 @@ const PendingApprovalSection = () => {
                 <button
                   onClick={handleNextPage}
                   disabled={currentPage === totalPages}
-                  className={`p-2 rounded-md ${currentPage === totalPages
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-black/70 hover:bg-gray-100"
-                    }`}
+                  className={`p-2 rounded-md ${
+                    currentPage === totalPages
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-black/70 hover:bg-gray-100"
+                  }`}
                 >
                   <ChevronRight size={20} />
                 </button>

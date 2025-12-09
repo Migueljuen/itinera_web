@@ -51,10 +51,10 @@ function Login() {
           // Use the wasFirstLogin flag from backend
           if (result.wasFirstLogin) {
             toast.success("Welcome! Let's set up your first activity 🎉");
-            navigate("/creator/create", { replace: true });
+            navigate("/owner/create", { replace: true });
           } else {
             toast.success("Login successful!");
-            navigate("/creator", { replace: true });
+            navigate("/owner", { replace: true });
           }
         } else if (userRole === "Admin") {
           toast.success("Welcome back, Admin!");
@@ -80,7 +80,6 @@ function Login() {
 
   return (
     <>
-
       <ChevronLeftIcon
         className="h-6 cursor-pointer hover:text-black/80 absolute top-10 left-10"
         onClick={() => navigate("/")}
@@ -148,13 +147,11 @@ function Login() {
             <div className="flex px-6 justify-end">
               <button
                 type="button"
-
                 onClick={handleForgot}
                 className="text-blue-400 text-sm font-medium hover:text-blue-500 transition-colors"
               >
                 Forgot Password?
               </button>
-
             </div>
 
             {/* Login Button */}

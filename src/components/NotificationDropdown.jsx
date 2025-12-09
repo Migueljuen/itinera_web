@@ -103,7 +103,7 @@ const NotificationDropdown = ({
     // Navigate based on notification type and associated IDs
     if (notification.type === "alert" && notification.itinerary_id) {
       // Payment notification - navigate to itinerary management (ADMIN)
-      navigate(`/admin/itineraries?selectedId=${notification.itinerary_id}`);
+      navigate(`/itineraries?selectedId=${notification.itinerary_id}`);
       onClose && onClose();
     } else if (
       notification.type === "attendance_confirmation" &&

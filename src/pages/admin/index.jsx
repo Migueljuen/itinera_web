@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
+import { Menu, ChevronRight } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import envelope from "../../assets/icons/envelope.svg";
@@ -17,6 +17,8 @@ import {
   ArrowDownRightIcon,
   BellIcon as BellOutline,
   UsersIcon,
+  ArrowTrendingUpIcon,
+  ArrowTrendingDownIcon,
   UserPlusIcon,
   ChevronUpIcon,
   ChevronDownIcon,
@@ -42,6 +44,8 @@ const AdminDashboard = () => {
   const notificationRef = useRef(null);
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [pendingPayments, setPendingPayments] = useState([]);
+  const [loadingPayments, setLoadingPayments] = useState(false);
   const [stats, setStats] = useState({
     activeExperiences: { count: 0, percentageChange: null },
     pendingExperiences: { count: 0 },
@@ -61,23 +65,55 @@ const AdminDashboard = () => {
     }
   };
 
+  // Fetch pending payments for the dashboard
+  const fetchPendingPayments = async () => {
+    try {
+      setLoadingPayments(true);
+      const response = await axios.get(`${API_URL}/admin/itineraries`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      // Filter only pending payments and limit to 3
+      const pending = (response.data.itineraries || [])
+        .filter((i) => i.payment_status === "Pending")
+        .slice(0, 3);
+
+      setPendingPayments(pending);
+    } catch (error) {
+      console.error("Error fetching pending payments:", error);
+      setPendingPayments([]);
+    } finally {
+      setLoadingPayments(false);
+    }
+  };
+
   useEffect(() => {
     fetchDashboardStats();
-  }, []);
+    if (user?.user_id) {
+      fetchPendingPayments();
+    }
+  }, [user]);
+
+  const formatDate = (dateString) => {
+    return dayjs(dateString).format("MMM D");
+  };
+
+  // Navigate to full itinerary management page with selected itinerary
+  const handleViewPayment = (itineraryId) => {
+    navigate(`/admin/itinerary-management?selectedId=${itineraryId}`);
+  };
 
   useEffect(() => {
     const fetchNotifications = async () => {
       console.log("=== FETCH NOTIFICATIONS DEBUG ===");
 
       try {
-        // 1. Check token
         const token =
           localStorage.getItem("token") || sessionStorage.getItem("token");
         console.log("Token found:", !!token);
-        console.log(
-          "Token value:",
-          token ? `${token.substring(0, 20)}...` : "null"
-        );
 
         if (!token) {
           console.error("No auth token found - setting dummy notifications");
@@ -85,11 +121,9 @@ const AdminDashboard = () => {
           return;
         }
 
-        // 2. Check API_URL
         console.log("API_URL:", API_URL);
         console.log("Full endpoint:", `${API_URL}/notifications`);
 
-        // 3. Make the request
         console.log("Making fetch request...");
         const res = await fetch(`${API_URL}/notifications`, {
           method: "GET",
@@ -102,7 +136,6 @@ const AdminDashboard = () => {
         console.log("Response received:");
         console.log("- Status:", res.status);
         console.log("- OK:", res.ok);
-        console.log("- Status Text:", res.statusText);
 
         if (!res.ok) {
           const errorText = await res.text();
@@ -110,20 +143,10 @@ const AdminDashboard = () => {
           throw new Error(`HTTP error! status: ${res.status} - ${errorText}`);
         }
 
-        // 4. Parse response
         console.log("Parsing JSON...");
         const response = await res.json();
         console.log("Parsed response:", response);
 
-        // 5. Check response structure
-        console.log("Response.success:", response.success);
-        console.log("Response.notifications:", response.notifications);
-        console.log(
-          "Notifications length:",
-          response.notifications?.length || 0
-        );
-
-        // 6. Set notifications - FIXED
         if (response.success && response.notifications !== undefined) {
           console.log("Setting notifications from API");
           setNotifications(response.notifications);
@@ -134,8 +157,6 @@ const AdminDashboard = () => {
       } catch (err) {
         console.error("=== FETCH ERROR ===");
         console.error("Error details:", err);
-        console.error("Error message:", err.message);
-        console.error("Setting empty notifications as fallback");
         setNotifications([]);
       }
 
@@ -144,12 +165,7 @@ const AdminDashboard = () => {
 
     fetchNotifications();
   }, []);
-  useEffect(() => {
-    console.log("User ID:", user?.id);
-    console.log("Notifications:", notifications);
-  }, [user?.id, notifications]);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -166,7 +182,6 @@ const AdminDashboard = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showNotifications]);
 
-  // Mark notifications as read
   const handleMarkAsRead = async (notificationId) => {
     try {
       const token =
@@ -217,7 +232,6 @@ const AdminDashboard = () => {
     }
   };
 
-  // Handle attendance response update
   const handleUpdateNotification = (notificationId, responseType) => {
     setNotifications((prev) =>
       prev.map((n) =>
@@ -294,7 +308,7 @@ const AdminDashboard = () => {
           </button>
           <div className="flex-1 lg:flex-none">
             <h1 className="text-2xl font-semibold text-gray-900 capitalize">
-              Admin Dashboard
+              Dashboard
             </h1>
             <p className="  text-black/60">
               Manage users and activity approval here.
@@ -302,13 +316,13 @@ const AdminDashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4 border-r border-gray-400 px-4">
-
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
-                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                    : "hover:bg-gray-100 active:bg-gray-200"
-                    }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
+                    showNotifications
+                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                      : "hover:bg-gray-100 active:bg-gray-200"
+                  }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -365,81 +379,178 @@ const AdminDashboard = () => {
       <div className="flex flex-1 flex-col w-full  xl:border-none gap-8  ">
         {/* Overview */}
 
-        <div className="flex gap-4 w-full">
-          {/* Active Activities */}
-          <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
-            <span className="flex gap-4">
-              <PresentationChartLineIcon className="w-6 h-6 text-black/60" />
-              <p className="font-medium text-black/80">Active Activities</p>
-            </span>
-            <span className="flex justify-between">
-              <div className="flex gap-2">
-                <p className="text-3xl font-semibold text-black/80">
-                  {stats.activeExperiences.count}
-                </p>
-                {stats.activeExperiences.percentageChange && (
-                  <span className="flex">
-                    <ChevronUpIcon className="w-4 h-4 text-green-600" />
-                    <p className="text-sm text-green-600">
-                      +{stats.activeExperiences.percentageChange}%
-                    </p>
-                  </span>
+        <div className="flex gap-2 w-full">
+          <div className="space-y-2 flex-[0.3] h-[440px] ">
+            {/* New Tickets / Active Activities */}
+            <div className="bg-white  px-6 py-8 rounded-2xl border border-gray-200 flex flex-col justify-between">
+              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                <div className="p-2 bg-green-50 rounded-md">
+                  <PresentationChartLineIcon className="w-7 h-7 text-green-900/50" />
+                </div>
+                <p className="font-medium text-black/80">Active Activities</p>
+              </div>
+
+              <div className="flex justify-between items-end mt-4 ">
+                <div className="flex items-start gap-6 flex-col ">
+                  <p className="text-3xl font-semibold text-black/80">
+                    {stats.activeExperiences.count}
+                  </p>
+                  <div className="flex gap-2">
+                    <span className="flex items-center w-fit text-green-600 bg-green-50 h-fit py-0.5 px-3 rounded-full border border-green-300 text-sm">
+                      <ArrowTrendingUpIcon className="w-4 h-4 text-green-600" />
+                      +18%
+                    </span>
+                    <p className="text-black/40 text-sm  "> Than last month</p>
+                  </div>
+                </div>
+
+                {/* Dummy mini-bar */}
+                <div className="flex items-end justify-end gap-1 h-full w-3/6 ">
+                  <div className="w-4 h-8 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
+                  <div className="w-4 h-12 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
+                  <div className="w-4 h-8 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
+                  <div className="w-4 h-14 bg-gradient-to-b from-gray-500 to-white rounded-full"></div>
+                  <div className="w-4 h-16 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Review needed*/}
+            <div className="bg-white px-6 py-8 rounded-2xl border border-gray-200 flex flex-col justify-between">
+              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                <div className="p-2 bg-yellow-50 rounded-md">
+                  <ClockIcon className="w-7 h-7 text-yellow-600" />
+                </div>
+                <p className="font-medium text-black/80">Review Needed</p>
+              </div>
+
+              <div className="flex justify-between items-end mt-4">
+                <div className="flex items-start gap-4 flex-col ">
+                  <p className="text-3xl font-semibold text-black/80">
+                    {stats.pendingExperiences.count}
+                  </p>
+                  <div className="flex gap-2">
+                    <span className="flex items-center w-fit text-green-600 bg-green-50 h-fit py-0.5 px-3 rounded-full border border-green-300 text-sm">
+                      <ArrowTrendingUpIcon className="w-4 h-4 text-green-600" />
+                      +24%
+                    </span>
+                    <p className="text-black/40 text-sm  "> Than last month</p>
+                  </div>
+                </div>
+
+                {/* Dummy mini-bar */}
+                <div className="flex items-end justify-end gap-1 h-full w-3/6 ">
+                  <div className="w-4 h-12 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
+                  <div className="w-4 h-7 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
+                  <div className="w-4 h-16 bg-gradient-to-b from-gray-500 to-white rounded-full"></div>
+                  <div className="w-4 h-12 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
+                  <div className="w-4 h-16 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Itinerary Payments Section */}
+          <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col flex-[0.7] h-[460px]">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <p className="font-medium text-black/80">Itineraries</p>
+                {pendingPayments.length > 0 && (
+                  <p className="text-xs text-[#397ff1] animate-pulse">
+                    {pendingPayments.length} pending
+                  </p>
                 )}
               </div>
-              <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
-            </span>
-          </div>
+              <button
+                onClick={() => navigate("/itineraries")}
+                className="text-sm text-[#397ff1] hover:text-[#2e6bd9] flex items-center gap-1"
+              >
+                View all
+              </button>
+            </div>
 
-          {/* Pending Activities */}
-          <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
-            <span className="flex gap-4">
-              <ClockIcon className="w-6 h-6 text-black/60" />
-              <p className="font-medium text-black/80">Pending Activities</p>
-            </span>
-            <span className="flex justify-between">
-              <p className="text-3xl font-semibold text-black/80">
-                {stats.pendingExperiences.count}
-              </p>
-              <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
-            </span>
-          </div>
+            {/* Payment Cards - Add relative wrapper */}
 
-          {/* Active Creators */}
-          <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
-            <span className="flex gap-4">
-              <UsersIcon className="w-6 h-6 text-black/60" />
-              <p className="font-medium text-black/80">Active Creators</p>
-            </span>
-            <span className="flex justify-between">
-              <div className="flex gap-2">
-                <p className="text-3xl font-semibold text-black/80">
-                  {stats.activeCreators.count}
-                </p>
-                {stats.activeCreators.percentageChange && (
-                  <span className="flex">
-                    <ChevronDownIcon className="w-4 h-4 text-orange-600" />
-                    <p className="text-sm text-orange-600">
-                      {stats.activeCreators.percentageChange}%
-                    </p>
-                  </span>
-                )}
-              </div>
-              <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
-            </span>
-          </div>
+            <div className="space-y-3 h-full overflow-y-auto scrollbar-hide">
+              {loadingPayments ? (
+                <div className="flex items-center justify-center h-40">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+                </div>
+              ) : pendingPayments.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-40 text-gray-400">
+                  <p className="text-sm">No pending payments</p>
+                </div>
+              ) : (
+                pendingPayments.map((payment) => (
+                  <div
+                    key={payment.itinerary_id}
+                    onClick={() =>
+                      navigate(
+                        `/itineraries?selectedId=${payment.itinerary_id}`
+                      )
+                    }
+                    className="border border-white rounded-xl p-4 hover:border-[#397ff1] hover:shadow-sm transition-all cursor-pointer"
+                  >
+                    {/* Header Row */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        {/* ID Badge */}
+                        <div className="bg-gray-50 rounded-lg px-3 py-1">
+                          <p className="text-xs text-gray-500">ID</p>
+                          <p className="text-sm font-semibold text-gray-700">
+                            #{String(payment.itinerary_id).padStart(4, "0")}
+                          </p>
+                        </div>
 
-          {/* Pending Creators */}
-          <div className="bg-white flex-1 h-30 px-6 shadow-sm flex flex-col justify-around rounded-2xl">
-            <span className="flex gap-4">
-              <UserPlusIcon className="w-6 h-6 text-black/60" />
-              <p className="font-medium text-black/80">Pending creators</p>
-            </span>
-            <span className="flex justify-between">
-              <p className="text-3xl font-semibold text-black/80">
-                {stats.pendingCreators.count}
-              </p>
-              <ArrowDownRightIcon className="w-5 h-5 text-black/80" />
-            </span>
+                        {/* Traveler Info */}
+                        <div>
+                          <p className="text-sm font-medium text-black/80">
+                            {payment.traveler_first_name}{" "}
+                            {payment.traveler_last_name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {formatDate(payment.start_date)} -{" "}
+                            {formatDate(payment.end_date)}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Status Badge */}
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+                        <span className="text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
+                          Pending
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Amount Row */}
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                      <div>
+                        <p className="text-xs text-gray-500">Total Amount</p>
+                        <p className="text-lg font-semibold text-black/80">
+                          ₱{parseFloat(payment.total_amount).toFixed(2)}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Payment Type</p>
+                        <p className="text-sm font-medium text-gray-700 capitalize">
+                          {payment.payment_type || "Full"}
+                        </p>
+                      </div>
+
+                      <div className="text-right">
+                        <p className="text-xs text-gray-500">Commission</p>
+                        <p className="text-sm font-semibold text-[#397ff1]">
+                          ₱{(parseFloat(payment.total_amount) * 0.1).toFixed(2)}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
         </div>
 
@@ -447,14 +558,6 @@ const AdminDashboard = () => {
         <div className="flex gap-4 w-full">
           {/* pending activities for approval */}
           <PendingApprovalSection />
-
-          {/* chart */}
-          {/* <div className="bg-white flex-1 h-90 shadow-sm flex flex-col justify-start rounded-2xl">
-            <h1 className="text-lg font-medium px-6  text-black/80 py-4 border-b border-gray-200">
-              Activities booked
-            </h1>
-         
-          </div> */}
         </div>
       </div>
     </div>
