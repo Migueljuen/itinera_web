@@ -318,11 +318,10 @@ const AdminDashboard = () => {
             <div className="flex gap-4 border-r border-gray-400 px-4">
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
-                    showNotifications
-                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                      : "hover:bg-gray-100 active:bg-gray-200"
-                  }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
+                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                    : "hover:bg-gray-100 active:bg-gray-200"
+                    }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -379,8 +378,8 @@ const AdminDashboard = () => {
       <div className="flex flex-1 flex-col w-full  xl:border-none gap-8  ">
         {/* Overview */}
 
-        <div className="flex gap-2 w-full">
-          <div className="space-y-2 flex-[0.3] h-[440px] ">
+        <div className="flex gap-2 w-full h-[480px] " >
+          <div className="space-y-2 flex-[0.3] h-full">
             {/* New Tickets / Active Activities */}
             <div className="bg-white  px-6 py-8 rounded-2xl border border-gray-200 flex flex-col justify-between">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
@@ -407,7 +406,7 @@ const AdminDashboard = () => {
                 {/* Dummy mini-bar */}
                 <div className="flex items-end justify-end gap-1 h-full w-3/6 ">
                   <div className="w-4 h-8 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
-                  <div className="w-4 h-12 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
+                  <div className="w-4 h-12 bg-gradient-to-b from-gray-400 to-white rounded-full"></div>
                   <div className="w-4 h-8 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
                   <div className="w-4 h-14 bg-gradient-to-b from-gray-500 to-white rounded-full"></div>
                   <div className="w-4 h-16 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
@@ -451,7 +450,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Itinerary Payments Section */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col flex-[0.7] h-[460px]">
+          <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col flex-[0.7] h-full">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <p className="font-medium text-black/80">Itineraries</p>
@@ -477,7 +476,7 @@ const AdminDashboard = () => {
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
                 </div>
               ) : pendingPayments.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-40 text-gray-400">
+                <div className="flex flex-col items-center justify-end h-40 text-black/40">
                   <p className="text-sm">No pending payments</p>
                 </div>
               ) : (

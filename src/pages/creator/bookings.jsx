@@ -267,8 +267,8 @@ const BookingManagement = () => {
                         key={tab}
                         onClick={() => setSelectedTab(tab)}
                         className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
-                            ? "bg-white text-black/80 shadow-sm/10"
-                            : "text-black/50 hover:text-black/70"
+                          ? "bg-white text-black/80 shadow-sm/10"
+                          : "text-black/50 hover:text-black/70"
                           }`}
                       >
                         {tab === "Confirmed" ? "Upcoming" : tab}
@@ -308,6 +308,189 @@ const BookingManagement = () => {
                 paginatedBookings.map((booking) => {
                   const isExpanded = expandedBookingId === booking.booking_id;
 
+                  // return (
+                  //   <div
+                  //     key={booking.booking_id}
+                  //     ref={(el) => (bookingRefs.current[booking.booking_id] = el)}
+                  //     className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                  //       }`}
+                  //   >
+                  //     {/* Top Row */}
+                  //     <div className="flex items-center justify-between px-2">
+                  //       <div className="grid grid-cols-[120px_240px_300px] gap-4">
+                  //         {/* DAY NUMBER AND DAY OF WEEK */}
+                  //         <div
+                  //           className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
+                  //             ? "text-[#3A81F3]"
+                  //             : "text-black/70"
+                  //             }`}
+                  //         >
+                  //           <p className="text-xl">
+                  //             {booking.day_of_week.slice(0, 3)}
+                  //           </p>
+                  //           <p className="text-4xl font-semibold">
+                  //             {dayjs(booking.booking_date).format("D")}
+                  //           </p>
+                  //         </div>
+
+                  //         {/* Date & Time */}
+                  //         <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around">
+                  //           <div className="flex items-center gap-3">
+                  //             <Clock size={16} className="text-black/60" />
+                  //             <span>
+                  //               {formatDateTime(
+                  //                 booking.created_at,
+                  //                 booking.start_time,
+                  //                 booking.end_time
+                  //               )}
+                  //             </span>
+                  //           </div>
+                  //           <div className="flex items-center gap-3">
+                  //             <Calendar size={16} className="text-black/60" />
+                  //             <span>{formatDate(booking.booking_date)}</span>
+                  //           </div>
+                  //         </div>
+
+                  //         {/* Activity booked and user */}
+                  //         <div className="flex flex-col justify-around px-4">
+                  //           <span className="font-medium text-sm text-black/70">
+                  //             {booking.experience_title}
+                  //           </span>
+                  //           {booking?.traveler_profile_pic ? (
+                  //             <div className="flex">
+                  //               <img
+                  //                 src={`${API_URL}/${booking.traveler_profile_pic}`}
+                  //                 alt="Profile"
+                  //                 className="w-6 h-6 border-2 z-10 border-white rounded-full object-cover"
+                  //               />
+                  //             </div>
+                  //           ) : (
+                  //             <User size={16} className="text-gray-400" />
+                  //           )}
+                  //         </div>
+                  //       </div>
+
+                  //       {/* Expand Button */}
+                  //       <button
+                  //         onClick={() =>
+                  //           setExpandedBookingId(
+                  //             isExpanded ? null : booking.booking_id
+                  //           )
+                  //         }
+                  //         className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
+                  //       >
+                  //         {isExpanded ? "Less" : "More"}{" "}
+                  //         <ChevronDown
+                  //           size={16}
+                  //           className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                  //             }`}
+                  //         />
+                  //       </button>
+                  //     </div>
+
+                  //     {/* Expanded Content (Sliding Section) */}
+                  //     <div
+                  //       className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
+                  //         ? "max-h-[500px] opacity-100 mt-4"
+                  //         : "max-h-0 opacity-0"
+                  //         }`}
+                  //     >
+                  //       <div className="border-t border-gray-200 pt-4 px-8 text-sm text-black/70 space-y-4 flex justify-between">
+                  //         {/* Traveler Details */}
+                  //         <div>
+                  //           <h4 className="font-semibold mb-2">
+                  //             Traveler Details
+                  //           </h4>
+                  //           <p className="text-black/50">
+                  //             Full Name: {booking.traveler_first_name}{" "}
+                  //             {booking.traveler_last_name}
+                  //           </p>
+                  //           <p className="text-black/50">
+                  //             Mobile Number: {booking.traveler_mobile || "N/A"}
+                  //           </p>
+                  //           <p className="text-black/50">
+                  //             Email: {booking.traveler_email}
+                  //           </p>
+                  //         </div>
+
+                  //         {/* Booking Details */}
+                  //         <div>
+                  //           <h4 className="font-semibold mb-2 flex items-center gap-4">
+                  //             Booking Details
+                  //             {(() => {
+                  //               // Map statuses to display name + colors
+                  //               const statusMap = {
+                  //                 Confirmed: {
+                  //                   label: "Upcoming",
+                  //                   color: "text-purple-950/60 bg-purple-200",
+                  //                   dot: "bg-purple-950/60",
+                  //                 },
+
+                  //                 Ongoing: {
+                  //                   label: "Ongoing",
+                  //                   color: "text-yellow-800/60 bg-yellow-100",
+                  //                   dot: "bg-yellow-800/60",
+                  //                 },
+                  //                 Completed: {
+                  //                   label: "Completed",
+                  //                   color: "text-green-950/60 bg-green-100/80",
+                  //                   dot: "bg-green-950/60",
+                  //                 },
+                  //                 Cancelled: {
+                  //                   label: "Cancelled",
+                  //                   color: "text-gray-700/60 bg-gray-100",
+                  //                   dot: "bg-gray-700/60",
+                  //                 },
+                  //               };
+
+                  //               const status = statusMap[booking.status] || {
+                  //                 label: booking.status,
+                  //                 color: "text-gray-600 bg-gray-100",
+                  //                 dot: "bg-gray-600",
+                  //               };
+
+                  //               return (
+                  //                 <p
+                  //                   className={`text-xs w-fit px-3 py-1 flex items-center rounded-xl gap-2 ${status.color}`}
+                  //                 >
+                  //                   <div
+                  //                     className={`size-2 rounded-full ${status.dot}`}
+                  //                   ></div>
+                  //                   {status.label}
+                  //                 </p>
+                  //               );
+                  //             })()}
+                  //           </h4>
+                  //           <p className="text-black/50">
+                  //             Booking ID: 0000{booking.booking_id}
+                  //           </p>
+                  //         </div>
+
+                  //         {/* Experience Details */}
+                  //         <div>
+                  //           <h4 className="font-semibold mb-2">
+                  //             Activity booked
+                  //           </h4>
+                  //           <p className="text-black/50">
+                  //             {booking.experience_title},
+                  //           </p>
+                  //           <p className="text-black/50">
+                  //             {booking.destination_name}
+                  //           </p>
+                  //         </div>
+
+                  //         {/* Actions */}
+                  //         <div>
+                  //           <button className="px-6 py-2 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75 ">
+                  //             Contact Traveler
+                  //           </button>
+                  //         </div>
+                  //       </div>
+                  //     </div>
+                  //   </div>
+                  // );
+
+
                   return (
                     <div
                       key={booking.booking_id}
@@ -318,16 +501,15 @@ const BookingManagement = () => {
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-2">
                         <div className="grid grid-cols-[120px_240px_300px] gap-4">
+
                           {/* DAY NUMBER AND DAY OF WEEK */}
                           <div
                             className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
-                                ? "text-[#3A81F3]"
-                                : "text-black/70"
+                              ? "text-[#3A81F3]"
+                              : "text-black/70"
                               }`}
                           >
-                            <p className="text-xl">
-                              {booking.day_of_week.slice(0, 3)}
-                            </p>
+                            <p className="text-xl">{booking.day_of_week.slice(0, 3)}</p>
                             <p className="text-4xl font-semibold">
                               {dayjs(booking.booking_date).format("D")}
                             </p>
@@ -356,6 +538,7 @@ const BookingManagement = () => {
                             <span className="font-medium text-sm text-black/70">
                               {booking.experience_title}
                             </span>
+
                             {booking?.traveler_profile_pic ? (
                               <div className="flex">
                                 <img
@@ -373,9 +556,7 @@ const BookingManagement = () => {
                         {/* Expand Button */}
                         <button
                           onClick={() =>
-                            setExpandedBookingId(
-                              isExpanded ? null : booking.booking_id
-                            )
+                            setExpandedBookingId(isExpanded ? null : booking.booking_id)
                           }
                           className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
                         >
@@ -390,27 +571,21 @@ const BookingManagement = () => {
 
                       {/* Expanded Content (Sliding Section) */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
-                            ? "max-h-[500px] opacity-100 mt-4"
-                            : "max-h-0 opacity-0"
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded ? "max-h-[800px] opacity-100 mt-4" : "max-h-0 opacity-0"
                           }`}
                       >
-                        <div className="border-t border-gray-200 pt-4 px-8 text-sm text-black/70 space-y-4 flex justify-between">
+                        <div className="border-t border-gray-200 pt-4 px-8 text-sm text-black/70 space-y-8">
+
                           {/* Traveler Details */}
                           <div>
-                            <h4 className="font-semibold mb-2">
-                              Traveler Details
-                            </h4>
+                            <h4 className="font-semibold mb-2">Traveler Details</h4>
                             <p className="text-black/50">
-                              Full Name: {booking.traveler_first_name}{" "}
-                              {booking.traveler_last_name}
+                              Full Name: {booking.traveler_first_name} {booking.traveler_last_name}
                             </p>
                             <p className="text-black/50">
                               Mobile Number: {booking.traveler_mobile || "N/A"}
                             </p>
-                            <p className="text-black/50">
-                              Email: {booking.traveler_email}
-                            </p>
+                            <p className="text-black/50">Email: {booking.traveler_email}</p>
                           </div>
 
                           {/* Booking Details */}
@@ -418,14 +593,12 @@ const BookingManagement = () => {
                             <h4 className="font-semibold mb-2 flex items-center gap-4">
                               Booking Details
                               {(() => {
-                                // Map statuses to display name + colors
                                 const statusMap = {
                                   Confirmed: {
                                     label: "Upcoming",
                                     color: "text-purple-950/60 bg-purple-200",
                                     dot: "bg-purple-950/60",
                                   },
-
                                   Ongoing: {
                                     label: "Ongoing",
                                     color: "text-yellow-800/60 bg-yellow-100",
@@ -453,42 +626,78 @@ const BookingManagement = () => {
                                   <p
                                     className={`text-xs w-fit px-3 py-1 flex items-center rounded-xl gap-2 ${status.color}`}
                                   >
-                                    <div
-                                      className={`size-2 rounded-full ${status.dot}`}
-                                    ></div>
+                                    <div className={`size-2 rounded-full ${status.dot}`}></div>
                                     {status.label}
                                   </p>
                                 );
                               })()}
                             </h4>
+
                             <p className="text-black/50">
                               Booking ID: 0000{booking.booking_id}
                             </p>
+                            <p className="text-black/50">
+                              {booking.experience_title}
+                            </p>
+
+
                           </div>
 
-                          {/* Experience Details */}
+
+                          {/* Payment Summary */}
                           <div>
-                            <h4 className="font-semibold mb-2">
-                              Activity booked
-                            </h4>
+                            <h4 className="font-semibold mb-2">Payment Summary</h4>
+
                             <p className="text-black/50">
-                              {booking.experience_title},
+                              Activity Price: ₱{booking.activity_price}
                             </p>
+
                             <p className="text-black/50">
-                              {booking.destination_name}
+                              Platform Fee ({booking.platform_commission_rate}%): ₱
+                              {booking.platform_commission_amount}
+                            </p>
+
+                            <p className="text-black/50">
+                              Creator Expected Payout: ₱{booking.creator_payout_amount}
+                            </p>
+
+                            <p className="text-black/50">
+                              Prepaid / Online Paid: ₱{booking.creator_prepaid_amount}
+                            </p>
+
+                            <p className="text-black/50">
+                              Cash to Collect Onsite: ₱{booking.creator_cash_due}
+                            </p>
+
+                            <p className="text-black/50">
+                              Cash Collected:{" "}
+                              {booking.creator_cash_collected ? (
+                                <span className="text-green-600 font-medium">
+                                  Yes (at{" "}
+                                  {dayjs(booking.creator_cash_collected_at).format(
+                                    "MMM D, h:mm A"
+                                  )}
+                                  )
+                                </span>
+                              ) : (
+                                <span className="text-red-600 font-medium">Not yet</span>
+                              )}
                             </p>
                           </div>
 
                           {/* Actions */}
                           <div>
-                            <button className="px-6 py-2 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75 ">
+                            <button className="px-6 py-2 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75">
                               Contact Traveler
                             </button>
                           </div>
+
                         </div>
                       </div>
                     </div>
                   );
+
+
                 })
               )}
             </div>
@@ -521,8 +730,8 @@ const BookingManagement = () => {
                       key={page}
                       onClick={() => setCurrentPage(page)}
                       className={`px-3 py-2 border rounded-lg ${currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
                         }`}
                     >
                       {page}

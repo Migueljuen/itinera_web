@@ -249,11 +249,10 @@ const ItineraryManagement = () => {
                         <button
                           key={tab}
                           onClick={() => setSelectedTab(tab)}
-                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                            selectedTab === tab
+                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
                               ? "bg-white text-black/80 shadow-sm"
                               : "text-black/50 hover:text-black/70"
-                          }`}
+                            }`}
                         >
                           {tab}
                         </button>
@@ -302,9 +301,8 @@ const ItineraryManagement = () => {
                       ref={(el) =>
                         (itineraryRefs.current[itinerary.itinerary_id] = el)
                       }
-                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${
-                        isExpanded ? "ring-2 ring-blue-400" : ""
-                      }`}
+                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                        }`}
                     >
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-4">
@@ -416,20 +414,18 @@ const ItineraryManagement = () => {
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                       </div>
 
-                      {/* Expanded Content */}
+                      {/* Expanded Itinerary Content */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                          isExpanded
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
                             ? "max-h-[800px] opacity-100 mt-6"
                             : "max-h-0 opacity-0"
-                        }`}
+                          }`}
                       >
                         <div className="border-t border-gray-200 pt-6 px-8">
                           <div className="grid grid-cols-2 gap-8">
@@ -776,7 +772,7 @@ const ItineraryManagement = () => {
                                         className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                       >
                                         {processingPayment ===
-                                        itinerary.itinerary_id
+                                          itinerary.itinerary_id
                                           ? "Processing..."
                                           : "Approve Payment"}
                                       </button>
@@ -830,11 +826,10 @@ const ItineraryManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
                           ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
                           : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       {page}
                     </button>
