@@ -527,9 +527,9 @@ const ItineraryManagement = () => {
 
                       {/* Expanded Itinerary Content */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                        className={`transition-all duration-300 ease-in-out flex-1 overflow-hidden ${
                           isExpanded
-                            ? "max-h-[800px] opacity-100 mt-6"
+                            ? "max-h-fit opacity-100 mt-6"
                             : "max-h-0 opacity-0"
                         }`}
                       >
