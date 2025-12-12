@@ -219,10 +219,10 @@ const ExperienceManagement = () => {
               </p>
             </div>
             <div className="flex gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              {/* <button className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
                 <Download size={16} />
                 Export
-              </button>
+              </button> */}
               <button
                 onClick={handleCreateListing}
                 className="flex items-center gap-2 px-4 py-2 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer"
@@ -414,7 +414,7 @@ const ExperienceManagement = () => {
                           </button>
 
                           {/* View Details button */}
-                          <button
+                          {/* <button
                             onClick={() => {
                               console.log("View details");
                               setOpenDropdownId(null); // Close dropdown after click
@@ -422,7 +422,7 @@ const ExperienceManagement = () => {
                             className="block w-full text-left px-4 py-1 text-sm text-black/60 hover:bg-gray-100"
                           >
                             View Details
-                          </button>
+                          </button> */}
 
                           <div className="border-t border-gray-200">
                             <p className="text-sm p-4 font-medium text-black/80">

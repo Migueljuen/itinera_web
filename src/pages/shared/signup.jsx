@@ -105,7 +105,6 @@ const Signup = () => {
 
   return (
     <>
-
       <ChevronLeftIcon
         className="h-8 cursor-pointer hover:text-black/90 absolute top-10 left-10"
         onClick={() => navigate("/login")}
@@ -120,7 +119,7 @@ const Signup = () => {
             <div className="grid grid-cols-2 gap-4 px-6">
               {/* First Name */}
               <div>
-                <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-400  focus-within:border-2 rounded-md px-4 py-3 h-10">
+                <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-200  focus-within:border-2 rounded-md px-4 py-3 h-10">
                   <input
                     type="text"
                     placeholder="First Name"
@@ -138,7 +137,7 @@ const Signup = () => {
 
               {/* Last Name */}
               <div>
-                <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-400 focus-within:border-2 rounded-md px-4 py-3 h-10">
+                <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-200 focus-within:border-2 rounded-md px-4 py-3 h-10">
                   <input
                     type="text"
                     placeholder="Last Name"
@@ -157,12 +156,11 @@ const Signup = () => {
 
             {/* Email Input */}
             <div className="px-6">
-              <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-400 focus-within:border-2 rounded-md px-4 py-3 h-10">
-                <Mail className="text-gray-400" size={20} />
+              <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-200 focus-within:border-2 rounded-md px-4 py-3 h-10">
                 <input
                   type="email"
                   placeholder="Email"
-                  className="flex-1 ml-3  bg-transparent outline-none placeholder-gray-400"
+                  className="flex-1   bg-transparent outline-none placeholder-gray-400"
                   value={formData.email}
                   onChange={(e) => handleChange("email", e.target.value)}
                   autoCapitalize="none"
@@ -175,12 +173,11 @@ const Signup = () => {
 
             {/* Password Input */}
             <div className="px-6">
-              <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-400 focus-within:border-2 rounded-md px-4 py-3 h-10">
-                <Lock className="text-gray-400" size={20} />
+              <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-200 focus-within:border-2 rounded-md px-4 py-3 h-10">
                 <input
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="flex-1 ml-3 text-sm bg-transparent outline-none placeholder-gray-400"
+                  className="flex-1 text-base bg-transparent outline-none placeholder-gray-400"
                   value={formData.password}
                   onChange={(e) => handleChange("password", e.target.value)}
                 />
@@ -205,12 +202,11 @@ const Signup = () => {
 
             {/* Confirm Password Input */}
             <div className="px-6">
-              <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-400 focus-within:border-2 rounded-md px-4 py-3 h-10">
-                <Lock className="text-gray-400" size={20} />
+              <div className="focus-within:ring-1 focus-within:ring-blue-400 flex items-center border border-gray-200 focus-within:border-2 rounded-md px-4 py-3 h-10">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
-                  className="flex-1 ml-3 text-sm bg-transparent outline-none placeholder-gray-400"
+                  className="flex-1  bg-transparent outline-none placeholder-gray-400"
                   value={formData.confirmPassword}
                   onChange={(e) =>
                     handleChange("confirmPassword", e.target.value)
@@ -219,7 +215,7 @@ const Signup = () => {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="ml-2 focus:outline-none"
+                  className=" focus:outline-none"
                 >
                   {showConfirmPassword ? (
                     <Eye className="text-gray-400" size={20} />
@@ -248,8 +244,9 @@ const Signup = () => {
                     <Circle className="text-gray-400" size={14} />
                   )}
                   <span
-                    className={`text-xs ${passwordMeetsLength ? "text-green-600" : "text-gray-500"
-                      }`}
+                    className={`text-xs ${
+                      passwordMeetsLength ? "text-green-600" : "text-gray-500"
+                    }`}
                   >
                     At least 6 characters
                   </span>
@@ -261,8 +258,9 @@ const Signup = () => {
                     <Circle className="text-gray-400" size={14} />
                   )}
                   <span
-                    className={`text-xs ${passwordsMatch ? "text-green-600" : "text-gray-500"
-                      }`}
+                    className={`text-xs ${
+                      passwordsMatch ? "text-green-600" : "text-gray-500"
+                    }`}
                   >
                     Passwords match
                   </span>

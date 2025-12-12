@@ -133,12 +133,12 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<AdminDashboard />} />
+          <Route index path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="itineraries" element={<ItineraryManagement />} />
         </Route>
 
         {/* Catch all - redirect to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/index" replace />} />
       </Routes>
     </Router>
   );

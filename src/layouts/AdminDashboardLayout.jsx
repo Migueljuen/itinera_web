@@ -98,7 +98,7 @@ const AdminDashboardLayout = ({ children }) => {
       id: "home",
       label: "Home",
       icon: Home,
-      path: "/dashboard",
+      path: "/admin-dashboard",
       expandable: false,
     },
     {

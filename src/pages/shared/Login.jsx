@@ -58,7 +58,7 @@ function Login() {
           }
         } else if (userRole === "Admin") {
           toast.success("Welcome back, Admin!");
-          navigate("/admin", { replace: true });
+          navigate("/admin-dashboard", { replace: true });
         } else {
           // Handle any other roles or invalid roles
           toast.error("Access denied! Invalid user role.");

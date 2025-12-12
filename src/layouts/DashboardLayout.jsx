@@ -124,17 +124,17 @@ const DashboardLayout = ({ children }) => {
       setExpanded: setIsTasksExpanded,
       subItems: [
         { label: "Manage Bookings", path: "/owner/bookings" },
-        { label: "Completed", path: "/owner/bookings/completed" },
+        // { label: "Completed", path: "/owner/bookings/completed" },
       ],
     },
-    {
-      id: "messages",
-      label: "Inbox",
-      icon: Inbox,
-      path: "/creator/messages",
-      expandable: false,
-      badge: unreadCount, // Add badge count to inbox
-    },
+    // {
+    //   id: "messages",
+    //   label: "Inbox",
+    //   icon: Inbox,
+    //   path: "/creator/messages",
+    //   expandable: false,
+    //   badge: unreadCount, // Add badge count to inbox
+    // },
   ];
 
   useEffect(() => {
@@ -281,7 +281,7 @@ const DashboardLayout = ({ children }) => {
             </nav>
 
             {/* Upgrade Section */}
-            <div className="p-4 border-t border-gray-200">
+            {/* <div className="p-4 border-t border-gray-200">
               <div className=" rounded-lg p-4  text-center text-primary">
                 <h3 className="font-bold mb-1">Upgrade Plan</h3>
                 <p className="text-sm opacity-90 mb-3">
@@ -291,7 +291,7 @@ const DashboardLayout = ({ children }) => {
                   Upgrade
                 </button>
               </div>
-            </div>
+            </div> */}
 
             {/* Bottom Section */}
             <div className="p-4   space-y-1">

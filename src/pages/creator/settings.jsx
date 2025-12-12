@@ -30,7 +30,7 @@ const Settings = () => {
   const tabs = [
     { name: "Personal info", icon: User },
     { name: "Security", icon: Lock },
-    { name: "Subscription", icon: CreditCard },
+    // { name: "Subscription", icon: CreditCard },
   ];
 
   // Fetch user data on mount
@@ -74,8 +74,6 @@ const Settings = () => {
     }
   };
 
-
-
   const handleSavePersonalInfo = async () => {
     try {
       setLoading(true);
@@ -116,9 +114,10 @@ const Settings = () => {
 
         if (response.data.profile_pic_path) {
           updatedUser.profile_pic = response.data.profile_pic_path;
-          setProfilePic(`${API_URL}/${response.data.profile_pic_path}?t=${Date.now()}`);
+          setProfilePic(
+            `${API_URL}/${response.data.profile_pic_path}?t=${Date.now()}`
+          );
         }
-
 
         updateUser(updatedUser);
 
@@ -171,9 +170,10 @@ const Settings = () => {
 
         // Update profile picture preview
         if (updatedUser.profile_pic) {
-          setProfilePic(`${API_URL}/${updatedUser.profile_pic}?t=${Date.now()}`);
+          setProfilePic(
+            `${API_URL}/${updatedUser.profile_pic}?t=${Date.now()}`
+          );
         }
-
 
         updateUser(updatedUser);
       }
@@ -187,7 +187,6 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen">
-
       <div className="">
         {/* Header */}
         <div className="mb-6">
@@ -202,10 +201,11 @@ const Settings = () => {
               <button
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
-                className={`flex items-center gap-2 px-8 font-medium transition-colors py-2 rounded-lg ${activeTab === tab.name
-                  ? "bg-white text-black/80 shadow-sm/10"
-                  : "text-black/50 hover:text-black/70"
-                  }`}
+                className={`flex items-center gap-2 px-8 font-medium transition-colors py-2 rounded-lg ${
+                  activeTab === tab.name
+                    ? "bg-white text-black/80 shadow-sm/10"
+                    : "text-black/50 hover:text-black/70"
+                }`}
               >
                 <Icon size={18} />
                 {tab.name}
@@ -255,7 +255,6 @@ const Settings = () => {
                         className="hidden"
                       />
                     </label>
-
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-2">
@@ -291,7 +290,6 @@ const Settings = () => {
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Phone Number
@@ -315,8 +313,6 @@ const Settings = () => {
                     />
                   </div>
                 </div>
-
-
               </div>
 
               {/* Action Buttons */}

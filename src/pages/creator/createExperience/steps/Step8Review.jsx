@@ -48,12 +48,12 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
     title: formData.title || "",
     price: formData.price || "",
     description: formData.description || "",
-    notes: formData.notes || ""
+    notes: formData.notes || "",
   });
   const [editedLocation, setEditedLocation] = useState({
     destination_name: formData.destination_name || "",
     city: formData.city || "",
-    destination_description: formData.destination_description || ""
+    destination_description: formData.destination_description || "",
   });
   const [editedCompanions, setEditedCompanions] = useState([...companions]);
 
@@ -83,25 +83,25 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
   };
 
   const handleInputChange = (field, value) => {
-    setEditedData(prev => ({
+    setEditedData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const handleLocationChange = (field, value) => {
-    setEditedLocation(prev => ({
+    setEditedLocation((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const removeCompanion = (companionToRemove) => {
-    setEditedCompanions(prev => prev.filter(c => c !== companionToRemove));
+    setEditedCompanions((prev) => prev.filter((c) => c !== companionToRemove));
   };
 
   const addCompanion = (companionToAdd) => {
-    setEditedCompanions(prev => [...prev, companionToAdd]);
+    setEditedCompanions((prev) => [...prev, companionToAdd]);
   };
 
   const formatFileSize = (bytes) => {
@@ -163,20 +163,19 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
         {/* Calendar days */}
         {daysOfWeek.map((fullDay, index) => {
           const hasAvailability = availabilityMap[fullDay];
-          const shortDay = shortDays[index];
 
           return (
             <div
               key={index}
-              className="flex flex-col justify-between h-full relative p-3 my-auto rounded-lg text-center border-gray-300"
+              className="flex flex-col justify-between h-full relative p-3 my-auto rounded-lg text-center border border-gray-300"
             >
               {/* Time slots */}
-              {hasAvailability ? (
+              {hasAvailability && hasAvailability.length > 0 ? (
                 <div className="space-y-2">
                   {hasAvailability.slice(0, 2).map((slot, slotIndex) => (
                     <div
                       key={slotIndex}
-                      className="text-[10.5px] rounded py-1 text-black/60"
+                      className="text-xs rounded py-2 border-l-4 border-blue-500 bg-blue-100 text-black/60"
                       title={`${convertToStandardTime(
                         slot.start_time
                       )} - ${convertToStandardTime(slot.end_time)}`}
@@ -189,6 +188,8 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                       </div>
                     </div>
                   ))}
+
+                  {/* + More indicator */}
                   {hasAvailability.length > 2 && (
                     <div className="text-xs text-green-600 font-medium">
                       +{hasAvailability.length - 2} more
@@ -196,7 +197,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                   )}
                 </div>
               ) : (
-                <div className="text-xs text-gray-400 mt-2">Not available</div>
+                <div className="text-xs text-gray-400 mt-2"></div>
               )}
             </div>
           );
@@ -328,7 +329,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           <input
                             type="text"
                             value={editedData.title}
-                            onChange={(e) => handleInputChange('title', e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange("title", e.target.value)
+                            }
                             className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                           />
                         ) : (
@@ -345,7 +348,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           <input
                             type="number"
                             value={editedData.price}
-                            onChange={(e) => handleInputChange('price', e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange("price", e.target.value)
+                            }
                             className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="0"
                           />
@@ -363,7 +368,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           <input
                             type="text"
                             value={editedData.description}
-                            onChange={(e) => handleInputChange('description', e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange("description", e.target.value)
+                            }
                             className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No description provided"
                           />
@@ -381,7 +388,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           <input
                             type="text"
                             value={editedData.notes}
-                            onChange={(e) => handleInputChange('notes', e.target.value)}
+                            onChange={(e) =>
+                              handleInputChange("notes", e.target.value)
+                            }
                             className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No additional notes provided"
                           />
@@ -475,7 +484,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             key={index}
                             className="relative px-6 py-1 rounded-full bg-blue-100 text-[#0e63be] pr-8"
                           >
-                            <span className="text-xs font-medium">{companion}</span>
+                            <span className="text-xs font-medium">
+                              {companion}
+                            </span>
                             <button
                               onClick={() => removeCompanion(companion)}
                               className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-red-400 text-white rounded-full text-xs hover:bg-red-600 transition-colors"
@@ -492,17 +503,23 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     )}
 
                     {/* Available companions to add */}
-                    {TRAVEL_COMPANIONS.filter(tc => !editedCompanions.includes(tc.label)).length > 0 && (
+                    {TRAVEL_COMPANIONS.filter(
+                      (tc) => !editedCompanions.includes(tc.label)
+                    ).length > 0 && (
                       <div className="mt-4">
                         <p className="text-xs text-black/60 mb-2">Add more:</p>
                         <div className="flex flex-wrap gap-2">
-                          {TRAVEL_COMPANIONS.filter(tc => !editedCompanions.includes(tc.label)).map((companion) => (
+                          {TRAVEL_COMPANIONS.filter(
+                            (tc) => !editedCompanions.includes(tc.label)
+                          ).map((companion) => (
                             <button
                               key={companion.id}
                               onClick={() => addCompanion(companion.label)}
                               className="relative px-6 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-[#0e63be] transition-colors pr-8"
                             >
-                              <span className="text-xs font-medium">{companion.label}</span>
+                              <span className="text-xs font-medium">
+                                {companion.label}
+                              </span>
                               <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-blue-400 text-white rounded-full text-xs">
                                 +
                               </span>
@@ -521,7 +538,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             key={index}
                             className="px-6 py-1 rounded-full bg-blue-100 text-[#0e63be]"
                           >
-                            <span className="text-xs font-medium">{companion}</span>
+                            <span className="text-xs font-medium">
+                              {companion}
+                            </span>
                           </div>
                         ))}
                       </div>
@@ -571,7 +590,12 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         <input
                           type="text"
                           value={editedLocation.destination_name}
-                          onChange={(e) => handleLocationChange('destination_name', e.target.value)}
+                          onChange={(e) =>
+                            handleLocationChange(
+                              "destination_name",
+                              e.target.value
+                            )
+                          }
                           className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                           placeholder="Not specified"
                         />
@@ -589,7 +613,9 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                         <input
                           type="text"
                           value={editedLocation.city}
-                          onChange={(e) => handleLocationChange('city', e.target.value)}
+                          onChange={(e) =>
+                            handleLocationChange("city", e.target.value)
+                          }
                           className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                           placeholder="Not specified"
                         />
@@ -608,7 +634,12 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                       <input
                         type="text"
                         value={editedLocation.destination_description}
-                        onChange={(e) => handleLocationChange('destination_description', e.target.value)}
+                        onChange={(e) =>
+                          handleLocationChange(
+                            "destination_description",
+                            e.target.value
+                          )
+                        }
                         className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                         placeholder="No description provided"
                       />
