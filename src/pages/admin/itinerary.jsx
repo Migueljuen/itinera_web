@@ -14,8 +14,9 @@ import {
   DollarSign,
   FileText,
   CheckCircle,
-  XCircle,
+  X,
   Image as ImageIcon,
+  XCircleIcon,
 } from "lucide-react";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
@@ -34,6 +35,7 @@ const ItineraryManagement = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedItineraryId, setExpandedItineraryId] = useState(null);
   const [processingPayment, setProcessingPayment] = useState(null);
+  const [selectedProofImage, setSelectedProofImage] = useState(null);
   const itineraryRefs = useRef({});
 
   const ITEMS_PER_PAGE = 10;
@@ -200,7 +202,7 @@ const ItineraryManagement = () => {
 
     // Fallback calculation
     const totalAmount = parseFloat(itinerary.total_amount || 0);
-    const commissionRate = 0.15;
+    const commissionRate = 0.1;
     const platformEarning = totalAmount * commissionRate;
     const creatorEarning = totalAmount - platformEarning;
 
@@ -210,6 +212,105 @@ const ItineraryManagement = () => {
       creators_payout: creatorEarning,
       commission_rate: commissionRate * 100,
     };
+  };
+
+  // Get payment proofs for an itinerary
+  const getPaymentProofs = (itinerary) => {
+    const proofs = [];
+
+    if (itinerary.proof_image) {
+      proofs.push({
+        label: "Full Payment",
+        url: `${API_URL}/${itinerary.proof_image}`,
+      });
+    }
+
+    if (itinerary.down_payment_proof) {
+      proofs.push({
+        label: "Down Payment",
+        url: `${API_URL}/${itinerary.down_payment_proof}`,
+      });
+    }
+
+    if (itinerary.remaining_payment_proof) {
+      proofs.push({
+        label: "Remaining Payment",
+        url: `${API_URL}/${itinerary.remaining_payment_proof}`,
+      });
+    }
+
+    return proofs;
+  };
+
+  // Payment Proof Modal Component
+  const PaymentProofModal = ({ proofs, onClose }) => {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+      const handleEscape = (e) => {
+        if (e.key === "Escape") onClose();
+      };
+      window.addEventListener("keydown", handleEscape);
+      return () => window.removeEventListener("keydown", handleEscape);
+    }, [onClose]);
+
+    const handleNext = () => {
+      setCurrentIndex((prev) => (prev + 1) % proofs.length);
+    };
+
+    const handlePrev = () => {
+      setCurrentIndex((prev) => (prev - 1 + proofs.length) % proofs.length);
+    };
+
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+        onClick={onClose}
+      >
+        <div className="relative max-w-7xl max-h-screen p-4">
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="absolute top-0 right-0 z-10 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+          >
+            <X size={24} className="text-white" />
+          </button>
+
+          {/* Image Container */}
+          <div className="relative" onClick={(e) => e.stopPropagation()}>
+            <img
+              src={proofs[currentIndex].url}
+              alt={proofs[currentIndex].label}
+              className="max-w-full max-h-[90vh] object-contain rounded-lg"
+            />
+          </div>
+
+          {/* Navigation Arrows */}
+          {proofs.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handlePrev();
+                }}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              >
+                <ChevronLeft size={24} className="text-white" />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleNext();
+                }}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+              >
+                <ChevronRight size={24} className="text-white" />
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -249,10 +350,11 @@ const ItineraryManagement = () => {
                         <button
                           key={tab}
                           onClick={() => setSelectedTab(tab)}
-                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
+                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
+                            selectedTab === tab
                               ? "bg-white text-black/80 shadow-sm"
                               : "text-black/50 hover:text-black/70"
-                            }`}
+                          }`}
                         >
                           {tab}
                         </button>
@@ -294,6 +396,7 @@ const ItineraryManagement = () => {
                     expandedItineraryId === itinerary.itinerary_id;
                   const earnings = getEarningsSummary(itinerary);
                   const creatorPayouts = itinerary.creator_payouts || [];
+                  const paymentProofs = getPaymentProofs(itinerary);
 
                   return (
                     <div
@@ -301,8 +404,9 @@ const ItineraryManagement = () => {
                       ref={(el) =>
                         (itineraryRefs.current[itinerary.itinerary_id] = el)
                       }
-                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
-                        }`}
+                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${
+                        isExpanded ? "ring-2 ring-blue-400" : ""
+                      }`}
                     >
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-4">
@@ -414,18 +518,20 @@ const ItineraryManagement = () => {
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
-                              }`}
+                            className={`transition-transform duration-300 ${
+                              isExpanded ? "rotate-180" : ""
+                            }`}
                           />
                         </button>
                       </div>
 
                       {/* Expanded Itinerary Content */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                          isExpanded
                             ? "max-h-[800px] opacity-100 mt-6"
                             : "max-h-0 opacity-0"
-                          }`}
+                        }`}
                       >
                         <div className="border-t border-gray-200 pt-6 px-8">
                           <div className="grid grid-cols-2 gap-8">
@@ -555,7 +661,6 @@ const ItineraryManagement = () => {
                               {/* Traveler Information */}
                               <div className="px-6">
                                 <h4 className="font-semibold text-black/80 mb-3 flex items-center gap-2">
-                                  <User size={18} />
                                   Traveler Information
                                 </h4>
                                 <div className="space-y-2 text-sm">
@@ -578,14 +683,9 @@ const ItineraryManagement = () => {
                               {/* Itinerary Details */}
                               <div className="px-6">
                                 <h4 className="font-semibold text-black/80 mb-3 flex items-center gap-2">
-                                  <FileText size={18} />
                                   Itinerary Details
                                 </h4>
                                 <div className="space-y-2 text-sm">
-                                  {/* <p className="text-black/60">
-                                    <span className="font-medium">Title:</span>{" "}
-                                    {itinerary.title}
-                                  </p> */}
                                   <p className="text-black/60">
                                     <span className="font-medium">
                                       Duration:
@@ -593,62 +693,15 @@ const ItineraryManagement = () => {
                                     {formatDate(itinerary.start_date)} -{" "}
                                     {formatDate(itinerary.end_date)}
                                   </p>
-                                  <p className="text-black/60">
-                                    <span className="font-medium">Status:</span>{" "}
-                                    {itinerary.status}
+                                  <p className=" font-medium text-black/60">
+                                    Status:
+                                    <span className="font-medium capitalize text-[#397ff1] ">
+                                      {" "}
+                                      {itinerary.status}
+                                    </span>
                                   </p>
                                 </div>
                               </div>
-
-                              {/* Payment Proof */}
-                              {/* {(itinerary.proof_image ||
-                                itinerary.down_payment_proof ||
-                                itinerary.remaining_payment_proof) && (
-                                <div>
-                                  <h4 className="font-semibold text-black/80 mb-3 flex items-center gap-2">
-                                    <ImageIcon size={18} />
-                                    Payment Proof
-                                  </h4>
-                                  <div className="space-y-3">
-                                    {itinerary.proof_image && (
-                                      <div>
-                                        <p className="text-xs text-gray-500 mb-1">
-                                          Full Payment
-                                        </p>
-                                        <img
-                                          src={`${API_URL}${itinerary.proof_image}`}
-                                          alt="Payment Proof"
-                                          className="w-48 h-48 object-cover rounded-lg border border-gray-200"
-                                        />
-                                      </div>
-                                    )}
-                                    {itinerary.down_payment_proof && (
-                                      <div>
-                                        <p className="text-xs text-gray-500 mb-1">
-                                          Down Payment
-                                        </p>
-                                        <img
-                                          src={`${API_URL}${itinerary.down_payment_proof}`}
-                                          alt="Down Payment Proof"
-                                          className="w-48 h-48 object-cover rounded-lg border border-gray-200"
-                                        />
-                                      </div>
-                                    )}
-                                    {itinerary.remaining_payment_proof && (
-                                      <div>
-                                        <p className="text-xs text-gray-500 mb-1">
-                                          Remaining Payment
-                                        </p>
-                                        <img
-                                          src={`${API_URL}${itinerary.remaining_payment_proof}`}
-                                          alt="Remaining Payment Proof"
-                                          className="w-48 h-48 object-cover rounded-lg border border-gray-200"
-                                        />
-                                      </div>
-                                    )}
-                                  </div>
-                                </div>
-                              )} */}
                             </div>
 
                             {/* Right Column - Payment Breakdown */}
@@ -747,9 +800,16 @@ const ItineraryManagement = () => {
                                       </p>
                                     </>
                                   )}
-                                  <p className="text-[#397ff1]">
-                                    View Payment Proof
-                                  </p>
+                                  {paymentProofs.length > 0 && (
+                                    <button
+                                      onClick={() =>
+                                        setSelectedProofImage(paymentProofs)
+                                      }
+                                      className="text-[#397ff1] hover:underline cursor-pointer"
+                                    >
+                                      View Payment Proof
+                                    </button>
+                                  )}
                                 </div>
                               </div>
 
@@ -772,7 +832,7 @@ const ItineraryManagement = () => {
                                         className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                       >
                                         {processingPayment ===
-                                          itinerary.itinerary_id
+                                        itinerary.itinerary_id
                                           ? "Processing..."
                                           : "Approve Payment"}
                                       </button>
@@ -826,10 +886,11 @@ const ItineraryManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                      className={`px-3 py-2 border rounded-lg ${
+                        currentPage === page
                           ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
                           : "border-gray-300 hover:bg-gray-50"
-                        }`}
+                      }`}
                     >
                       {page}
                     </button>
@@ -850,6 +911,13 @@ const ItineraryManagement = () => {
           )}
         </div>
       </div>
+      {/* Payment Proof Modal */}
+      {selectedProofImage && (
+        <PaymentProofModal
+          proofs={selectedProofImage}
+          onClose={() => setSelectedProofImage(null)}
+        />
+      )}
     </>
   );
 };

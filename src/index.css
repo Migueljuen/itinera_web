@@ -11,7 +11,6 @@
   --color-primary: #212121;
 }
 
-/* Toolbar (navigation + view buttons) */
 .calendar .rbc-toolbar {
   @apply flex items-center justify-between p-4 mb-4;
 }

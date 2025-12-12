@@ -107,10 +107,11 @@ const TimePickerWrapper = ({
 const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
-    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
-      ? "border-gray-900 bg-[#376a63]/5"
-      : "border-gray-200 bg-white hover:border-gray-900"
-      }`}
+    className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${
+      isSelected
+        ? "border-gray-900 bg-[#376a63]/5"
+        : "border-gray-200 bg-white hover:border-gray-900"
+    }`}
   >
     <div className="flex items-start justify-between">
       <div className="flex-1">
@@ -276,8 +277,6 @@ const Step4AvailabilityCompanion = ({
 
   return (
     <>
-
-
       <div className="min-h-screen w-full">
         <div className="mx-auto">
           <div className="text-center py-2">
@@ -293,7 +292,7 @@ const Step4AvailabilityCompanion = ({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-x-4">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={onBack}
                   className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors"
@@ -335,7 +334,7 @@ const Step4AvailabilityCompanion = ({
             {/* TWO COL */}
             <div className="flex flex-row justify-between gap-8">
               {/* LEFT - Availability */}
-              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-[0.6]">
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-[0.7]">
                 <div className="flex flex-col items-left">
                   <div>
                     <label className="block font-medium py-2 text-left text-black/80 ">
@@ -365,11 +364,11 @@ const Step4AvailabilityCompanion = ({
                   className="w-full rounded-xl p-3 flex items-center justify-start  transition-colors mb-3"
                 >
                   {showAddForm ? (
-                    <ChevronUp size={18} className="text-[#376a63]" />
+                    <ChevronUp size={18} className="text-[#0e63be]" />
                   ) : (
-                    <ChevronDown size={18} className="text-[#376a63]" />
+                    <ChevronDown size={18} className="text-[#0e63be]" />
                   )}
-                  <span className="ml-2 text-[#376a63] font-medium text-sm">
+                  <span className="ml-2 text-[#0e63be] font-medium text-sm">
                     {showAddForm ? "Hide Add Form" : "Add Time Slots"}
                   </span>
                 </button>
@@ -387,10 +386,11 @@ const Step4AvailabilityCompanion = ({
                           className={`min-w-[45px] text-center font-medium px-2 py-2 text-xs whitespace-nowrap transition-colors rounded-full space-x-4
        
         ${index !== daysOfWeek.length - 1 ? "" : ""} 
-        ${selectedDays.includes(day)
-                              ? "bg-blue-100 text-[#0e63be] "
-                              : "bg-white border-white text-black/80 hover:bg-gray-50"
-                            }`}
+        ${
+          selectedDays.includes(day)
+            ? "bg-blue-100 text-[#0e63be] "
+            : "bg-white border-white text-black/80 hover:bg-gray-50"
+        }`}
                         >
                           {daysShort[index]}
                         </button>
@@ -417,24 +417,26 @@ const Step4AvailabilityCompanion = ({
                         />
                       </div>
                     </div>
-
-                    {/* Add Button */}
-                    <button
-                      type="button"
-                      onClick={addAvailability}
-                      disabled={!start || !end || selectedDays.length === 0}
-                      className={`w-full py-3 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
-                        ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    <div className="flex justify-end">
+                      {/* Add Button */}
+                      <button
+                        type="button"
+                        onClick={addAvailability}
+                        disabled={!start || !end || selectedDays.length === 0}
+                        className={`px-6 py-3   rounded-xl font-medium text-sm transition-colors ${
+                          start && end && selectedDays.length > 0
+                            ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
                         }`}
-                    >
-                      Add to Selected Days
-                    </button>
+                      >
+                        Add to Selected Days
+                      </button>
+                    </div>
                   </div>
                 )}
 
-                {/* Current Schedule */}
-                <div className="max-h-64 overflow-y-auto">
+                {/* Current Schedule - Calendar View */}
+                <div className="max-h-96 overflow-y-auto">
                   {(formData.availability || []).length === 0 ? (
                     <div className="bg-gray-50 p-4 rounded-xl text-center">
                       <Calendar
@@ -449,76 +451,121 @@ const Step4AvailabilityCompanion = ({
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-2">
-                      {(formData.availability || []).map((item, index) => (
-                        <div
-                          key={`${item.day_of_week}-${index}`}
-                          className="bg-white border border-gray-200 rounded-xl overflow-hidden"
-                        >
-                          {/* Day Header */}
-                          <button
-                            onClick={() => toggleDayExpansion(item.day_of_week)}
-                            className="w-full flex justify-between items-center p-3 hover:bg-gray-50 transition-colors"
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="grid grid-cols-7 gap-2">
+                        {/* Header row with day names */}
+                        {daysShort.map((day, index) => (
+                          <div
+                            key={index}
+                            className="text-center text-xs font-semibold text-black/80 py-2"
                           >
-                            <div className="flex items-center flex-1">
-                              <div className="bg-blue-100 p-1 rounded-lg mr-2 w-12 flex items-center justify-center">
-                                <span className="text-[#0e63be] font-semibold text-xs">
-                                  {item.day_of_week
-                                    .substring(0, 3)
-                                    .toUpperCase()}
-                                </span>
-                              </div>
-                              <div className="flex-1 text-left">
-                                <h4 className="font-semibold text-gray-800 text-sm">
-                                  {item.day_of_week}
-                                </h4>
-                                <p className="text-xs text-gray-500">
-                                  {item.time_slots.length} slot
-                                  {item.time_slots.length !== 1 ? "s" : ""}
-                                </p>
-                              </div>
-                            </div>
-                            {expandedDay === item.day_of_week ? (
-                              <ChevronUp size={16} className="text-gray-400" />
-                            ) : (
-                              <ChevronDown
-                                size={16}
-                                className="text-gray-400"
-                              />
-                            )}
-                          </button>
+                            {day}
+                          </div>
+                        ))}
 
-                          {/* Expanded Time Slots */}
-                          {expandedDay === item.day_of_week && (
-                            <div className="px-3 pb-3 border-t border-gray-100">
-                              {item.time_slots.map((slot, i) => (
-                                <div
-                                  key={`${item.day_of_week}-${i}`}
-                                  className="flex justify-between items-center py-4 px-2 "
-                                >
-                                  <span className="text-black/80 text-sm">
-                                    {formatTimeForDisplay(slot.start_time)} -{" "}
-                                    {formatTimeForDisplay(slot.end_time)}
-                                  </span>
-                                  <button
-                                    onClick={() => removeSlot(index, i)}
-                                    className="p-1 text-black/60 hover:text-black/50 transition-colors"
-                                  >
-                                    <Trash2 size={14} />
-                                  </button>
+                        {/* Calendar days */}
+                        {daysOfWeek.map((fullDay, index) => {
+                          const dayData = (formData.availability || []).find(
+                            (item) => item.day_of_week === fullDay
+                          );
+                          const timeSlots = dayData?.time_slots || [];
+                          const isExpanded = expandedDay === fullDay;
+
+                          return (
+                            <div
+                              key={index}
+                              className={`flex flex-col justify-start min-h-[100px] relative p-3 rounded-lg border transition-all ${
+                                timeSlots.length > 0
+                                  ? "bg-white border-gray-200 hover:border-blue-300"
+                                  : "bg-gray-50 border-gray-200"
+                              }`}
+                            >
+                              {/* Time slots or empty state */}
+                              {timeSlots.length > 0 ? (
+                                <div className="space-y-2">
+                                  {timeSlots
+                                    .slice(0, isExpanded ? timeSlots.length : 2)
+                                    .map((slot, slotIndex) => (
+                                      <div
+                                        key={slotIndex}
+                                        className="group relative"
+                                      >
+                                        <div
+                                          className="text-sm bg-blue-50 border-l-4 border-[#0e63be]/70 rounded-lg py-1.5 px-2 text-[#0e63be] cursor-pointer hover:bg-blue-100 transition-colors"
+                                          title={`${formatTimeForDisplay(
+                                            slot.start_time
+                                          )} - ${formatTimeForDisplay(
+                                            slot.end_time
+                                          )}`}
+                                        >
+                                          <div className="flex flex-col items-center justify-center ">
+                                            <span className=" text-xs">
+                                              {formatTimeForDisplay(
+                                                slot.start_time
+                                              )}
+                                            </span>
+                                            {/* //remove slot */}
+                                            <button
+                                              onClick={(e) => {
+                                                e.stopPropagation();
+                                                const dayIndex = (
+                                                  formData.availability || []
+                                                ).findIndex(
+                                                  (item) =>
+                                                    item.day_of_week === fullDay
+                                                );
+                                                removeSlot(dayIndex, slotIndex);
+                                              }}
+                                              className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 transition-opacity p-0.5 hover:bg-gray-100 rounded-full"
+                                            >
+                                              <X
+                                                size={16}
+                                                className="text-b-500"
+                                              />
+                                            </button>
+                                            <span className=" bg-red "></span>
+                                          </div>
+
+                                          <span className=" text-xs text-[#0e63be]">
+                                            {formatTimeForDisplay(
+                                              slot.end_time
+                                            )}
+                                          </span>
+                                        </div>
+                                      </div>
+                                    ))}
+                                  {timeSlots.length > 2 && (
+                                    <button
+                                      onClick={() =>
+                                        toggleDayExpansion(fullDay)
+                                      }
+                                      className="w-full text-xs text-[#0e63be] font-medium hover:bg-blue-50 py-1 rounded transition-colors"
+                                    >
+                                      {isExpanded ? (
+                                        <span className="flex items-center justify-center gap-1">
+                                          <ChevronUp size={12} />
+                                          Show less
+                                        </span>
+                                      ) : (
+                                        `+${timeSlots.length - 2} more`
+                                      )}
+                                    </button>
+                                  )}
                                 </div>
-                              ))}
+                              ) : (
+                                <div className=""></div>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      ))}
+                          );
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>
               </div>
 
               {/* RIGHT - Travel Companions */}
-              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-[0.4] h-fit">
+              <div className="flex flex-col gap-4 border rounded-xl p-4 border-gray-300 flex-[0.3] h-fit">
                 <div className="pb-4">
                   <label className="block font-medium py-2 text-left text-black/80 ">
                     Who is this experience perfect for?

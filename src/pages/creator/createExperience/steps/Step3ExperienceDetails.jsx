@@ -9,20 +9,20 @@ const units = ["Entry", "Hour", "Day", "Package"];
 const getImageUrl = (imageUrl) => {
   console.log("getImageUrl input:", imageUrl);
 
-  if (!imageUrl) return '';
+  if (!imageUrl) return "";
 
   // If already a full URL, return as is
-  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+  if (imageUrl.startsWith("http://") || imageUrl.startsWith("https://")) {
     console.log("Already full URL, returning as is");
     return imageUrl;
   }
 
   // Get base URL (remove /api if present)
-  const baseUrl = API_URL.replace(/\/api$/, '');
+  const baseUrl = API_URL.replace(/\/api$/, "");
   console.log("Base URL after removing /api:", baseUrl);
 
   // Remove leading slash from imageUrl to avoid double slashes
-  const cleanImageUrl = imageUrl.startsWith('/') ? imageUrl.slice(1) : imageUrl;
+  const cleanImageUrl = imageUrl.startsWith("/") ? imageUrl.slice(1) : imageUrl;
   console.log("Clean image URL:", cleanImageUrl);
 
   // Construct full URL
@@ -41,7 +41,7 @@ const Step3ExperienceDetails = ({
   onSave,
   isSaving = false,
   deletedImageIds = [],
-  setDeletedImageIds = () => { },
+  setDeletedImageIds = () => {},
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -52,8 +52,8 @@ const Step3ExperienceDetails = ({
     console.log("Step3ExperienceDetails - Props:", {
       isEditMode,
       deletedImageIds,
-      hasSetDeletedImageIds: typeof setDeletedImageIds === 'function',
-      imagesCount: formData.images?.length
+      hasSetDeletedImageIds: typeof setDeletedImageIds === "function",
+      imagesCount: formData.images?.length,
     });
   }, [isEditMode, deletedImageIds, formData.images]);
 
@@ -76,7 +76,11 @@ const Step3ExperienceDetails = ({
         const maxSize = 5 * 1024 * 1024; // 5MB
         if (file.size > maxSize) {
           console.warn(
-            `File ${file.name} is too large (${(file.size / 1024 / 1024).toFixed(1)}MB)`
+            `File ${file.name} is too large (${(
+              file.size /
+              1024 /
+              1024
+            ).toFixed(1)}MB)`
           );
           toast.error(`${file.name} is too large. Maximum size is 5MB.`);
           return null;
@@ -94,7 +98,9 @@ const Step3ExperienceDetails = ({
         };
       });
 
-      const imageInfoArray = (await Promise.all(imageInfoPromises)).filter(Boolean);
+      const imageInfoArray = (await Promise.all(imageInfoPromises)).filter(
+        Boolean
+      );
 
       if (imageInfoArray.length > 0) {
         setFormData({
@@ -149,7 +155,12 @@ const Step3ExperienceDetails = ({
     console.log("Current deletedImageIds:", deletedImageIds);
 
     // If it's an existing image (has image_id), track it for deletion
-    if (isEditMode && imageData.isExisting && imageData.image_id && setDeletedImageIds) {
+    if (
+      isEditMode &&
+      imageData.isExisting &&
+      imageData.image_id &&
+      setDeletedImageIds
+    ) {
       const newDeletedIds = [...deletedImageIds, imageData.image_id];
       setDeletedImageIds(newDeletedIds);
       console.log("Updated deletedImageIds:", newDeletedIds);
@@ -157,7 +168,11 @@ const Step3ExperienceDetails = ({
     }
 
     // If it's a new upload (blob URL), revoke it to prevent memory leaks
-    if (!imageData.isExisting && imageData.uri && imageData.uri.startsWith("blob:")) {
+    if (
+      !imageData.isExisting &&
+      imageData.uri &&
+      imageData.uri.startsWith("blob:")
+    ) {
       URL.revokeObjectURL(imageData.uri);
       toast.success("Image removed");
     }
@@ -220,7 +235,6 @@ const Step3ExperienceDetails = ({
 
   return (
     <>
-
       <div className="min-h-screen w-full">
         <div className="mx-auto">
           <div className="text-center py-2">
@@ -230,7 +244,8 @@ const Step3ExperienceDetails = ({
                   Getting Started
                 </h2>
                 <p className="text-left text-sm text-black/60 mb-6">
-                  Please fill the form below. Feel free to add as much detail as needed.
+                  Please fill the form below. Feel free to add as much detail as
+                  needed.
                 </p>
               </div>
               {/* Action Buttons */}
@@ -297,7 +312,9 @@ const Step3ExperienceDetails = ({
                   <textarea
                     placeholder="Short description of the activity"
                     value={formData.description}
-                    onChange={(e) => handleChange("description", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("description", e.target.value)
+                    }
                     className="w-full p-4 text-sm text-gray-800 h-32 rounded-sm border border-gray-300 resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     rows={4}
                   />
@@ -307,10 +324,13 @@ const Step3ExperienceDetails = ({
                 <div className="pb-4">
                   <label className="block font-medium py-2 text-left text-black/90">
                     Additional Notes
-                    <span className="text-gray-400 text-sm font-normal ml-2">(Optional)</span>
+                    <span className="text-gray-400 text-sm font-normal ml-2">
+                      (Optional)
+                    </span>
                   </label>
                   <p className="text-left text-sm text-black/60 mb-4">
-                    Add helpful reminders or requirements for participants (e.g., bring sunscreen, wear comfortable shoes).
+                    Add helpful reminders or requirements for participants
+                    (e.g., bring sunscreen, wear comfortable shoes).
                   </p>
                   <textarea
                     placeholder="E.g. Bring sunscreen, comfortable shoes recommended, etc."
@@ -373,8 +393,8 @@ const Step3ExperienceDetails = ({
                   Upload Images
                 </h3>
                 <p className="text-left text-sm text-black/60 mb-8">
-                  Select images that showcase your experience. High-quality photos will
-                  attract more visitors.
+                  Select images that showcase your experience. High-quality
+                  photos will attract more visitors.
                 </p>
 
                 {/* Drag and Drop Area */}
@@ -383,10 +403,11 @@ const Step3ExperienceDetails = ({
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={pickImage}
-                  className={`border-2 border-dashed rounded-sm p-6 text-center cursor-pointer transition-colors ${dragOver
-                    ? "border-blue-400 bg-blue-50"
-                    : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                    } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                  className={`border-2 border-dashed rounded-sm p-6 text-center cursor-pointer transition-colors ${
+                    dragOver
+                      ? "border-blue-400 bg-blue-50"
+                      : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                  } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
                 >
                   {isLoading ? (
                     <div className="flex flex-col items-center">
@@ -394,7 +415,9 @@ const Step3ExperienceDetails = ({
                         size={36}
                         className="text-blue-600 animate-spin mb-3"
                       />
-                      <p className="text-sm text-gray-600">Processing images...</p>
+                      <p className="text-sm text-gray-600">
+                        Processing images...
+                      </p>
                     </div>
                   ) : (
                     <div className="flex flex-col items-center">
@@ -421,8 +444,9 @@ const Step3ExperienceDetails = ({
 
                 <p className="text-xs text-gray-500 text-center italic py-4">
                   {formData.images?.length > 0
-                    ? `${formData.images.length} image${formData.images.length > 1 ? "s" : ""
-                    } selected`
+                    ? `${formData.images.length} image${
+                        formData.images.length > 1 ? "s" : ""
+                      } selected`
                     : "Optional: Add images to showcase your experience"}
                 </p>
 
@@ -440,11 +464,18 @@ const Step3ExperienceDetails = ({
                           ? `Image ${index + 1}`
                           : img.name;
                         const size = img.isExisting ? null : img.size;
-                        const uniqueKey = img.image_id || img.tempId || img.uri || `img-${index}`;
+                        const uniqueKey =
+                          img.image_id ||
+                          img.tempId ||
+                          img.uri ||
+                          `img-${index}`;
 
                         // Debug log
                         if (index === 0) {
-                          console.log("First image structure:", JSON.stringify(img, null, 2));
+                          console.log(
+                            "First image structure:",
+                            JSON.stringify(img, null, 2)
+                          );
                           console.log("Image keys:", Object.keys(img));
                           console.log("img.image_url:", img.image_url);
                           console.log("Constructed URI:", uri);
@@ -452,10 +483,7 @@ const Step3ExperienceDetails = ({
                         }
 
                         return (
-                          <div
-                            key={uniqueKey}
-                            className="relative group mt-4"
-                          >
+                          <div key={uniqueKey} className="relative group mt-4">
                             {/* Image Preview */}
                             <div className="rounded-lg overflow-hidden h-32">
                               <img
@@ -464,7 +492,8 @@ const Step3ExperienceDetails = ({
                                 className="w-full h-full object-cover"
                                 onError={(e) => {
                                   console.error("Image load error:", uri);
-                                  e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23999' dy='.3em'%3EError%3C/text%3E%3C/svg%3E";
+                                  e.target.src =
+                                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect fill='%23ddd' width='100' height='100'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' fill='%23999' dy='.3em'%3EError%3C/text%3E%3C/svg%3E";
                                 }}
                               />
                             </div>
@@ -486,12 +515,6 @@ const Step3ExperienceDetails = ({
 
                             {/* Image Info */}
                             <div className="mt-1">
-                              <p
-                                className="text-xs text-gray-600 truncate"
-                                title={name}
-                              >
-                                {name}
-                              </p>
                               {size && (
                                 <p className="text-xs text-gray-400">
                                   {formatFileSize(size)}
@@ -499,7 +522,7 @@ const Step3ExperienceDetails = ({
                               )}
                               {img.isExisting && (
                                 <p className="text-xs text-green-600">
-                                  Uploaded • ID: {img.image_id}
+                                  Uploaded
                                 </p>
                               )}
                             </div>
@@ -510,7 +533,9 @@ const Step3ExperienceDetails = ({
                   ) : (
                     <div className="flex flex-col items-center justify-center h-32 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
                       <FileImage size={32} className="mb-2" />
-                      <p className="text-sm text-gray-500">No images selected</p>
+                      <p className="text-sm text-gray-500">
+                        No images selected
+                      </p>
                       <p className="text-xs text-gray-400 mt-1">
                         Images will appear here after selection
                       </p>
