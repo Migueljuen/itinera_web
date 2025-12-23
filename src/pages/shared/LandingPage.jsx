@@ -120,6 +120,10 @@ const LandingPage = () => {
     navigate("/login");
   }, [navigate]);
 
+  const handlePartnerOnboarding = useCallback(() => {
+    navigate("/partner-onboarding");
+  }, [navigate]);
+
   // Preload critical images
   useEffect(() => {
     const preloadImages = [logoImage, mockup];
@@ -134,9 +138,8 @@ const LandingPage = () => {
       <div className="min-h-screen bg-white font-display">
         {/* Header */}
         <header
-          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${
-            scrolled ? "transform-gpu" : ""
-          }`}
+          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${scrolled ? "transform-gpu" : ""
+            }`}
         >
           <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
             <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
@@ -573,30 +576,35 @@ const LandingPage = () => {
                   </div>
                   <p className="text-black/60 mb-4">Service fee per booking</p>
                 </div>
+
                 <div className="flex-1 space-y-4 mb-8">
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
                     <span className="text-black/80">
-                      Set your own activity rates
+                      Set your own service rates
                     </span>
                   </div>
+
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
                     <span className="text-black/80">
                       Transparent earnings and payouts
                     </span>
                   </div>
+
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
                     <span className="text-black/80">
-                      Reach travelers seeking authentic experiences
+                      Connect with travelers planning curated itineraries
                     </span>
                   </div>
                 </div>
-                <Button onClick={handleSignIn} className="w-full ">
+
+                <Button onClick={handlePartnerOnboarding} className="w-full">
                   Become a Partner
                 </Button>
               </div>
+
             </div>
           </div>
         </motion.section>
@@ -668,10 +676,10 @@ const LandingPage = () => {
                               link === "About Us"
                                 ? "/about"
                                 : link === "Contact Us"
-                                ? "/contact"
-                                : link === "Become a host"
-                                ? "/host"
-                                : "/"
+                                  ? "/contact"
+                                  : link === "Become a host"
+                                    ? "/host"
+                                    : "/"
                             }
                           >
                             {link}

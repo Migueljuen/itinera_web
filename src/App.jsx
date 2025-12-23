@@ -23,7 +23,7 @@ import Settings from "./pages/creator/settings";
 import ForgotPassword from "./pages/shared/forgot";
 import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
-
+import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx"
 export default function App() {
   return (
     <Router>
@@ -85,6 +85,14 @@ export default function App() {
           element={
             <PublicRoute>
               <Signup />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/partner-onboarding"
+          element={
+            <PublicRoute>
+              <PartnerOnboardingForm />
             </PublicRoute>
           }
         />

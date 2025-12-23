@@ -36,6 +36,10 @@ const ItineraryManagement = () => {
   const [expandedItineraryId, setExpandedItineraryId] = useState(null);
   const [processingPayment, setProcessingPayment] = useState(null);
   const [selectedProofImage, setSelectedProofImage] = useState(null);
+
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [declineReason, setDeclineReason] = useState('');
   const itineraryRefs = useRef({});
 
   const ITEMS_PER_PAGE = 10;
@@ -189,6 +193,47 @@ const ItineraryManagement = () => {
     } catch (error) {
       console.error("Error approving payment:", error);
       toast.error("Failed to approve payment");
+    } finally {
+      setProcessingPayment(null);
+    }
+  };
+
+  // Handle payment decline - open modal
+  const handleDeclineClick = (itineraryId, paymentId) => {
+    setSelectedPayment({ itineraryId, paymentId });
+    setShowDeclineModal(true);
+    setDeclineReason('');
+  };
+
+  // Handle payment decline - submit
+  const handleDeclinePayment = async () => {
+    if (!declineReason.trim()) {
+      toast.error("Please provide a reason for declining");
+      return;
+    }
+
+    try {
+      setProcessingPayment(selectedPayment.itineraryId);
+
+      await axios.put(
+        `${API_URL}/admin/payment/${selectedPayment.paymentId}/decline`,
+        { reason: declineReason },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      toast.success("Payment declined successfully!");
+      setShowDeclineModal(false);
+      setSelectedPayment(null);
+      setDeclineReason('');
+      fetchItineraries(); // Refresh the list
+    } catch (error) {
+      console.error("Error declining payment:", error);
+      toast.error("Failed to decline payment");
     } finally {
       setProcessingPayment(null);
     }
@@ -350,11 +395,10 @@ const ItineraryManagement = () => {
                         <button
                           key={tab}
                           onClick={() => setSelectedTab(tab)}
-                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                            selectedTab === tab
-                              ? "bg-white text-black/80 shadow-sm"
-                              : "text-black/50 hover:text-black/70"
-                          }`}
+                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
+                            ? "bg-white text-black/80 shadow-sm"
+                            : "text-black/50 hover:text-black/70"
+                            }`}
                         >
                           {tab}
                         </button>
@@ -404,9 +448,8 @@ const ItineraryManagement = () => {
                       ref={(el) =>
                         (itineraryRefs.current[itinerary.itinerary_id] = el)
                       }
-                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${
-                        isExpanded ? "ring-2 ring-blue-400" : ""
-                      }`}
+                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                        }`}
                     >
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-4">
@@ -518,20 +561,18 @@ const ItineraryManagement = () => {
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                       </div>
 
                       {/* Expanded Itinerary Content */}
                       <div
-                        className={`transition-all duration-300 ease-in-out flex-1 overflow-hidden ${
-                          isExpanded
-                            ? "max-h-fit opacity-100 mt-6"
-                            : "max-h-0 opacity-0"
-                        }`}
+                        className={`transition-all duration-300 ease-in-out flex-1 overflow-hidden ${isExpanded
+                          ? "max-h-fit opacity-100 mt-6"
+                          : "max-h-0 opacity-0"
+                          }`}
                       >
                         <div className="border-t border-gray-200 pt-6 px-8">
                           <div className="grid grid-cols-2 gap-8">
@@ -814,6 +855,7 @@ const ItineraryManagement = () => {
                               </div>
 
                               {/* Action Buttons */}
+                              {/* Action Buttons */}
                               <div className="space-y-2">
                                 {itinerary.payment_status === "Pending" && (
                                   <>
@@ -825,27 +867,75 @@ const ItineraryManagement = () => {
                                             itinerary.payment_id
                                           )
                                         }
-                                        disabled={
-                                          processingPayment ===
-                                          itinerary.itinerary_id
-                                        }
-                                        className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        disabled={processingPayment === itinerary.itinerary_id}
+                                        className="w-full px-6 py-3 bg-primary text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors"
                                       >
-                                        {processingPayment ===
-                                        itinerary.itinerary_id
+                                        {processingPayment === itinerary.itinerary_id
                                           ? "Processing..."
                                           : "Approve Payment"}
                                       </button>
-                                      <button className="w-full px-6 py-3 bg-gray-100 text-black/80 font-medium rounded-lg  flex items-center justify-center gap-2">
+                                      <button
+                                        onClick={() =>
+                                          handleDeclineClick(
+                                            itinerary.itinerary_id,
+                                            itinerary.payment_id
+                                          )
+                                        }
+                                        disabled={processingPayment === itinerary.itinerary_id}
+                                        className="w-full px-6 py-3 bg-gray-50 text-black/80 font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:bg-red-100 transition-colors"
+                                      >
                                         Reject Payment
                                       </button>
                                     </div>
                                   </>
                                 )}
-                                {/* <button className="w-full px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200">
-                                  View Full Itinerary
-                                </button> */}
                               </div>
+
+                              {/* Decline Payment Modal */}
+                              {showDeclineModal && (
+                                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+                                  <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
+                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                                      Decline Payment
+                                    </h3>
+                                    <p className="text-sm text-gray-600 mb-4">
+                                      Please provide a reason for declining this payment. The traveler will be notified.
+                                    </p>
+
+                                    <textarea
+                                      value={declineReason}
+                                      onChange={(e) => setDeclineReason(e.target.value)}
+                                      placeholder="e.g., Invalid payment proof, unclear bank receipt, wrong amount..."
+                                      className="w-full border border-gray-300 rounded-lg px-4 py-3 mb-4 min-h-[120px] focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
+                                      maxLength={500}
+                                    />
+
+                                    <p className="text-xs text-gray-500 mb-4">
+                                      {declineReason.length}/500 characters
+                                    </p>
+
+                                    <div className="flex gap-3">
+                                      <button
+                                        onClick={() => {
+                                          setShowDeclineModal(false);
+                                          setSelectedPayment(null);
+                                          setDeclineReason('');
+                                        }}
+                                        className="flex-1 px-4 py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                                      >
+                                        Cancel
+                                      </button>
+                                      <button
+                                        onClick={handleDeclinePayment}
+                                        disabled={!declineReason.trim() || processingPayment}
+                                        className="flex-1 px-4 py-2.5 bg-gray-50 text-black/80 font-medium rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                      >
+                                        {processingPayment ? "Declining..." : "Decline Payment"}
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -886,11 +976,10 @@ const ItineraryManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
-                          ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                        ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
                     >
                       {page}
                     </button>
