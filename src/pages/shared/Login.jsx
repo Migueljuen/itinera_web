@@ -49,13 +49,13 @@ function Login() {
         // Route based on user role
         if (userRole === "Creator") {
           // Use the wasFirstLogin flag from backend
-          if (result.wasFirstLogin) {
-            toast.success("Welcome! Let's set up your first activity 🎉");
-            navigate("/owner/create", { replace: true });
-          } else {
-            toast.success("Login successful!");
-            navigate("/owner", { replace: true });
-          }
+          // if (result.wasFirstLogin) {
+          //   toast.success("Welcome! Let's set up your first activity 🎉");
+          //   navigate("/owner/create", { replace: true });
+          // } else {
+          toast.success("Login successful!");
+          navigate("/owner", { replace: true });
+
         } else if (userRole === "Admin") {
           toast.success("Welcome back, Admin!");
           navigate("/admin-dashboard", { replace: true });
