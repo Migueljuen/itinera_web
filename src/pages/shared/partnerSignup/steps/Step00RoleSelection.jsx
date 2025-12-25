@@ -10,19 +10,19 @@ const Step00RoleSelection = ({ formData, setFormData, onNext }) => {
 
   const roles = [
     {
-      role_id: "creator",
+      role_id: "Creator",
       name: "Share Activity",
       description: "Offer activities and experiences to travelers",
       image: creatorImg,
     },
     {
-      role_id: "guide",
+      role_id: "Guide",
       name: "Tour Guide",
       description: "Guide travelers through destinations and activities",
       image: guideImg,
     },
     {
-      role_id: "driver",
+      role_id: "Driver",
       name: "Transport Provider",
       description: "Provide itinerary-based transportation services",
       image: driverImg,

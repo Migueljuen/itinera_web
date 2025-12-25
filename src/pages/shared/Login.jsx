@@ -55,7 +55,6 @@ function Login() {
           // } else {
           toast.success("Login successful!");
           navigate("/owner", { replace: true });
-
         } else if (userRole === "Admin") {
           toast.success("Welcome back, Admin!");
           navigate("/admin-dashboard", { replace: true });
@@ -197,10 +196,10 @@ function Login() {
             {/* Sign Up Link */}
             <div className="text-center pt-4">
               <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
+                Not a partner yet?{" "}
                 <button
                   type="button"
-                  onClick={() => navigate("/signup")}
+                  onClick={() => navigate("/partner-onboarding")}
                   className="text-blue-400 font-medium hover:text-blue-500 transition-colors cursor-pointer"
                 >
                   Sign Up
