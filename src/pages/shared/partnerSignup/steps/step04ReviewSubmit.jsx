@@ -34,30 +34,30 @@ const Step04ReviewSubmit = ({
     if (creator_role === "Guide") {
       return (
         <div className="space-y-3">
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Role:</span>
+          <div className="flex justify-between py-2  ">
+            <span className="text-black/70">Role:</span>
             <span className="font-medium">Tour Guide</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Expertise:</span>
+          <div className="flex justify-between py-2  ">
+            <span className="text-black/70">Expertise:</span>
             <span className="font-medium">
               {getCategoryName(formData.expertise_category_id)}
             </span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Languages:</span>
+          <div className="flex justify-between py-2 ">
+            <span className="text-black/70">Languages:</span>
             <span className="font-medium">
               {formData.languages?.join(", ") || "—"}
             </span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Service Areas:</span>
+          <div className="flex justify-between py-2 ">
+            <span className="text-black/70">Service Areas:</span>
             <span className="font-medium text-right">
               {formData.areas_covered || "—"}
             </span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Experience:</span>
+          <div className="flex justify-between py-2">
+            <span className="text-black/70">Experience:</span>
             <span className="font-medium">
               {formData.experience_years
                 ? `${formData.experience_years} year${
@@ -66,8 +66,8 @@ const Step04ReviewSubmit = ({
                 : "—"}
             </span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Availability:</span>
+          <div className="flex justify-between py-2 ">
+            <span className="text-black/70">Availability:</span>
             <span className="font-medium text-right">
               {formData.guide_availability_days?.join(", ") || "—"}
             </span>
@@ -76,25 +76,25 @@ const Step04ReviewSubmit = ({
       );
     }
 
-    if (role === "Driver") {
+    if (creator_role === "Driver") {
       return (
         <div className="space-y-3">
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Role:</span>
+          <div className="flex justify-between py-2   ">
+            <span className="text-black/70">Role:</span>
             <span className="font-medium">Transport Provider</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Service Area:</span>
+          <div className="flex justify-between py-2 ">
+            <span className="text-black/70">Service Area:</span>
             <span className="font-medium">{formData.service_area || "—"}</span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Multi-day Service:</span>
+          <div className="flex justify-between py-2   ">
+            <span className="text-black/70">Multi-day Service:</span>
             <span className="font-medium">
               {formData.is_multi_day ? "Yes" : "No"}
             </span>
           </div>
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Availability:</span>
+          <div className="flex justify-between py-2   ">
+            <span className="text-black/70">Availability:</span>
             <span className="font-medium text-right">
               {formData.driver_availability_days?.join(", ") || "—"}
             </span>
@@ -103,19 +103,11 @@ const Step04ReviewSubmit = ({
       );
     }
 
-    if (role === "Creator") {
+    if (creator_role === "Creator") {
       return (
-        <div className="space-y-3">
-          <div className="flex justify-between py-2 border-b border-gray-100">
-            <span className="text-gray-600">Role:</span>
-            <span className="font-medium">Experience Creator</span>
-          </div>
-          <div className="py-2">
-            <p className="text-sm text-gray-600">
-              You can start creating experiences after your account is approved.
-            </p>
-          </div>
-        </div>
+        <p className="text-sm text-black/70">
+          You can start creating experiences after your account is approved.
+        </p>
       );
     }
 
@@ -219,79 +211,81 @@ const Step04ReviewSubmit = ({
 
         {/* Right Content */}
         <div className="flex-[0.7] flex items-center justify-center py-12">
-          <div className="max-w-4xl w-full px-6">
+          <div className="max-w-6xl w-full px-6">
             <h2 className="text-3xl font-semibold mb-4">Review & Submit</h2>
-            <p className="mb-8 text-gray-700">
+            <p className="mb-8 text-black/60">
               Please review your details before submitting your partner
               application.
             </p>
 
             <div className="space-y-6">
-              {/* Personal Information */}
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Personal Information
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Full Name:</span>
-                    <span className="font-medium">
-                      {formData.first_name} {formData.last_name}
-                    </span>
+              <div className="flex gap-6">
+                {/* Personal Information */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 w-full">
+                  <h3 className="text-lg font-medium text-black/90 mb-4">
+                    Personal Information
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between py-2    border-gray-100">
+                      <span className="text-black/70">Full Name:</span>
+                      <span className="font-medium">
+                        {formData.first_name} {formData.last_name}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-2    border-gray-100">
+                      <span className="text-black/70">Email:</span>
+                      <span className="font-medium">
+                        {formData.email || "—"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-2    border-gray-100">
+                      <span className="text-black/70">Mobile Number:</span>
+                      <span className="font-medium">
+                        {formData.mobile_number || "—"}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Email:</span>
-                    <span className="font-medium">{formData.email || "—"}</span>
-                  </div>
-                  <div className="flex justify-between py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Mobile Number:</span>
-                    <span className="font-medium">
-                      {formData.mobile_number || "—"}
-                    </span>
+                </div>
+                {/* Verification Documents */}
+                <div className="bg-white border border-gray-200 rounded-xl p-6 w-full ">
+                  <h3 className="text-lg font-medium text-black/90 mb-4">
+                    Verification Documents
+                  </h3>
+                  <div className="space-y-2">
+                    {formData.profile_pic && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-black/60">Profile Picture</span>
+                      </div>
+                    )}
+                    {formData.id_document && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-black/60">Government ID</span>
+                      </div>
+                    )}
+                    {formData.license_document && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-black/60">Driver's License</span>
+                      </div>
+                    )}
+                    {!formData.profile_pic &&
+                      !formData.id_document &&
+                      !formData.license_document && (
+                        <p className="text-sm text-gray-500">
+                          No documents uploaded
+                        </p>
+                      )}
                   </div>
                 </div>
               </div>
-
               {/* Role-Specific Details */}
               <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Service Details
+                <h3 className="text-lg font-medium text-black/90 mb-4">
+                  Other Details
                 </h3>
                 {renderRoleSummary()}
-              </div>
-
-              {/* Verification Documents */}
-              <div className="bg-white border border-gray-200 rounded-xl p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Verification Documents
-                </h3>
-                <div className="space-y-2">
-                  {formData.profile_pic && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-700">Profile Picture</span>
-                    </div>
-                  )}
-                  {formData.id_document && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-700">Government ID</span>
-                    </div>
-                  )}
-                  {formData.license_document && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-700">Driver's License</span>
-                    </div>
-                  )}
-                  {!formData.profile_pic &&
-                    !formData.id_document &&
-                    !formData.license_document && (
-                      <p className="text-sm text-gray-500">
-                        No documents uploaded
-                      </p>
-                    )}
-                </div>
               </div>
 
               {/* Important Notice */}

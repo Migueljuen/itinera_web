@@ -98,8 +98,11 @@ const PartnerOnboardingForm = () => {
           JSON.stringify(formData.driver_availability_days)
         );
 
-        if (formData.license?.file) {
-          formDataToSend.append("license", formData.license.file);
+        if (formData.license_document?.file) {
+          formDataToSend.append(
+            "license_document",
+            formData.license_document.file
+          );
         }
       }
 

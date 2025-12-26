@@ -15,7 +15,7 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [dragOver, setDragOver] = useState(null);
   const fileInputRefs = useRef({});
-
+  console.log(formData);
   // Define required documents based on role
   const getRequiredDocuments = () => {
     const role = formData.creator_role?.toLowerCase();
@@ -57,6 +57,8 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
         ...formData,
         [documentKey]: { file, uri, isExisting: false },
       });
+
+      console.log("✅ Document saved to formData:", documentKey, { file, uri }); // ← ADD THIS
 
       const docLabel = requiredDocuments.find(
         (d) => d.key === documentKey

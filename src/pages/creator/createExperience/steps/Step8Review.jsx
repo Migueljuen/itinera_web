@@ -167,7 +167,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
           return (
             <div
               key={index}
-              className="flex flex-col justify-between h-full relative p-3 my-auto rounded-lg text-center border border-gray-300"
+              className="flex flex-col justify-between h-full relative p-3 my-auto rounded-lg text-center  border-gray-300"
             >
               {/* Time slots */}
               {hasAvailability && hasAvailability.length > 0 ? (
@@ -175,7 +175,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                   {hasAvailability.slice(0, 2).map((slot, slotIndex) => (
                     <div
                       key={slotIndex}
-                      className="text-xs rounded py-2 border-l-4 border-blue-500 bg-blue-100 text-black/60"
+                      className="text-xs rounded py-2 border-l-4 border-blue-500 bg-blue-100 text-black/80"
                       title={`${convertToStandardTime(
                         slot.start_time
                       )} - ${convertToStandardTime(slot.end_time)}`}
@@ -278,7 +278,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 </div>
               </div>
               {formData.availability && formData.availability.length > 0 ? (
-                <div className="rounded-lg p-4 bg-gray-50">
+                <div className="rounded-lg p-4 ">
                   {renderAvailabilityCalendar()}
                 </div>
               ) : (
@@ -317,12 +317,12 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     title, description and pricing.
                   </p>
                 </div>
-                <div className="mt-8">
+                <div className="mt-12">
                   <div className="flex flex-row justify-between gap-4">
                     {/* LEFT */}
                     <div className="flex-1 space-y-4">
-                      <div className="flex space-x-8 items-center min-h-[24px]">
-                        <label className="text-sm font-medium text-black/80">
+                      <div className="flex justify-between items-center min-h-[24px]">
+                        <label className=" font-base text-black/60">
                           Activity title
                         </label>
                         {isEditingBasicDetails ? (
@@ -332,17 +332,15 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("title", e.target.value)
                             }
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
+                            className=" text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be] pb-1">
-                            {formData.title}
-                          </div>
+                          <div className="">{formData.title}</div>
                         )}
                       </div>
-                      <div className="flex space-x-8">
-                        <label className="text-sm font-medium text-black/80">
-                          Pricing per {formData.unit}
+                      <div className="flex justify-between">
+                        <label className="font-base text-black/60">
+                          Per {formData.unit}
                         </label>
                         {isEditingBasicDetails ? (
                           <input
@@ -355,13 +353,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             placeholder="0"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
-                            ₱{formData.price || "0"}
-                          </div>
+                          <div className="">₱{formData.price || "0"}</div>
                         )}
                       </div>
-                      <div className="flex space-x-8">
-                        <label className="text-sm font-medium text-black/80">
+                      <div className="flex justify-between">
+                        <label className=" font-base text-black/60">
                           Short Description of the activity
                         </label>
                         {isEditingBasicDetails ? (
@@ -371,17 +367,17 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("description", e.target.value)
                             }
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className=" border-b text-[#0e63be] border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No description provided"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
+                          <div className="">
                             {formData.description || "No description provided"}
                           </div>
                         )}
                       </div>
-                      <div className="flex space-x-8">
-                        <label className="text-sm font-medium text-black/80">
+                      <div className="flex justify-between">
+                        <label className=" text-black/60">
                           Additional Notes
                         </label>
                         {isEditingBasicDetails ? (
@@ -391,11 +387,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("notes", e.target.value)
                             }
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className=" text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No additional notes provided"
                           />
                         ) : (
-                          <div className="text-sm text-[#0e63be]">
+                          <div className="">
                             {formData.notes || "No additional notes provided"}
                           </div>
                         )}
@@ -417,7 +413,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 </div>
                 {/* Category Section */}
                 <div className="flex-1 space-y-4">
-                  <div className="flex space-x-8 mt-8">
+                  <div className="flex space-x-8 mt-12">
                     <label className="text-sm font-medium text-black/80">
                       Category
                     </label>
@@ -468,7 +464,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                       )}
                     </button>
                   </div>
-                  <p className="text-sm text-black/60 text-left">
+                  <p className="text-sm text-black/60 text-left mb-6">
                     Let customers know who would enjoy this activity the most,
                     from solo travelers to families.
                   </p>
@@ -582,10 +578,8 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
 
                 <div className="space-y-4 text-left">
                   <div className="flex-1 space-y-4">
-                    <div className="flex space-x-8 mt-8">
-                      <label className="text-sm font-medium text-black/80">
-                        Name
-                      </label>
+                    <div className="flex justify-between mt-12">
+                      <label className=" text-black/60">Name</label>
                       {isEditingLocation ? (
                         <input
                           type="text"
@@ -596,19 +590,17 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                               e.target.value
                             )
                           }
-                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                          className=" text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                           placeholder="Not specified"
                         />
                       ) : (
-                        <div className="text-sm text-[#0e63be]">
+                        <div className="">
                           {formData.destination_name || "Not specified"}
                         </div>
                       )}
                     </div>
-                    <div className="flex space-x-8">
-                      <label className="text-sm font-medium text-black/80">
-                        City
-                      </label>
+                    <div className="flex justify-between">
+                      <label className=" text-black/60">City</label>
                       {isEditingLocation ? (
                         <input
                           type="text"
@@ -616,18 +608,18 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                           onChange={(e) =>
                             handleLocationChange("city", e.target.value)
                           }
-                          className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                          className="text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                           placeholder="Not specified"
                         />
                       ) : (
-                        <div className="text-sm text-[#0e63be]">
+                        <div className="">
                           {formData.city || "Not specified"}
                         </div>
                       )}
                     </div>
                   </div>
-                  <div className="flex space-x-8">
-                    <label className="text-sm font-medium text-black/80">
+                  <div className="flex justify-between">
+                    <label className=" text-black/60">
                       Description or Landmark
                     </label>
                     {isEditingLocation ? (
@@ -640,11 +632,11 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             e.target.value
                           )
                         }
-                        className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                        className=" text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                         placeholder="No description provided"
                       />
                     ) : (
-                      <div className="text-sm text-[#0e63be]">
+                      <div className="">
                         {formData.destination_description ||
                           "No description provided"}
                       </div>
