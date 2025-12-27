@@ -16,7 +16,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
-
+import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -309,7 +309,6 @@ const CreatorDashboard = () => {
                 )}
               </div>
             </div>
-
             {/* Profile */}
             <div className="flex items-center gap-4">
               {user?.profile_pic ? (
@@ -325,10 +324,15 @@ const CreatorDashboard = () => {
                   </span>
                 </div>
               )}
-              <div className="text-right hidden sm:block">
+
+              <div className="hidden sm:flex items-center gap-1">
                 <p className="text-base font-medium text-primary capitalize">
                   {user?.first_name} {user?.last_name}
                 </p>
+
+                {user?.status === "Approved" && (
+                  <CheckBadgeIcon className="size-5 text-blue-400" />
+                )}
               </div>
             </div>
           </div>

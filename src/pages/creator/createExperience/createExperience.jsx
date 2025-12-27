@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ProgressBar from "../../../components/ProgressBar";
+import { ClockIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 // Step components (web versions)
@@ -132,7 +132,7 @@ const ExperienceCreationForm = () => {
     return true;
   };
 
-  const handleSubmit = async (status = "pending") => {
+  const handleSubmit = async (status = "active") => {
     console.log("Submitting formData:", formData);
 
     if (!validateFormData()) {
@@ -145,7 +145,7 @@ const ExperienceCreationForm = () => {
 
       // Show loading toast
       const loadingToastId = toast.loading(
-        status === "pending"
+        status === "active"
           ? "Submitting experience for approval..."
           : "Saving draft..."
       );
@@ -326,6 +326,38 @@ const ExperienceCreationForm = () => {
         return null;
     }
   };
+  if (user && user.status !== "Approved") {
+    return (
+      <DashboardLayout>
+        <div className="min-h-[70vh] max-w-xl mx-auto flex items-center justify-center px-6 ">
+          <div className="  text-center">
+            <div className="bg-gray-100 rounded-full w-fit p-2 mx-auto mb-8">
+              <ClockIcon className="size-8 " />
+            </div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-3">
+              Account Pending Approval
+            </h2>
+
+            <p className="text-black/60 mb-6">
+              You’ll be able to create and publish activities once your account
+              has been approved by our team.
+            </p>
+
+            <div className="bg-blue-50 text-blue-700 text-sm rounded-xl px-4 py-3 mb-6">
+              This helps us maintain quality and trust for travelers.
+            </div>
+
+            <button
+              onClick={() => navigate("/owner/dashboard")}
+              className="  gap-2 w-full py-3 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer"
+            >
+              Back to dashboard
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
   return (
     <>
