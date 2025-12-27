@@ -3,11 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Menu, ChevronRight } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
-import envelope from "../../assets/icons/envelope.svg";
-import BarChartTest from "../../components/BarChart";
-import SubscriptionBanner from "../../components/SubscriptionBanner";
-import CalendarView from "../../components/Calendar";
-import RecentBooking from "../../components/RecentBooking";
 import dummyNotifications from "../../constants/dummyNotif";
 import NotificationDropdown from "../../components/NotificationDropdown";
 import PendingApprovalSection from "../../components/PendingApprovalSection";
@@ -378,10 +373,10 @@ const AdminDashboard = () => {
       <div className="flex flex-1 flex-col w-full  xl:border-none gap-8  ">
         {/* Overview */}
 
-        <div className="flex gap-2 w-full h-[480px] " >
+        <div className="flex gap-2 w-full h-[490px] " >
           <div className="space-y-2 flex-[0.3] h-full">
             {/* New Tickets / Active Activities */}
-            <div className="bg-white  px-6 py-8 rounded-2xl border border-gray-200 flex flex-col justify-between">
+            <div className="bg-white  px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="p-2 bg-green-50 rounded-md">
                   <PresentationChartLineIcon className="w-7 h-7 text-green-900/50" />
@@ -415,7 +410,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Review needed*/}
-            <div className="bg-white px-6 py-8 rounded-2xl border border-gray-200 flex flex-col justify-between">
+            <div className="bg-white px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="p-2 bg-yellow-50 rounded-md">
                   <ClockIcon className="w-7 h-7 text-yellow-600" />
@@ -450,7 +445,7 @@ const AdminDashboard = () => {
           </div>
 
           {/* Itinerary Payments Section */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-200 flex flex-col flex-[0.7] h-full">
+          <div className="bg-white p-6 rounded-2xl border-2 border-gray-300 flex flex-col flex-[0.7] h-full">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <p className="font-medium text-black/80">Itineraries</p>

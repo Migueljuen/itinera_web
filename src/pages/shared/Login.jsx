@@ -47,7 +47,7 @@ function Login() {
         const userRole = result.user.role;
 
         // Route based on user role
-        if (userRole === "Creator") {
+        if (userRole === "Creator" || userRole === "Driver" || userRole === "Guide") {
           // Use the wasFirstLogin flag from backend
           // if (result.wasFirstLogin) {
           //   toast.success("Welcome! Let's set up your first activity 🎉");

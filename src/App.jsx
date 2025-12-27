@@ -24,6 +24,8 @@ import ForgotPassword from "./pages/shared/forgot";
 import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
 import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx"
+import PartnersManagement from "./pages/admin/partner.jsx";
+import PartnerDetailScreen from "./pages/admin/partner/id.jsx";
 export default function App() {
   return (
     <Router>
@@ -120,7 +122,7 @@ export default function App() {
         <Route
           path="/owner"
           element={
-            <ProtectedRoute allowedRoles={["Creator"]}>
+            <ProtectedRoute allowedRoles={["Creator", "Driver", "Guide"]}>
               <DashboardLayout />
             </ProtectedRoute>
           }
@@ -143,6 +145,8 @@ export default function App() {
         >
           <Route index path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="itineraries" element={<ItineraryManagement />} />
+          <Route path="partners" element={<PartnersManagement />} />
+          <Route path="partner/:id" element={<PartnerDetailScreen />} />
         </Route>
 
         {/* Catch all - redirect to home */}

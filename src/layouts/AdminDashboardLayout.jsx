@@ -102,10 +102,10 @@ const AdminDashboardLayout = ({ children }) => {
       expandable: false,
     },
     {
-      id: "users",
+      id: "partners",
       label: "Partners",
       icon: LayoutGrid,
-      path: "/admin/users",
+      path: "/partners",
       expandable: false,
     },
     {
@@ -147,9 +147,8 @@ const AdminDashboardLayout = ({ children }) => {
             <div className="flex items-center gap-2">
               <ChevronDown
                 size={16}
-                className={`text-gray-400 transition-transform ${
-                  item.isExpanded ? "rotate-180" : ""
-                }`}
+                className={`text-gray-400 transition-transform ${item.isExpanded ? "rotate-180" : ""
+                  }`}
               />
             </div>
           </button>
@@ -167,10 +166,9 @@ const AdminDashboardLayout = ({ children }) => {
                   <NavLink
                     to={subItem.path}
                     className={({ isActive }) =>
-                      `block px-6 py-2 text-sm rounded-lg transition-colors ml-4 whitespace-nowrap ${
-                        isActive
-                          ? "bg-gray-100 text-primary"
-                          : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      `block px-6 py-2 text-sm rounded-lg transition-colors ml-4 whitespace-nowrap ${isActive
+                        ? "bg-gray-100 text-primary"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                       }`
                     }
                   >
@@ -196,8 +194,7 @@ const AdminDashboardLayout = ({ children }) => {
           }
         }}
         className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative ${
-            isActive ? "bg-gray-100 " : " hover:bg-gray-100"
+          `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative ${isActive ? "bg-gray-100 " : " hover:bg-gray-100"
           }`
         }
       >
@@ -236,9 +233,8 @@ const AdminDashboardLayout = ({ children }) => {
 
         {/* Sidebar */}
         <aside
-          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
+          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+            }`}
         >
           <div className="flex flex-col min-h-screen">
             {/* Logo Section */}
