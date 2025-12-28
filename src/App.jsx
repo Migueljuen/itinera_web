@@ -10,22 +10,41 @@ import Login from "./pages/shared/Login";
 import Signup from "./pages/shared/signup";
 import DashboardLayout from "./layouts/DashboardLayout";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
+
+// Creator Pages
 import CreatorDashboard from "./pages/creator/index";
-import AdminDashboard from "./pages/admin/index";
-import ItineraryManagement from "./pages/admin/itinerary.jsx";
 import CreatorExperiences from "./pages/creator/activities";
 import BookingManagement from "./pages/creator/bookings";
-import ProtectedRoute from "./components/ProtectedRoute";
-import PublicRoute from "./components/PublicRoute";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
 import ExperienceEditForm from "./pages/creator/editExperience/ExperienceEditForm";
-import Settings from "./pages/creator/settings";
+import CreatorSettings from "./pages/creator/settings";
+
+// Guide Pages
+import GuideDashboard from "./pages/guide/index";
+// import GuideItineraries from "./pages/guide/itineraries"; // TODO: Create
+import GuideAvailability from "./pages/guide/availability";
+// import GuideSettings from "./pages/guide/settings"; // TODO: Create
+
+// Driver Pages
+// import DriverDashboard from "./pages/driver/index"; // TODO: Create
+// import DriverTrips from "./pages/driver/trips"; // TODO: Create
+// import DriverAvailability from "./pages/driver/availability"; // TODO: Create (or reuse GuideAvailability)
+// import DriverSettings from "./pages/driver/settings"; // TODO: Create
+
+// Admin Pages
+import AdminDashboard from "./pages/admin/index";
+import ItineraryManagement from "./pages/admin/itinerary.jsx";
+import PartnersManagement from "./pages/admin/partner.jsx";
+import PartnerDetailScreen from "./pages/admin/partner/id.jsx";
+
+// Shared Components
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 import ForgotPassword from "./pages/shared/forgot";
 import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
-import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx"
-import PartnersManagement from "./pages/admin/partner.jsx";
-import PartnerDetailScreen from "./pages/admin/partner/id.jsx";
+import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx";
+
 export default function App() {
   return (
     <Router>
@@ -39,38 +58,12 @@ export default function App() {
       />
 
       <Routes>
-        {/* Public Routes - Redirect to dashboard if already logged in */}
+        {/* ==================== PUBLIC ROUTES ==================== */}
         <Route
           path="/"
           element={
             <PublicRoute>
               <LandingPage />
-            </PublicRoute>
-          }
-        />
-        <Route
-          path="/forgot"
-          element={
-            <PublicRoute>
-              <ForgotPassword />
-            </PublicRoute>
-          }
-        />
-
-        <Route
-          path="/reset-password"
-          element={
-            <PublicRoute>
-              <ResetPassword />
-            </PublicRoute>
-          }
-        />
-
-        <Route
-          path="/verify-otp"
-          element={
-            <PublicRoute>
-              <VerifyOtp />
             </PublicRoute>
           }
         />
@@ -91,6 +84,30 @@ export default function App() {
           }
         />
         <Route
+          path="/forgot"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/verify-otp"
+          element={
+            <PublicRoute>
+              <VerifyOtp />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <PublicRoute>
+              <ResetPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
           path="/partner-onboarding"
           element={
             <PublicRoute>
@@ -99,7 +116,7 @@ export default function App() {
           }
         />
 
-        {/* Creator Routes - Protected */}
+        {/* ==================== CREATOR ROUTES (outside layout) ==================== */}
         <Route
           path="/owner/create"
           element={
@@ -108,8 +125,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Edit Experience Route */}
         <Route
           path="/owner/edit/:id"
           element={
@@ -119,6 +134,7 @@ export default function App() {
           }
         />
 
+        {/* ==================== OWNER DASHBOARD LAYOUT (All Roles) ==================== */}
         <Route
           path="/owner"
           element={
@@ -127,14 +143,104 @@ export default function App() {
             </ProtectedRoute>
           }
         >
-          <Route index element={<CreatorDashboard />} />
-          <Route path="dashboard" element={<CreatorDashboard />} />
-          <Route path="settings" element={<Settings />} />
-          <Route path="activities" element={<CreatorExperiences />} />
-          <Route path="bookings" element={<BookingManagement />} />
+          {/* CREATOR ROUTES */}
+          <Route
+            index
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <CreatorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="dashboard"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <CreatorDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="activities"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <CreatorExperiences />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="bookings"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <BookingManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="settings"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <CreatorSettings />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* GUIDE ROUTES */}
+          <Route
+            path="guide"
+            element={
+              <ProtectedRoute allowedRoles={["Guide"]}>
+                <GuideDashboard />
+              </ProtectedRoute>
+            }
+          />
+          {/* TODO: Create GuideItineraries component */}
+          {/* <Route 
+            path="itineraries" 
+            element={
+              <ProtectedRoute allowedRoles={["Guide"]}>
+                <GuideItineraries />
+              </ProtectedRoute>
+            } 
+          /> */}
+          {/* <Route 
+            path="itineraries/schedule" 
+            element={
+              <ProtectedRoute allowedRoles={["Guide"]}>
+                <GuideItineraries />
+              </ProtectedRoute>
+            } 
+          /> */}
+          <Route
+            path="availability"
+            element={
+              <ProtectedRoute allowedRoles={["Guide"]}>
+                <GuideAvailability />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* DRIVER ROUTES */}
+          {/* TODO: Create DriverTrips component */}
+          {/* <Route 
+            path="trips" 
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <DriverTrips />
+              </ProtectedRoute>
+            } 
+          /> */}
+          {/* <Route 
+            path="trips/history" 
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <DriverTrips />
+              </ProtectedRoute>
+            } 
+          /> */}
         </Route>
 
-        {/* Admin routes */}
+        {/* ==================== ADMIN ROUTES ==================== */}
         <Route
           path="/"
           element={
@@ -149,8 +255,8 @@ export default function App() {
           <Route path="partner/:id" element={<PartnerDetailScreen />} />
         </Route>
 
-        {/* Catch all - redirect to home */}
-        <Route path="*" element={<Navigate to="/index" replace />} />
+        {/* ==================== FALLBACK ==================== */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );

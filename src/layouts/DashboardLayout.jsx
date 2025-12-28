@@ -13,6 +13,8 @@ import {
   X,
   ChevronDown,
   Plus,
+  Car,
+  Map,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import logoImage from "../assets/images/alt.png";
@@ -29,6 +31,115 @@ const DashboardLayout = ({ children }) => {
   const [isTasksExpanded, setIsTasksExpanded] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
+
+  // Function to get navigation items based on user role
+  const getNavigationItems = (role) => {
+    switch (role) {
+      case "Creator":
+        return [
+          {
+            id: "home",
+            label: "Home",
+            icon: Home,
+            path: "/owner",
+            expandable: false,
+          },
+          {
+            id: "activities",
+            label: "Activities",
+            icon: LayoutGrid,
+            path: "/owner/activities",
+            expandable: true,
+            isExpanded: isProjectsExpanded,
+            setExpanded: setIsProjectsExpanded,
+            subItems: [
+              { label: "Manage Activities", path: "/owner/activities" },
+              { label: "Create listing", path: "/owner/create" },
+            ],
+          },
+          {
+            id: "bookings",
+            label: "Bookings",
+            icon: () => (
+              <img src={Calendars} alt="Bookings" className="w-5 h-5" />
+            ),
+            path: "/owner/bookings",
+            expandable: true,
+            isExpanded: isTasksExpanded,
+            setExpanded: setIsTasksExpanded,
+            subItems: [{ label: "Manage Bookings", path: "/owner/bookings" }],
+          },
+        ];
+
+      case "Guide":
+        return [
+          {
+            id: "home",
+            label: "Home",
+            icon: Home,
+            path: "/owner",
+            expandable: false,
+          },
+          {
+            id: "itineraries",
+            label: "Itineraries",
+            icon: Map,
+            path: "/owner/itineraries",
+            expandable: true,
+            isExpanded: isProjectsExpanded,
+            setExpanded: setIsProjectsExpanded,
+            subItems: [
+              { label: "Assigned Tours", path: "/owner/itineraries" },
+              { label: "Daily Schedule", path: "/owner/itineraries/schedule" },
+            ],
+          },
+          {
+            id: "availability",
+            label: "Availability",
+            icon: Calendar,
+            path: "/owner/availability",
+            expandable: false,
+          },
+        ];
+
+      case "Driver":
+        return [
+          {
+            id: "home",
+            label: "Home",
+            icon: Home,
+            path: "/owner",
+            expandable: false,
+          },
+          {
+            id: "trips",
+            label: "Trips",
+            icon: Car,
+            path: "/owner/trips",
+            expandable: true,
+            isExpanded: isProjectsExpanded,
+            setExpanded: setIsProjectsExpanded,
+            subItems: [
+              { label: "Upcoming Trips", path: "/owner/trips" },
+              { label: "Trip History", path: "/owner/trips/history" },
+            ],
+          },
+          {
+            id: "availability",
+            label: "Availability",
+            icon: Calendar,
+            path: "/owner/availability",
+            expandable: false,
+          },
+        ];
+
+      default:
+        return [];
+    }
+  };
+
+  // Get navigation items based on current user role
+  const navigationItems = getNavigationItems(user?.role);
 
   // Function to fetch unread notification count
   const fetchUnreadCount = async () => {
@@ -72,7 +183,7 @@ const DashboardLayout = ({ children }) => {
 
   // Only redirect if the user is a first-login creator and on /owner root
   useEffect(() => {
-    if (user?.is_first_login) {
+    if (user?.is_first_login && user?.role === "Creator") {
       navigate("/owner/create", { replace: true });
     }
   }, [user, navigate]);
@@ -92,50 +203,6 @@ const DashboardLayout = ({ children }) => {
       return () => clearTimeout(timer);
     }
   }, [shouldAnimateDashboard, disableDashboardAnimation]);
-
-  const navigationItems = [
-    {
-      id: "home",
-      label: "Home",
-      icon: Home,
-      path: "/owner",
-      expandable: false,
-    },
-    {
-      id: "activities",
-      label: "Activities",
-      icon: LayoutGrid,
-      path: "/owner/activities",
-      expandable: true,
-      isExpanded: isProjectsExpanded,
-      setExpanded: setIsProjectsExpanded,
-      subItems: [
-        { label: "Manage Activities", path: "/owner/activities" },
-        { label: "Create listing", path: "/owner/create" },
-      ],
-    },
-    {
-      id: "bookings",
-      label: "Bookings",
-      icon: () => <img src={Calendars} alt="Bookings" className="w-5 h-5" />,
-      path: "/owner/bookings",
-      expandable: true,
-      isExpanded: isTasksExpanded,
-      setExpanded: setIsTasksExpanded,
-      subItems: [
-        { label: "Manage Bookings", path: "/owner/bookings" },
-        // { label: "Completed", path: "/owner/bookings/completed" },
-      ],
-    },
-    // {
-    //   id: "messages",
-    //   label: "Inbox",
-    //   icon: Inbox,
-    //   path: "/creator/messages",
-    //   expandable: false,
-    //   badge: unreadCount, // Add badge count to inbox
-    // },
-  ];
 
   useEffect(() => {
     console.log("DashboardLayout mounted");
@@ -279,19 +346,6 @@ const DashboardLayout = ({ children }) => {
                 <NavItem key={item.id} item={item} />
               ))}
             </nav>
-
-            {/* Upgrade Section */}
-            {/* <div className="p-4 border-t border-gray-200">
-              <div className=" rounded-lg p-4  text-center text-primary">
-                <h3 className="font-bold mb-1">Upgrade Plan</h3>
-                <p className="text-sm opacity-90 mb-3">
-                  Showcase more activities
-                </p>
-                <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-[#376a63]/80 cursor-pointer transition-colors w-3/4">
-                  Upgrade
-                </button>
-              </div>
-            </div> */}
 
             {/* Bottom Section */}
             <div className="p-4   space-y-1">

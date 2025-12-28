@@ -313,10 +313,11 @@ const AdminDashboard = () => {
             <div className="flex gap-4 border-r border-gray-400 px-4">
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
-                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                    : "hover:bg-gray-100 active:bg-gray-200"
-                    }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
+                    showNotifications
+                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                      : "hover:bg-gray-100 active:bg-gray-200"
+                  }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -373,10 +374,10 @@ const AdminDashboard = () => {
       <div className="flex flex-1 flex-col w-full  xl:border-none gap-8  ">
         {/* Overview */}
 
-        <div className="flex gap-2 w-full h-[490px] " >
-          <div className="space-y-2 flex-[0.3] h-full">
+        <div className="flex gap-2 w-full h-[490px] ">
+          <div className="flex gap-2 flex-col flex-[0.3] h-full ">
             {/* New Tickets / Active Activities */}
-            <div className="bg-white  px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between">
+            <div className="bg-white  px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between h-full">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="p-2 bg-green-50 rounded-md">
                   <PresentationChartLineIcon className="w-7 h-7 text-green-900/50" />
@@ -410,7 +411,7 @@ const AdminDashboard = () => {
             </div>
 
             {/* Review needed*/}
-            <div className="bg-white px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between">
+            <div className="bg-white px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between h-full">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="p-2 bg-yellow-50 rounded-md">
                   <ClockIcon className="w-7 h-7 text-yellow-600" />

@@ -139,10 +139,11 @@ const PartnersManagement = () => {
                   <button
                     key={tab}
                     onClick={() => setSelectedTab(tab)}
-                    className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
-                      ? "bg-white text-black/80 shadow-sm/10"
-                      : "text-black/50 hover:text-black/70"
-                      }`}
+                    className={`px-8 font-medium transition-colors py-2 rounded-lg ${
+                      selectedTab === tab
+                        ? "bg-white text-black/80 shadow-sm/10"
+                        : "text-black/50 hover:text-black/70"
+                    }`}
                   >
                     {tab}
                   </button>
@@ -212,7 +213,6 @@ const PartnersManagement = () => {
                         <div className="flex gap-1 justify-center">
                           <h3 className="font-semibold text-base text-black/80 ">
                             {item.first_name} {item.last_name}
-
                           </h3>
                           {item?.status === "Approved" && (
                             <CheckBadgeIcon className="size-5 text-blue-400" />
@@ -230,12 +230,13 @@ const PartnersManagement = () => {
                     <div className="w-full px-8 mt-8">
                       <div className="text-sm text-center text-black/60 mb-2">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${item.status === "Approved"
-                            ? "bg-green-100 text-green-700"
-                            : item.status === "Rejected"
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
+                            item.status === "Approved"
+                              ? "bg-green-100 text-green-700"
+                              : item.status === "Rejected"
                               ? "bg-red-100 text-red-700"
                               : "bg-yellow-100 text-yellow-700"
-                            }`}
+                          }`}
                         >
                           {item.status}
                         </span>
@@ -254,7 +255,7 @@ const PartnersManagement = () => {
                   </div>
 
                   {/* Dropdown Menu */}
-                  <div className="absolute top-2 right-2">
+                  {/* <div className="absolute top-2 right-2">
                     <button
                       onClick={() => toggleDropdown(item.user_id)}
                       className="p-2 hover:bg-gray-100 rounded-full"
@@ -280,7 +281,7 @@ const PartnersManagement = () => {
                         ))}
                       </div>
                     )}
-                  </div>
+                  </div> */}
                 </div>
               ))
             )}
@@ -311,10 +312,11 @@ const PartnersManagement = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 border rounded-lg ${currentPage === page
-                      ? "bg-[#397ff1] text-white cursor-pointer hover:bg-[#2e6bd4]"
-                      : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                    className={`px-3 py-2 border rounded-lg ${
+                      currentPage === page
+                        ? "bg-[#397ff1] text-white cursor-pointer hover:bg-[#2e6bd4]"
+                        : "border-gray-300 hover:bg-gray-50"
+                    }`}
                   >
                     {page}
                   </button>

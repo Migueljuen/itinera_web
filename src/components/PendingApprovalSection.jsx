@@ -73,14 +73,23 @@ const PendingApprovalSection = () => {
 
   return (
     <div className="bg-white flex-1 flex flex-col ">
-      {/* Header */}
-      <div className="flex-1 lg:flex-none">
-        <h1 className="text-xl font-semibold text-gray-900 ">Review needed</h1>
-        <p className="  text-black/60">Awaiting review and confirmation</p>
+      <div className="flex items-center justify-between">
+        {/* Header */}
+        <div className="flex-1 lg:flex-none">
+          <h1 className="text-xl font-semibold text-gray-900 ">
+            Review needed
+          </h1>
+          <p className="  text-black/60">Awaiting review and confirmation</p>
+        </div>
+        <button
+          onClick={() => navigate("/partners")}
+          className="text-sm text-[#397ff1] hover:text-[#2e6bd9] flex items-center gap-1"
+        >
+          View all
+        </button>
       </div>
-
       {/* Users List */}
-      <div className="grid grid-cols-4 gap-4 mt-8">
+      <div className="flex gap-4 flex-row   w-fit max-w-dvw mt-8">
         {loading ? (
           <div className="py-8 text-center">
             <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
@@ -92,12 +101,12 @@ const PendingApprovalSection = () => {
           </div>
         ) : (
           <>
-            {paginatedUsers.map((item) => (
+            {paginatedUsers.slice(0, 4).map((item) => (
               <div
                 key={item.user_id}
-                className="flex items-center w-full  justify-center border-2 rounded-xl  border-gray-300 hover:bg-gray-50 cursor-pointer"
+                className="flex items-center w-[18rem]   justify-center border-2 rounded-xl  border-gray-300 hover:bg-gray-50 cursor-pointer"
               >
-                <div className="py-8 space-y-4 w-full">
+                <div className="py-8 space-y-4 w-full ">
                   {/* User Profile Picture */}
                   <div className="">
                     <div className="size-36 bg-gray-200 rounded-full mx-auto flex items-center justify-center overflow-hidden">
@@ -130,22 +139,18 @@ const PendingApprovalSection = () => {
                       </div> */}
                       <div>
                         <h3 className="text-center">
-                          {item.role === 'Driver'
-                            ? 'Transportation Provider'
-                            : item.role === 'Creator'
-                              ? 'Activity Partner'
-                              : 'Tour Guide'}
+                          {item.role === "Driver"
+                            ? "Transportation Provider"
+                            : item.role === "Creator"
+                            ? "Activity Partner"
+                            : "Tour Guide"}
                         </h3>
                       </div>
-
-
                     </div>
-
                   </div>
 
                   {/* Role and Registration Date */}
                   <div className="w-full px-8 mt-8">
-
                     {/* <div className="text-sm text-black/60">
                       Registered:{" "}
                       {new Date(item.created_at).toLocaleDateString()}
@@ -160,23 +165,10 @@ const PendingApprovalSection = () => {
                     >
                       View Profile
                     </button>
-
                   </div>
                 </div>
-
-                {/* View Details Action */}
-                {/* <div className="flex flex-col gap-2 items-center relative px-8">
-                  <button
-                    onClick={() => handleViewDetails(item.user_id)}
-                    className="flex items-center justify-between gap-2 px-3 py-2 rounded-md text-sm font-normal hover:bg-gray-100 transition-colors"
-                  >
-                    More <ChevronRight size={16} />
-                  </button>
-                </div> */}
               </div>
             ))}
-
-
           </>
         )}
       </div>
@@ -186,10 +178,11 @@ const PendingApprovalSection = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`p-2 rounded-md ${currentPage === 1
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-black/70 hover:bg-gray-100"
-              }`}
+            className={`p-2 rounded-md ${
+              currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-black/70 hover:bg-gray-100"
+            }`}
           >
             <ChevronLeft size={20} />
           </button>
@@ -198,10 +191,11 @@ const PendingApprovalSection = () => {
             <button
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
-              className={`px-3 py-1 rounded-md text-sm ${currentPage === index + 1
-                ? "bg-[#397ff1] text-white"
-                : "text-black/70 hover:bg-gray-100"
-                }`}
+              className={`px-3 py-1 rounded-md text-sm ${
+                currentPage === index + 1
+                  ? "bg-[#397ff1] text-white"
+                  : "text-black/70 hover:bg-gray-100"
+              }`}
             >
               {index + 1}
             </button>
@@ -210,10 +204,11 @@ const PendingApprovalSection = () => {
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`p-2 rounded-md ${currentPage === totalPages
-              ? "text-gray-400 cursor-not-allowed"
-              : "text-black/70 hover:bg-gray-100"
-              }`}
+            className={`p-2 rounded-md ${
+              currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "text-black/70 hover:bg-gray-100"
+            }`}
           >
             <ChevronRight size={20} />
           </button>
