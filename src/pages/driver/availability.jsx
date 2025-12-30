@@ -18,15 +18,14 @@ import API_URL from "../../constants/api";
 import toast, { Toaster } from "react-hot-toast";
 import dayjs from "dayjs";
 
-const GuideAvailability = () => {
+const DriverAvailability = () => {
   const { user, token } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [guideProfile, setGuideProfile] = useState(null);
+  const [driverProfile, setDriverProfile] = useState(null);
   const [availabilityDays, setAvailabilityDays] = useState([]);
   const [overrides, setOverrides] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState(dayjs());
   const [showAddOverrideModal, setShowAddOverrideModal] = useState(false);
-  const [editingDay, setEditingDay] = useState(null);
 
   // Form state for override
   const [overrideForm, setOverrideForm] = useState({
@@ -35,12 +34,12 @@ const GuideAvailability = () => {
     reason: "",
   });
 
-  // Fetch guide profile
-  const fetchGuideProfile = async () => {
+  // Fetch driver profile
+  const fetchDriverProfile = async () => {
     try {
       setLoading(true);
       const response = await axios.get(
-        `${API_URL}/partner/profile/guide/${user.user_id}`,
+        `${API_URL}/partner/profile/driver/${user.user_id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -48,10 +47,9 @@ const GuideAvailability = () => {
           },
         }
       );
+      setDriverProfile(response.data.profile);
 
-      setGuideProfile(response.data.profile);
-
-      // Handle availability_days - it might already be parsed or still a string
+      // Handle availability_days
       const availDays = response.data.profile.availability_days;
       if (typeof availDays === "string") {
         setAvailabilityDays(JSON.parse(availDays || "[]"));
@@ -61,7 +59,7 @@ const GuideAvailability = () => {
         setAvailabilityDays([]);
       }
     } catch (error) {
-      console.error("Error fetching guide profile:", error);
+      console.error("Error fetching driver profile:", error);
       toast.error("Failed to fetch profile");
     } finally {
       setLoading(false);
@@ -80,7 +78,6 @@ const GuideAvailability = () => {
           },
         }
       );
-
       setOverrides(response.data.overrides || []);
     } catch (error) {
       console.error("Error fetching overrides:", error);
@@ -89,7 +86,7 @@ const GuideAvailability = () => {
 
   useEffect(() => {
     if (user?.user_id) {
-      fetchGuideProfile();
+      fetchDriverProfile();
       fetchOverrides();
     }
   }, [user]);
@@ -102,7 +99,7 @@ const GuideAvailability = () => {
 
     try {
       await axios.put(
-        `${API_URL}/partner/profile/guide/${guideProfile.guide_id}/availability`,
+        `${API_URL}/partner/profile/driver/${driverProfile.driver_id}/availability`,
         {
           availability_days: JSON.stringify(updatedDays),
         },
@@ -207,7 +204,6 @@ const GuideAvailability = () => {
 
     // Check for overrides first
     const override = overrides.find((o) => {
-      // Handle both formats: full timestamp or date string
       const overrideDate = dayjs(o.date).format("YYYY-MM-DD");
       return overrideDate === dateString;
     });
@@ -224,7 +220,6 @@ const GuideAvailability = () => {
   const getOverrideForDate = (date) => {
     const dateString = date.format("YYYY-MM-DD");
     return overrides.find((o) => {
-      // Handle both formats: full timestamp or date string
       const overrideDate = dayjs(o.date).format("YYYY-MM-DD");
       return overrideDate === dateString;
     });
@@ -244,7 +239,7 @@ const GuideAvailability = () => {
   return (
     <>
       <Toaster position="top-center" />
-      <div className="min-h-screen ">
+      <div className="min-h-screen">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -268,26 +263,26 @@ const GuideAvailability = () => {
             <div className="lg:col-span-1">
               <div className="bg-white rounded-lg border border-gray-300 p-6">
                 <div className="flex items-center gap-4 border-b-2 pb-4 border-gray-100">
-                  <div className="p-2 border border-gray-300 rounded-lg ">
-                    <Clock size={20} className="" />
+                  <div className="p-2 border border-gray-300 rounded-lg">
+                    <Clock size={20} />
                   </div>
                   <div>
-                    <h3 className="font-medium text-black/90 text-lg  flex items-center ">
+                    <h3 className="font-medium text-black/90 text-lg flex items-center">
                       Set Your Availability
                     </h3>
-                    <p className="text-sm text-black/60 ">
+                    <p className="text-sm text-black/60">
                       Select the days you're generally available
                     </p>
                   </div>
                 </div>
+
                 <div className="space-y-4 mt-8">
                   {daysOfWeek.map((day) => {
                     const isActive = availabilityDays.includes(day);
-
                     return (
                       <div
                         key={day}
-                        className="flex items-center gap-4 px-4 py-3  "
+                        className="flex items-center gap-4 px-4 py-3"
                       >
                         {/* Toggle */}
                         <button
@@ -302,8 +297,9 @@ const GuideAvailability = () => {
                             }`}
                           />
                         </button>
+
                         <span
-                          className={`font-medium    ${
+                          className={`font-medium ${
                             isActive ? "text-black/90" : "text-black/30"
                           }`}
                         >
@@ -313,36 +309,28 @@ const GuideAvailability = () => {
                     );
                   })}
                 </div>
-                {/* <div>
-                  <h3 className="font-medium text-black/90 text-base flex items-center ">
-                    Set Your Availability
-                  </h3>
-                  <p className="text-sm text-black/60 ">
-                    Select the days you're generally available
-                  </p>
-                </div> */}
               </div>
 
               {/* Overrides List */}
               <div className="bg-white rounded-lg border border-gray-300 p-6 mt-6">
-                <div className="flex items-center justify-between  mb-4 border-b-2 pb-4 border-gray-100">
-                  <div className="flex items-center gap-4 ">
-                    <div className="p-2 border border-gray-300 rounded-lg ">
-                      <Clock size={20} className="" />
+                <div className="flex items-center justify-between mb-4 border-b-2 pb-4 border-gray-100">
+                  <div className="flex items-center gap-4">
+                    <div className="p-2 border border-gray-300 rounded-lg">
+                      <Clock size={20} />
                     </div>
                     <div>
                       <h3 className="font-medium text-black/90 text-lg flex items-center">
                         Set specific dates as unavailable
                       </h3>
                       <p className="text-sm text-black/60">
-                        Choose dates when you won’t be available.
+                        Choose dates when you won't be available.
                       </p>
                     </div>
                   </div>
                   <div className="pb-4">
                     <button
                       onClick={() => setShowAddOverrideModal(true)}
-                      className="p-2 "
+                      className="p-2"
                     >
                       <Plus size={20} />
                     </button>
@@ -390,7 +378,7 @@ const GuideAvailability = () => {
                               onClick={() =>
                                 handleDeleteOverride(override.override_id)
                               }
-                              className="text-black/90 "
+                              className="text-black/90"
                             >
                               <Trash2 size={16} />
                             </button>
@@ -476,7 +464,7 @@ const GuideAvailability = () => {
                           {date.format("D")}
                         </div>
                         {override && isCurrentMonth && (
-                          <div className="absolute  bottom-1 left-1/2 transform -translate-x-1/2">
+                          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
                             <div
                               className={`w-1.5 h-1.5 rounded-full ${
                                 override.type === "Available"
@@ -538,7 +526,7 @@ const GuideAvailability = () => {
                     Add Unavailable Date
                   </h3>
                   <p className="text-sm text-black/60 mt-1">
-                    Block a specific date when you won’t be available for
+                    Block a specific date when you won't be available for
                     bookings.
                   </p>
                 </div>
@@ -572,7 +560,7 @@ const GuideAvailability = () => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-black/90  mb-1">
+                  <label className="block text-sm font-medium text-black/90 mb-1">
                     Reason (Optional)
                   </label>
                   <input
@@ -613,4 +601,4 @@ const GuideAvailability = () => {
   );
 };
 
-export default GuideAvailability;
+export default DriverAvailability;

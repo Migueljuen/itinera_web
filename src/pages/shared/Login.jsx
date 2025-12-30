@@ -47,7 +47,7 @@ function Login() {
         const userRole = result.user.role;
 
         // Route based on user role
-        if (userRole === "Creator" || userRole === "Driver") {
+        if (userRole === "Creator") {
           // Use the wasFirstLogin flag from backend
           // if (result.wasFirstLogin) {
           //   toast.success("Welcome! Let's set up your first activity 🎉");
@@ -58,6 +58,9 @@ function Login() {
         } else if (userRole === "Guide") {
           toast.success("Login successful!");
           navigate("/owner/guide", { replace: true });
+        } else if (userRole === "Driver") {
+          toast.success("Login successful!");
+          navigate("/owner/driver", { replace: true });
         } else if (userRole === "Admin") {
           toast.success("Welcome back, Admin!");
           navigate("/admin-dashboard", { replace: true });

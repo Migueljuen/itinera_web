@@ -23,13 +23,13 @@ import CreatorSettings from "./pages/creator/settings";
 import GuideDashboard from "./pages/guide/index";
 // import GuideItineraries from "./pages/guide/itineraries"; // TODO: Create
 import GuideAvailability from "./pages/guide/availability";
-// import GuideSettings from "./pages/guide/settings"; // TODO: Create
+import GuideSettings from "./pages/guide/settings";
 
 // Driver Pages
-// import DriverDashboard from "./pages/driver/index"; // TODO: Create
+import DriverDashboard from "./pages/driver/index"; // TODO: Create
 // import DriverTrips from "./pages/driver/trips"; // TODO: Create
-// import DriverAvailability from "./pages/driver/availability"; // TODO: Create (or reuse GuideAvailability)
-// import DriverSettings from "./pages/driver/settings"; // TODO: Create
+import DriverAvailability from "./pages/driver/availability";
+import DriverSettings from "./pages/driver/settings"; // TODO: Create
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/index";
@@ -44,6 +44,8 @@ import ForgotPassword from "./pages/shared/forgot";
 import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
 import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx";
+import VehicleManagement from "./pages/driver/vehicle.jsx";
+import VehicleRegistrationPage from "./pages/driver/registerVehicle/index.jsx";
 
 export default function App() {
   return (
@@ -219,8 +221,25 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="guide/settings"
+            element={
+              <ProtectedRoute allowedRoles={["Guide"]}>
+                <GuideSettings />
+              </ProtectedRoute>
+            }
+          />
 
           {/* DRIVER ROUTES */}
+          <Route
+            path="driver"
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <DriverDashboard />
+              </ProtectedRoute>
+            }
+          />
+
           {/* TODO: Create DriverTrips component */}
           {/* <Route 
             path="trips" 
@@ -238,6 +257,38 @@ export default function App() {
               </ProtectedRoute>
             } 
           /> */}
+          <Route
+            path="driver/vehicle/add"
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <VehicleRegistrationPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="driver/vehicle"
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <VehicleManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="driver/availability"
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <DriverAvailability />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="driver/settings"
+            element={
+              <ProtectedRoute allowedRoles={["Driver"]}>
+                <DriverSettings />
+              </ProtectedRoute>
+            }
+          />
         </Route>
 
         {/* ==================== ADMIN ROUTES ==================== */}

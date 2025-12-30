@@ -14,6 +14,7 @@ import {
   ChevronDown,
   Plus,
   Car,
+  CarFront,
   Map,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
@@ -31,6 +32,7 @@ const DashboardLayout = ({ children }) => {
   const [isTasksExpanded, setIsTasksExpanded] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
+  const userRole = user?.role;
 
   // Function to get navigation items based on user role
   const getNavigationItems = (role) => {
@@ -77,7 +79,7 @@ const DashboardLayout = ({ children }) => {
             id: "home",
             label: "Home",
             icon: Home,
-            path: "/owner",
+            path: "/owner/guide",
             expandable: false,
           },
           {
@@ -108,7 +110,7 @@ const DashboardLayout = ({ children }) => {
             id: "home",
             label: "Home",
             icon: Home,
-            path: "/owner",
+            path: "/owner/driver",
             expandable: false,
           },
           {
@@ -128,7 +130,14 @@ const DashboardLayout = ({ children }) => {
             id: "availability",
             label: "Availability",
             icon: Calendar,
-            path: "/owner/availability",
+            path: "/owner/driver/availability",
+            expandable: false,
+          },
+          {
+            id: "vehicle",
+            label: "My Vehicle",
+            icon: CarFront,
+            path: "/owner/driver/vehicle",
             expandable: false,
           },
         ];
@@ -348,15 +357,32 @@ const DashboardLayout = ({ children }) => {
             </nav>
 
             {/* Bottom Section */}
-            <div className="p-4   space-y-1">
+            <div className="p-4 space-y-1">
               <p className="pl-4 text-black/60 text-xs font-medium">SETTINGS</p>
-              <button
-                onClick={() => navigate("/owner/settings")}
-                className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <Settings size={20} className="text-gray-500" />
-                <span className="font-medium">Settings</span>
-              </button>
+
+              {/* Render settings button only for owners */}
+              {userRole === "Creator" && (
+                <button
+                  onClick={() => navigate("/owner/settings")}
+                  className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Settings size={20} className="text-gray-500" />
+                  <span className="font-medium">Settings</span>
+                </button>
+              )}
+
+              {/* Render settings button for admins */}
+              {userRole === "Guide" && (
+                <button
+                  onClick={() => navigate("/owner/guide/settings")}
+                  className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                >
+                  <Settings size={20} className="text-gray-500" />
+                  <span className="font-medium">Settings</span>
+                </button>
+              )}
+
+              {/* Log out button is universal */}
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"

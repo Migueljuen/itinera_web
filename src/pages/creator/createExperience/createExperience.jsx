@@ -326,7 +326,7 @@ const ExperienceCreationForm = () => {
         return null;
     }
   };
-  if (user && user.status !== "Approved") {
+  if (user && user.status !== "Pending") {
     return (
       <DashboardLayout>
         <div className="min-h-[70vh] max-w-xl mx-auto flex items-center justify-center px-6 ">

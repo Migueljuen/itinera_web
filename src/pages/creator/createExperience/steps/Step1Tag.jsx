@@ -262,7 +262,7 @@ const Step1Tag = ({ formData = { tags: [] }, setFormData, onNext, onBack }) => {
       <div className="max-w-4xl mx-auto px-6 py-8">
         <div className="flex items-center justify-center py-12">
           <Loader2 className="animate-spin mr-3" size={24} />
-          <span className="text-gray-600">Loading tags...</span>
+          <span className="text-gray-600">Getting there...</span>
         </div>
       </div>
     );
