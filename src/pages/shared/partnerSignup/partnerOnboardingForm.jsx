@@ -29,7 +29,7 @@ const PartnerOnboardingForm = () => {
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         is_first_login: 1,
         status: "Pending",
-
+        short_Description: "",
         // UI-only helper
         creator_role_label: "",
         id_document: null,
@@ -85,6 +85,7 @@ const PartnerOnboardingForm = () => {
             formDataToSend.append("last_name", formData.last_name);
             formDataToSend.append("email", formData.email);
             formDataToSend.append("mobile_number", formData.mobile_number);
+            formDataToSend.append("short_description", formData.short_description);
             formDataToSend.append("password", formData.password);
             formDataToSend.append("timezone", formData.timezone);
 

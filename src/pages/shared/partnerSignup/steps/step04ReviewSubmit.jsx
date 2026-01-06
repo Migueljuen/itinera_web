@@ -60,9 +60,8 @@ const Step04ReviewSubmit = ({
             <span className="text-black/70">Experience:</span>
             <span className="font-medium">
               {formData.experience_years
-                ? `${formData.experience_years} year${
-                    formData.experience_years !== 1 ? "s" : ""
-                  }`
+                ? `${formData.experience_years} year${formData.experience_years !== 1 ? "s" : ""
+                }`
                 : "—"}
             </span>
           </div>
@@ -242,6 +241,12 @@ const Step04ReviewSubmit = ({
                       <span className="text-black/70">Mobile Number:</span>
                       <span className="font-medium">
                         {formData.mobile_number || "—"}
+                      </span>
+                    </div>
+                    <div className="flex justify-between py-2    border-gray-100">
+                      <span className="text-black/70">Short description about yourself:</span>
+                      <span className="font-medium">
+                        {formData.short_description || "—"}
                       </span>
                     </div>
                   </div>

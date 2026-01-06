@@ -1,6 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Upload, X, FileImage, Loader2, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../../../contexts/AuthContext";
+import API_URL from "../../../constants/api";
+import toast, { Toaster } from "react-hot-toast";
 
 const vehicleTypes = [
   "Sedan",
@@ -24,6 +28,7 @@ const OTHER = "Other";
 
 const VehicleRegistrationPage = () => {
   const navigate = useNavigate();
+  const { user, token } = useAuth();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -142,13 +147,54 @@ const VehicleRegistrationPage = () => {
   };
 
   /* ---------------- SUBMIT ---------------- */
-
   const handleSubmit = async () => {
+    if (!formData.plate_number) {
+      toast.error("Please enter plate number");
+      return;
+    }
+
     setIsSubmitting(true);
+
     try {
-      await new Promise((res) => setTimeout(res, 2000));
-      alert("Vehicle registered successfully!");
-      navigate("/driver/vehicles");
+      const finalBrand =
+        formData.brand === OTHER ? formData.custom_brand : formData.brand;
+      const finalModel =
+        formData.model === OTHER ? formData.custom_model : formData.model;
+
+      const data = new FormData();
+
+      // TEXT FIELDS
+      data.append("user_id", user.user_id);
+      data.append("plate_number", formData.plate_number);
+      data.append("vehicle_type", formData.vehicle_type);
+      data.append("brand", finalBrand);
+      data.append("model", finalModel);
+      data.append("year", formData.year || "");
+      data.append("color", formData.color || "");
+      data.append("passenger_capacity", formData.passenger_capacity || "");
+
+      // DOCUMENT (single)
+      if (formData.or_cr_document?.file) {
+        data.append("or_cr_document", formData.or_cr_document.file);
+      }
+
+      // PHOTOS (multiple)
+      formData.vehicle_photos.forEach((photo) => {
+        data.append("vehicle_photos", photo.file);
+      });
+
+      const response = await axios.post(`${API_URL}/vehicles`, data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          // ❗ DO NOT manually set Content-Type
+        },
+      });
+
+      toast.success("Vehicle registered successfully!");
+      navigate("/owner/driver/vehicle");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to register vehicle");
     } finally {
       setIsSubmitting(false);
     }
@@ -159,6 +205,7 @@ const VehicleRegistrationPage = () => {
 
   return (
     <div className="min-h-screen w-full">
+      <Toaster position="top-center" />
       <div className="mx-auto">
         <div className="text-center py-2">
           {/* PAGE HEADER */}
@@ -371,11 +418,10 @@ const VehicleRegistrationPage = () => {
                     handleDocumentSelect(e.dataTransfer.files);
                   }}
                   onClick={() => documentInputRef.current?.click()}
-                  className={`border-2 border-dashed rounded-sm p-6 cursor-pointer transition-colors ${
-                    documentDragOver
-                      ? "border-blue-400 bg-blue-50"
-                      : "border-gray-300 hover:bg-gray-50"
-                  }`}
+                  className={`border-2 border-dashed rounded-sm p-6 cursor-pointer transition-colors ${documentDragOver
+                    ? "border-blue-400 bg-blue-50"
+                    : "border-gray-300 hover:bg-gray-50"
+                    }`}
                 >
                   <FileText className="mx-auto mb-2 text-gray-400" />
                   <p className="text-sm font-medium text-gray-700">
@@ -429,11 +475,10 @@ const VehicleRegistrationPage = () => {
                   handlePhotoSelect(e.dataTransfer.files);
                 }}
                 onClick={() => photoInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-sm p-6 text-center cursor-pointer transition-colors ${
-                  dragOver
-                    ? "border-blue-400 bg-blue-50"
-                    : "border-gray-300 hover:bg-gray-50"
-                } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                className={`border-2 border-dashed rounded-sm p-6 text-center cursor-pointer transition-colors ${dragOver
+                  ? "border-blue-400 bg-blue-50"
+                  : "border-gray-300 hover:bg-gray-50"
+                  } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
               >
                 {isLoading ? (
                   <Loader2 className="mx-auto animate-spin" />

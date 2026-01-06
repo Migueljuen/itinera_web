@@ -502,28 +502,28 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     {TRAVEL_COMPANIONS.filter(
                       (tc) => !editedCompanions.includes(tc.label)
                     ).length > 0 && (
-                      <div className="mt-4">
-                        <p className="text-xs text-black/60 mb-2">Add more:</p>
-                        <div className="flex flex-wrap gap-2">
-                          {TRAVEL_COMPANIONS.filter(
-                            (tc) => !editedCompanions.includes(tc.label)
-                          ).map((companion) => (
-                            <button
-                              key={companion.id}
-                              onClick={() => addCompanion(companion.label)}
-                              className="relative px-6 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-[#0e63be] transition-colors pr-8"
-                            >
-                              <span className="text-xs font-medium">
-                                {companion.label}
-                              </span>
-                              <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-blue-400 text-white rounded-full text-xs">
-                                +
-                              </span>
-                            </button>
-                          ))}
+                        <div className="mt-4">
+                          <p className="text-xs text-black/60 mb-2">Add more:</p>
+                          <div className="flex flex-wrap gap-2">
+                            {TRAVEL_COMPANIONS.filter(
+                              (tc) => !editedCompanions.includes(tc.label)
+                            ).map((companion) => (
+                              <button
+                                key={companion.id}
+                                onClick={() => addCompanion(companion.label)}
+                                className="relative px-6 py-1 rounded-full bg-gray-100 text-gray-700 hover:bg-blue-50 hover:text-[#0e63be] transition-colors pr-8"
+                              >
+                                <span className="text-xs font-medium">
+                                  {companion.label}
+                                </span>
+                                <span className="absolute -top-1 -right-1 w-4 h-4 flex items-center justify-center bg-blue-400 text-white rounded-full text-xs">
+                                  +
+                                </span>
+                              </button>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 ) : (
                   <>
@@ -550,10 +550,59 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               </div>
             </div>
 
-            {/* RIGHT COL - DESTINATION & IMAGES */}
+            {/* RIGHT COL - EXPERIENCE STEPS, DESTINATION & IMAGES */}
             <div className="flex flex-col gap-6 border rounded-xl p-6 border-gray-200 flex-1 h-fit bg-white">
-              {/* Destination Section */}
+              {/* Experience Steps Section */}
               <div>
+                <div className="mb-4">
+                  <h3 className="font-medium text-left text-black/90 text-base mb-1">
+                    Experience Steps
+                  </h3>
+                  <p className="text-sm text-black/60 text-left">
+                    The journey travelers will take during this activity.
+                  </p>
+                </div>
+
+                <div className="space-y-3 max-h-64 overflow-y-auto">
+                  {formData.steps && formData.steps.length > 0 ? (
+                    formData.steps.map((step, index) => {
+                      return (
+                        <div
+                          key={index}
+                          className="flex gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
+                        >
+                          {/* Step Number */}
+                          <div className="flex-shrink-0">
+                            <div className="flex items-center justify-center w-7 h-7 rounded-full bg-black/80 text-white text-xs font-medium">
+                              {index + 1}
+                            </div>
+                          </div>
+
+                          {/* Step Content */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm text-black/90 mb-1">
+                              {step.title}
+                            </p>
+                            <p className="text-xs text-black/60 line-clamp-2">
+                              {step.description}
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-8 text-gray-400 border-2 border-dashed border-gray-200 rounded-lg">
+                      <p className="text-sm text-black/60">No steps added</p>
+                      <p className="text-xs text-gray-400 mt-1">
+                        Steps help travelers understand the experience flow
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Destination Section */}
+              <div className="border-t border-gray-200 pt-6">
                 <div className="mb-4">
                   <div className="flex justify-between">
                     <h3 className="font-medium text-left text-black/90 text-base mb-1">

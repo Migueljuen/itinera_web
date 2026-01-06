@@ -294,6 +294,21 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
               </p>
             </div>
 
+            {/* Short description */}
+            <div>
+              <label className="block font-medium text-black/80 mb-1">
+                Short description about yourself
+              </label>
+              <input
+                type="text"
+                placeholder="Adventure enthusiast, food lover, and travel guide."
+                value={formData.short_description || ""}
+                onChange={(e) => handleChange("short_description", e.target.value)}
+                className="w-full px-4 pt-4 pb-12 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+              />
+
+            </div>
+
             {/* Profile Photo Upload */}
             <div>
               <label className="block font-medium text-black/80 mb-1">
@@ -304,11 +319,10 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={pickImage}
-                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                  dragOver
-                    ? "border-blue-400 bg-blue-50"
-                    : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${dragOver
+                  ? "border-blue-400 bg-blue-50"
+                  : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                  } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
               >
                 {formData.profile_pic ? (
                   <div className="relative inline-block">

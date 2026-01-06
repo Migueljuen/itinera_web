@@ -9,6 +9,7 @@ import Step1Tag from "./steps/Step1Tag";
 import Step2GetStarted from "./steps/Step2GetStarted";
 import Step3ExperienceDetails from "./steps/Step3ExperienceDetails";
 import Step4AvailabilityCompanion from "./steps/Step4AvailabilityCompanion";
+import Step5ExperienceSteps from "./steps/Step5ExperienceSteps";
 import Step6Destination from "./steps/Step6Destination";
 import SuccessModal from "../../../components/SuccessModal";
 import ReviewSubmit from "./steps/Step8Review";
@@ -19,7 +20,7 @@ import API_URL from "../../../constants/api";
 const ExperienceCreationForm = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
-  const stepCount = 7;
+  const stepCount = 8;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState("pending");
@@ -43,6 +44,7 @@ const ExperienceCreationForm = () => {
     latitude: "",
     longitude: "",
     images: [],
+    steps: []
   });
 
   const validateFormData = () => {
@@ -58,6 +60,10 @@ const ExperienceCreationForm = () => {
 
     if (!Array.isArray(formData.tags) || formData.tags.length === 0) {
       console.log("No tags selected");
+      return false;
+    }
+    if (!Array.isArray(formData.steps) || formData.steps.length === 0) {
+      console.log("No experience steps added");
       return false;
     }
 
@@ -214,6 +220,16 @@ const ExperienceCreationForm = () => {
           }
         });
       }
+      formDataObj.append(
+        "steps",
+        JSON.stringify(
+          formData.steps.map((step, index) => ({
+            order: index + 1,
+            title: step.title,
+            description: step.description
+          }))
+        )
+      );
 
       const response = await fetch(`${API_URL}/experience/create`, {
         method: "POST",
@@ -302,10 +318,12 @@ const ExperienceCreationForm = () => {
             onNext={handleNext}
             onBack={handleBack}
           />
+
         );
+
       case 6:
         return (
-          <Step6Destination
+          <Step5ExperienceSteps
             formData={formData}
             setFormData={setFormData}
             onNext={handleNext}
@@ -315,6 +333,16 @@ const ExperienceCreationForm = () => {
 
       case 7:
         return (
+          <Step6Destination
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNext}
+            onBack={handleBack}
+          />
+        );
+
+      case 8:
+        return (
           <ReviewSubmit
             formData={formData}
             onBack={handleBack}
@@ -322,6 +350,7 @@ const ExperienceCreationForm = () => {
             isSubmitting={isSubmitting}
           />
         );
+
       default:
         return null;
     }

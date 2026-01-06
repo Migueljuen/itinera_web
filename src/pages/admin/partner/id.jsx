@@ -243,7 +243,7 @@ const PartnerDetailScreen = () => {
                         Set as Approved
                       </button>
                     )}
-                    {user.status !== "Rejected" && (
+                    {/* {user.status !== "Rejected" && (
                       <button
                         onClick={() => handleStatusUpdate("Rejected")}
                         disabled={updatingStatus}
@@ -251,14 +251,14 @@ const PartnerDetailScreen = () => {
                       >
                         Set as Rejected
                       </button>
-                    )}
+                    )} */}
                     {user.status !== "Pending" && (
                       <button
                         onClick={() => handleStatusUpdate("Pending")}
                         disabled={updatingStatus}
                         className="w-full px-4 py-2 border-2   text-black/80 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors "
                       >
-                        Set as Pending
+                        Disable User
                       </button>
                     )}
                   </div>
@@ -320,7 +320,7 @@ const PartnerDetailScreen = () => {
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {profile.availability_days &&
-                        profile.availability_days.length > 0 ? (
+                          profile.availability_days.length > 0 ? (
                           profile.availability_days.map((day, index) => (
                             <span
                               key={index}
@@ -387,27 +387,27 @@ const PartnerDetailScreen = () => {
                     Driver Information
                   </h3>
                   <div className="grid grid-cols-2 gap-6">
-                    <div className=" rounded-lg p-4">
+                    <div className=" ">
                       <p className="text-sm text-black/60 mb-1">Service Area</p>
-                      <p className="text-lg font-semibold text-black/80">
+                      <p className="text-base  text-black/80">
                         {profile.service_area || "Not specified"}
                       </p>
                     </div>
-                    <div className=" rounded-lg p-4">
+                    {/* <div className=" rounded-lg p-4">
                       <p className="text-sm text-black/60 mb-1">
                         Multi-day Service
                       </p>
                       <p className="text-lg font-semibold text-black/80">
                         {profile.is_multi_day ? "Available" : "Not Available"}
                       </p>
-                    </div>
+                    </div> */}
                     <div className="col-span-2">
                       <p className="text-sm text-black/60 mb-3 font-medium">
                         Availability Days
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {profile.availability_days &&
-                        profile.availability_days.length > 0 ? (
+                          profile.availability_days.length > 0 ? (
                           profile.availability_days.map((day, index) => (
                             <span
                               key={index}
@@ -423,7 +423,96 @@ const PartnerDetailScreen = () => {
                         )}
                       </div>
                     </div>
+
                   </div>
+                </div>
+
+                {/* Driver Vehicles */}
+                <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
+                  <h3 className="text-lg font-semibold text-black/80 mb-6 flex items-center gap-2">
+                    <Car size={20} />
+                    Registered Vehicles
+                  </h3>
+
+                  {profile.vehicles && profile.vehicles.length > 0 ? (
+                    <div className="space-y-4">
+                      {profile.vehicles.map((vehicle) => (
+                        <div
+                          key={vehicle.vehicle_id}
+                          className="p-5 border border-gray-200 rounded-xl bg-gray-50"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-base font-semibold text-black/80">
+                                {vehicle.brand} {vehicle.model} ({vehicle.year})
+                              </p>
+                              <p className="text-sm text-black/60 mt-1">
+                                Plate Number: {vehicle.plate_number}
+                              </p>
+                            </div>
+
+                            <span className="px-3 py-1 text-xs font-medium border rounded-full bg-white">
+                              {vehicle.vehicle_type}
+                            </span>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
+                            <div>
+                              <p className="text-black/60">Color</p>
+                              <p className="text-black/80">{vehicle.color}</p>
+                            </div>
+                            <div>
+                              <p className="text-black/60">Passenger Capacity</p>
+                              <p className="text-black/80">
+                                {vehicle.passenger_capacity} pax
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* OR/CR Document */}
+                          {vehicle.or_cr_document && (
+                            <div className="mt-4">
+                              <a
+                                href={`${API_URL}/${vehicle.or_cr_document}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#397ff1] border-2 border-[#397ff1] rounded-lg hover:bg-blue-50 transition"
+                              >
+                                <FileText size={16} />
+                                View OR/CR
+                              </a>
+                            </div>
+                          )}
+
+                          {/* Vehicle Photos */}
+                          {vehicle.vehicle_photos && vehicle.vehicle_photos.length > 0 && (
+                            <div className="mt-4 flex gap-3 overflow-x-auto">
+                              {vehicle.vehicle_photos.map((photo, index) => (
+                                <a
+                                  key={index}
+                                  href={`${API_URL}/${photo}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                >
+                                  <img
+                                    src={`${API_URL}/${photo}`}
+                                    alt="Vehicle"
+                                    className="w-32 h-24 object-cover rounded-lg  hover:opacity-90 transition cursor-pointer"
+                                  />
+                                </a>
+                              ))}
+
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-black/60 text-center py-4">
+                      No vehicles registered
+                    </p>
+                  )}
                 </div>
 
                 {/* Documents */}
@@ -510,6 +599,9 @@ const PartnerDetailScreen = () => {
                     </div>
                   </div>
                 </div>
+
+
+
 
                 {/* Documents */}
                 <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">

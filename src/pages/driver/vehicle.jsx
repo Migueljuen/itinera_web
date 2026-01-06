@@ -13,44 +13,58 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
+import API_URL from "../../constants/api";
+import toast, { Toaster } from "react-hot-toast";
+
 const VehicleManagement = () => {
   const navigate = useNavigate();
+  const { user, token } = useAuth();
+
   const [loading, setLoading] = useState(true);
   const [vehicles, setVehicles] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [expandedVehicleId, setExpandedVehicleId] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
 
-  // Simulate fetching vehicles
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      // Empty array = no vehicles registered yet
-      setVehicles([]);
-      setLoading(false);
-    }, 1000);
+  // Fetch vehicles
+  const fetchVehicles = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${API_URL}/vehicles/driver/${user.user_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-    // Example with vehicles:
-    // setVehicles([
-    //   {
-    //     vehicle_id: 1,
-    //     plate_number: "ABC 1234",
-    //     vehicle_type: "Sedan",
-    //     brand: "Toyota",
-    //     model: "Vios",
-    //     year: 2020,
-    //     color: "White",
-    //     passenger_capacity: 4,
-    //     or_cr_document: "/uploads/documents/or-cr-123.pdf",
-    //     vehicle_photos: [
-    //       "/uploads/vehicles/car1-front.jpg",
-    //       "/uploads/vehicles/car1-side.jpg",
-    //     ],
-    //     created_at: "2024-01-15T10:30:00",
-    //     status: "active",
-    //   },
-    // ]);
-  }, []);
+      if (response.data.success) {
+        // Parse vehicle_photos JSON if needed
+        const vehiclesData = response.data.vehicles.map(vehicle => ({
+          ...vehicle,
+          vehicle_photos: typeof vehicle.vehicle_photos === 'string'
+            ? JSON.parse(vehicle.vehicle_photos || '[]')
+            : vehicle.vehicle_photos || []
+        }));
+        setVehicles(vehiclesData);
+      }
+    } catch (error) {
+      console.error("Error fetching vehicles:", error);
+      toast.error("Failed to fetch vehicles");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.user_id) {
+      fetchVehicles();
+    }
+  }, [user]);
 
   const filteredVehicles = vehicles.filter((vehicle) => {
     const matchesSearch =
@@ -67,19 +81,29 @@ const VehicleManagement = () => {
   };
 
   const handleEditVehicle = (vehicleId) => {
-    alert(`Navigate to: /driver/vehicles/edit/${vehicleId}`);
-    // navigate(`/driver/vehicles/edit/${vehicleId}`);
+    navigate(`/driver/vehicles/edit/${vehicleId}`);
   };
 
   const handleDeleteVehicle = async (vehicleId) => {
     if (window.confirm("Are you sure you want to delete this vehicle?")) {
       try {
-        // TODO: API call to delete vehicle
-        setVehicles(vehicles.filter((v) => v.vehicle_id !== vehicleId));
-        alert("Vehicle deleted successfully");
+        const response = await axios.delete(
+          `${API_URL}/vehicles/${vehicleId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.data.success) {
+          toast.success("Vehicle deleted successfully");
+          fetchVehicles(); // Refresh the list
+        }
       } catch (error) {
         console.error("Error deleting vehicle:", error);
-        alert("Failed to delete vehicle");
+        toast.error("Failed to delete vehicle");
       }
     }
   };
@@ -91,7 +115,8 @@ const VehicleManagement = () => {
   // Empty State
   if (!loading && vehicles.length === 0) {
     return (
-      <div className="min-h-screen ">
+      <div className="min-h-screen">
+        <Toaster position="top-center" />
         <div className="">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
@@ -106,7 +131,7 @@ const VehicleManagement = () => {
           </div>
 
           {/* Empty State Card */}
-          <div className=" p-36">
+          <div className="p-36">
             <div className="max-w-lg mx-auto text-center">
               <div className="bg-gray-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-6">
                 <Car size={40} className="text-gray-400" />
@@ -155,6 +180,7 @@ const VehicleManagement = () => {
   if (loading) {
     return (
       <div className="min-h-screen">
+        <Toaster position="top-center" />
         <div className="">
           <div className="flex justify-between items-center mb-6">
             <div>
@@ -167,7 +193,7 @@ const VehicleManagement = () => {
             </div>
           </div>
 
-          <div className=" p-36">
+          <div className="p-36">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
               <p className="text-gray-500">Loading vehicles...</p>
@@ -180,7 +206,8 @@ const VehicleManagement = () => {
 
   // Vehicles List
   return (
-    <div className="min-h-screen ">
+    <div className="min-h-screen">
+      <Toaster position="top-center" />
       <div className="">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -231,9 +258,8 @@ const VehicleManagement = () => {
               return (
                 <div
                   key={vehicle.vehicle_id}
-                  className={`bg-white rounded-xl border border-gray-200 transition-all ${
-                    isExpanded ? "ring-2 ring-blue-400" : ""
-                  }`}
+                  className={`bg-white rounded-xl border border-gray-200 transition-all ${isExpanded ? "ring-2 ring-blue-400" : ""
+                    }`}
                 >
                   {/* Main Content */}
                   <div className="p-6">
@@ -244,7 +270,8 @@ const VehicleManagement = () => {
                         <div className="w-24 h-24 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                           {vehicle.vehicle_photos?.length > 0 ? (
                             <img
-                              src={vehicle.vehicle_photos[0]}
+                              src={`${API_URL}/${vehicle.vehicle_photos[0]}`}
+
                               alt={`${vehicle.brand} ${vehicle.model}`}
                               className="w-full h-full object-cover"
                             />
@@ -273,29 +300,35 @@ const VehicleManagement = () => {
                                 {vehicle.plate_number}
                               </span>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <Users size={16} />
-                              <span>
-                                {vehicle.passenger_capacity} passengers
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <Calendar size={16} />
-                              <span>{vehicle.year}</span>
-                            </div>
+                            {vehicle.passenger_capacity && (
+                              <div className="flex items-center gap-2">
+                                <Users size={16} />
+                                <span>
+                                  {vehicle.passenger_capacity} passengers
+                                </span>
+                              </div>
+                            )}
+                            {vehicle.year && (
+                              <div className="flex items-center gap-2">
+                                <Calendar size={16} />
+                                <span>{vehicle.year}</span>
+                              </div>
+                            )}
                           </div>
 
-                          <div className="flex items-center gap-2">
-                            <div
-                              className="w-4 h-4 rounded-full border border-gray-300"
-                              style={{
-                                backgroundColor: vehicle.color.toLowerCase(),
-                              }}
-                            ></div>
-                            <span className="text-sm text-black/60">
-                              {vehicle.color}
-                            </span>
-                          </div>
+                          {vehicle.color && (
+                            <div className="flex items-center gap-2">
+                              <div
+                                className="w-4 h-4 rounded-full border border-gray-300"
+                                style={{
+                                  backgroundColor: vehicle.color.toLowerCase(),
+                                }}
+                              ></div>
+                              <span className="text-sm text-black/60">
+                                {vehicle.color}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -312,9 +345,8 @@ const VehicleManagement = () => {
                           {isExpanded ? "Less" : "More"}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
 
@@ -367,11 +399,10 @@ const VehicleManagement = () => {
 
                   {/* Expanded Content */}
                   <div
-                    className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                      isExpanded
-                        ? "max-h-[1000px] opacity-100"
-                        : "max-h-0 opacity-0"
-                    }`}
+                    className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
+                      ? "max-h-[1000px] opacity-100"
+                      : "max-h-0 opacity-0"
+                      }`}
                   >
                     <div className="border-t border-gray-200 p-6">
                       <div className="grid grid-cols-2 gap-8">
@@ -403,9 +434,10 @@ const VehicleManagement = () => {
                                 <button
                                   onClick={() =>
                                     window.open(
-                                      vehicle.or_cr_document,
+                                      `${API_URL}/${vehicle.or_cr_document}`,
                                       "_blank"
                                     )
+
                                   }
                                   className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"
                                 >
@@ -419,17 +451,16 @@ const VehicleManagement = () => {
                             </p>
                           )}
 
-                          {/* Status */}
+                          {/* Registration Date */}
                           <div className="mt-6">
-                            <h4 className="font-semibold mb-3">Status</h4>
-                            <div className="flex items-center gap-2">
-                              <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                              <span className="text-sm text-gray-700">
-                                {vehicle.status === "active"
-                                  ? "Active"
-                                  : "Inactive"}
-                              </span>
-                            </div>
+                            <h4 className="font-semibold mb-3">Registration Date</h4>
+                            <p className="text-sm text-gray-700">
+                              {new Date(vehicle.created_at).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                              })}
+                            </p>
                           </div>
                         </div>
 
@@ -443,13 +474,14 @@ const VehicleManagement = () => {
                                 <div
                                   key={index}
                                   className="aspect-square rounded-lg overflow-hidden bg-gray-100 cursor-pointer hover:opacity-75 transition-opacity"
-                                  onClick={() => window.open(photo, "_blank")}
-                                >
+                                  onClick={() => window.open(`${API_URL}/${photo}`, "_blank")}>
+
                                   <img
-                                    src={photo}
+                                    src={`${API_URL}/${photo}`}
                                     alt={`Vehicle photo ${index + 1}`}
                                     className="w-full h-full object-cover"
                                   />
+
                                 </div>
                               ))}
                             </div>

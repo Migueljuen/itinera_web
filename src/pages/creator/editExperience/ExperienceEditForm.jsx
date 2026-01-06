@@ -12,6 +12,7 @@ import API_URL from "../../../constants/api";
 import Step2GetStarted from "../createExperience/steps/Step2GetStarted";
 import Step3ExperienceDetails from "../createExperience/steps/Step3ExperienceDetails";
 import Step4AvailabilityCompanion from "../createExperience/steps/Step4AvailabilityCompanion";
+import Step5ExperienceSteps from "../createExperience/steps/Step5ExperienceSteps";
 import Step6Destination from "../createExperience/steps/Step6Destination";
 
 const ExperienceEditForm = () => {
@@ -20,7 +21,7 @@ const ExperienceEditForm = () => {
   const { user } = useAuth();
 
   const [step, setStep] = useState(2);
-  const stepCount = 4;
+  const stepCount = 5; // Updated from 4 to 5
   const [isSaving, setIsSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [experience, setExperience] = useState(null);
@@ -44,6 +45,7 @@ const ExperienceEditForm = () => {
     latitude: "",
     longitude: "",
     images: [],
+    steps: [], // Added steps field
   });
 
   // Track deleted image IDs (not URLs)
@@ -62,7 +64,6 @@ const ExperienceEditForm = () => {
         // Fetch experience data
         const response = await fetch(`${API_URL}/experience/${id}`);
         const data = await response.json();
-
 
         if (data.images && data.images.length > 0) {
           console.log("First image:", data.images[0]);
@@ -167,13 +168,23 @@ const ExperienceEditForm = () => {
           );
         }
 
+        // Load experience steps
+        let stepsData = [];
+        if (data.steps && Array.isArray(data.steps)) {
+          stepsData = data.steps.map((step) => ({
+            step_id: step.step_id,
+            title: step.title,
+            description: step.description,
+            order: step.step_order,
+          }));
+        }
+
         // Populate form data
         setFormData({
           category_id: data.category_id || 0,
           title: data.title || "",
           description: data.description || "",
           notes: data.notes || "",
-
           price: data.price || "",
           unit: data.unit || "",
           availability: transformedAvailability,
@@ -190,6 +201,7 @@ const ExperienceEditForm = () => {
           latitude: data.destination?.latitude?.toString() || "",
           longitude: data.destination?.longitude?.toString() || "",
           images: imageData,
+          steps: stepsData, // Added steps to formData
         });
       } catch (error) {
         console.error("Error loading experience:", error);
@@ -212,8 +224,8 @@ const ExperienceEditForm = () => {
       console.log("Current experience state:", experience);
       console.log("Current step:", step);
 
-      // Validate destination data before saving (Step 4)
-      if (step === 4) {
+      // Validate destination data before saving (Step 5)
+      if (step === 5) {
         if (!formData.destination_name?.trim()) {
           toast.error("Please enter a destination name.");
           setIsSaving(false);
@@ -231,6 +243,23 @@ const ExperienceEditForm = () => {
         }
         if (!formData.latitude || !formData.longitude) {
           toast.error("Please select a location on the map.");
+          setIsSaving(false);
+          return;
+        }
+      }
+
+      // Validate steps data before saving (Step 4)
+      if (step === 4) {
+        if (!formData.steps || formData.steps.length === 0) {
+          toast.error("Please add at least one experience step.");
+          setIsSaving(false);
+          return;
+        }
+        const hasEmptyFields = formData.steps.some(
+          (step) => !step.title?.trim() || !step.description?.trim()
+        );
+        if (hasEmptyFields) {
+          toast.error("Please fill in all step titles and descriptions.");
           setIsSaving(false);
           return;
         }
@@ -263,7 +292,7 @@ const ExperienceEditForm = () => {
       data.append("longitude", formData.longitude || "");
 
       // Flag to force update of existing destination
-      if (step === 4 && formData.destination_id) {
+      if (step === 5 && formData.destination_id) {
         data.append("update_destination", "true");
       }
 
@@ -289,6 +318,18 @@ const ExperienceEditForm = () => {
       if (formData.tags && formData.tags.length > 0) {
         console.log("Adding tags to FormData:", formData.tags);
         data.append("tags", JSON.stringify(formData.tags));
+      }
+
+      // Add steps data
+      if (formData.steps && formData.steps.length > 0) {
+        console.log("Adding steps to FormData:", formData.steps);
+        const stepsToSend = formData.steps.map((step, index) => ({
+          step_id: step.step_id || null,
+          order: index + 1,
+          title: step.title,
+          description: step.description,
+        }));
+        data.append("steps", JSON.stringify(stepsToSend));
       }
 
       // Handle new image uploads
@@ -329,6 +370,7 @@ const ExperienceEditForm = () => {
       );
       console.log("Response tags:", response.data.tags);
       console.log("Response images:", response.data.images);
+      console.log("Response steps:", response.data.steps);
 
       toast.success("Changes saved successfully!");
 
@@ -339,6 +381,7 @@ const ExperienceEditForm = () => {
         availability: updatedAvailability,
         tags: updatedTags,
         images: updatedImages,
+        steps: updatedSteps,
       } = response.data;
 
       console.log("=== UPDATING STATE ===");
@@ -372,6 +415,21 @@ const ExperienceEditForm = () => {
         setFormData((prev) => ({
           ...prev,
           travel_companions: updatedExperience.travel_companions,
+        }));
+      }
+
+      // Update steps
+      if (updatedSteps && Array.isArray(updatedSteps)) {
+        console.log("Updating steps:", updatedSteps);
+        const transformedSteps = updatedSteps.map((step) => ({
+          step_id: step.step_id,
+          title: step.title,
+          description: step.description,
+          order: step.step_order,
+        }));
+        setFormData((prev) => ({
+          ...prev,
+          steps: transformedSteps,
         }));
       }
 
@@ -420,6 +478,7 @@ const ExperienceEditForm = () => {
           images: updatedImages,
           availability: updatedAvailability,
           tags: updatedTags,
+          steps: updatedSteps,
         });
         console.log("Updated experience state with destination:", destination);
       }
@@ -435,6 +494,7 @@ const ExperienceEditForm = () => {
         images: updatedImages,
         availability: updatedAvailability,
         tags: updatedTags,
+        steps: updatedSteps,
       });
     } catch (error) {
       console.error("=== SAVE ERROR ===");
@@ -470,6 +530,8 @@ const ExperienceEditForm = () => {
       case 3:
         return true;
       case 4:
+        return true; // Steps changed
+      case 5:
         return (
           formData.destination_name !== experience.destination?.name ||
           formData.city !== experience.destination?.city ||
@@ -483,7 +545,7 @@ const ExperienceEditForm = () => {
 
   const handleNext = () => {
     console.log("handleNext called, current step:", step);
-    setStep((prev) => Math.min(prev + 1, 4));
+    setStep((prev) => Math.min(prev + 1, 5));
   };
 
   const handleBack = () => {
@@ -535,6 +597,18 @@ const ExperienceEditForm = () => {
           />
         );
       case 4:
+        return (
+          <Step5ExperienceSteps
+            formData={formData}
+            setFormData={setFormData}
+            onNext={handleNext}
+            onBack={handleBack}
+            isEditMode={true}
+            onSave={handleSaveCurrentStep}
+            isSaving={isSaving}
+          />
+        );
+      case 5:
         return (
           <Step6Destination
             formData={formData}
