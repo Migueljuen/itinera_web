@@ -15,8 +15,9 @@ import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import CreatorDashboard from "./pages/creator/index";
 import CreatorExperiences from "./pages/creator/activities";
 import BookingManagement from "./pages/creator/bookings";
+import EarningsManagement from "./pages/creator/earnings";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
-import ExperienceEditForm from "./pages/creator/editExperience/ExperienceEditForm";
+import ExperienceEditForm from "./pages/creator/editExperience/edit.jsx";
 import CreatorSettings from "./pages/creator/settings";
 
 // Guide Pages
@@ -175,6 +176,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["Creator"]}>
                 <BookingManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="earnings"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <EarningsManagement />
               </ProtectedRoute>
             }
           />

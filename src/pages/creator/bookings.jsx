@@ -30,6 +30,12 @@ import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
 import toast, { Toaster } from "react-hot-toast";
 import dayjs from "dayjs";
+import BookingFilters from "../../components/BookingFilters";
+
+import isBetween from "dayjs/plugin/isBetween";
+
+// Extend dayjs with the plugin
+dayjs.extend(isBetween);
 
 const BookingManagement = () => {
   const navigate = useNavigate();
@@ -43,6 +49,8 @@ const BookingManagement = () => {
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [expandedBookingId, setExpandedBookingId] = useState(null);
+  const [filters, setFilters] = useState({});
+
   const bookingRefs = useRef({});
 
   const ITEMS_PER_PAGE = 10;
@@ -177,7 +185,42 @@ const BookingManagement = () => {
       (selectedTab !== "Ongoing" &&
         booking.status?.toLowerCase() === selectedTab.toLowerCase());
 
-    return matchesSearch && matchesTab;
+    // Date filter
+    let matchesDate = true;
+    if (filters.dateFilter && filters.dateFilter !== 'all') {
+      const bookingDate = dayjs(booking.booking_date);
+      const today = dayjs();
+
+      if (filters.dateFilter === 'today') {
+        matchesDate = bookingDate.isSame(today, 'day');
+      } else if (filters.dateFilter === 'week') {
+        matchesDate = bookingDate.isSame(today, 'week');
+      } else if (filters.dateFilter === 'month') {
+        matchesDate = bookingDate.isSame(today, 'month');
+      } else if (filters.dateFilter === 'custom') {
+        if (filters.customDateRange?.start && filters.customDateRange?.end) {
+          const startDate = dayjs(filters.customDateRange.start);
+          const endDate = dayjs(filters.customDateRange.end);
+
+          matchesDate = (bookingDate.isAfter(startDate) || bookingDate.isSame(startDate, 'day')) &&
+            (bookingDate.isBefore(endDate) || bookingDate.isSame(endDate, 'day'));
+        }
+      }
+    }
+
+    // Experience filter
+    const matchesExperience =
+      !filters.selectedExperience ||
+      filters.selectedExperience === 'all' ||
+      booking.experience_title === filters.selectedExperience;
+
+    // Booking status filter
+    const matchesStatus =
+      !filters.statusFilter ||
+      filters.statusFilter === 'all' ||
+      booking.status?.toLowerCase() === filters.statusFilter.toLowerCase();
+
+    return matchesSearch && matchesTab && matchesDate && matchesExperience && matchesStatus;
   });
 
   // Calculate pagination
@@ -254,46 +297,13 @@ const BookingManagement = () => {
             {/* Table Header */}
             <div className="py-4">
               {/* Search and Filters */}
-              <div className="bg-white rounded-lg mb-6">
-                <div className="flex justify-between">
-                  {/* Tab Navigation */}
-                  <div className="flex bg-gray-50 rounded-lg w-fit p-2">
-                    {[
-                      "All",
-                      "Confirmed",
-                      "Ongoing",
-                      "Completed",
-                      "Cancelled",
-                    ].map((tab) => (
-                      <button
-                        key={tab}
-                        onClick={() => setSelectedTab(tab)}
-                        className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                          selectedTab === tab
-                            ? "bg-white text-black/80 shadow-sm/10"
-                            : "text-black/50 hover:text-black/70"
-                        }`}
-                      >
-                        {tab === "Confirmed" ? "Upcoming" : tab}
-                      </button>
-                    ))}
-                  </div>
-                  {/* Search */}
-                  <div className="relative h-fit">
-                    <Search
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                      size={20}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      value={searchText}
-                      onChange={(e) => setSearchText(e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+
+              <BookingFilters
+                bookings={bookings}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                onFilterChange={setFilters}
+              />
             </div>
 
             {/* Table Body */}
@@ -316,20 +326,18 @@ const BookingManagement = () => {
                       ref={(el) =>
                         (bookingRefs.current[booking.booking_id] = el)
                       }
-                      className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${
-                        isExpanded ? "ring-2 ring-blue-400" : ""
-                      }`}
+                      className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                        }`}
                     >
                       {/* Top Row */}
                       <div className="flex items-center justify-between px-2">
                         <div className="grid grid-cols-[120px_240px_300px] gap-4">
                           {/* DAY NUMBER AND DAY OF WEEK */}
                           <div
-                            className={`text-center px-4 border-r border-gray-300 ${
-                              dayjs(booking.booking_date).isSame(dayjs(), "day")
-                                ? "text-[#3A81F3]"
-                                : "text-black/70"
-                            }`}
+                            className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
+                              ? "text-[#3A81F3]"
+                              : "text-black/70"
+                              }`}
                           >
                             <p className="text-xl">
                               {booking.day_of_week.slice(0, 3)}
@@ -389,20 +397,18 @@ const BookingManagement = () => {
                           {isExpanded ? "Less" : "More"}{" "}
                           <ChevronDown
                             size={16}
-                            className={`transition-transform duration-300 ${
-                              isExpanded ? "rotate-180" : ""
-                            }`}
+                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                              }`}
                           />
                         </button>
                       </div>
 
                       {/* Expanded Content (Sliding Section) */}
                       <div
-                        className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                          isExpanded
-                            ? "max-h-[1000px] opacity-100 mt-4"
-                            : "max-h-0 opacity-0"
-                        }`}
+                        className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
+                          ? "max-h-[1000px] opacity-100 mt-4"
+                          : "max-h-0 opacity-0"
+                          }`}
                       >
                         <div className="border-t border-gray-200 pt-4 px-8">
                           <div className="grid grid-cols-2 gap-8">
@@ -655,11 +661,10 @@ const BookingManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
                     >
                       {page}
                     </button>
