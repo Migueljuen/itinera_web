@@ -23,7 +23,7 @@ import logoImage from "../assets/images/alt.png";
 import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
-
+import FloatingChat from '../components/FloatingChat';
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -34,6 +34,11 @@ const DashboardLayout = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
   const userRole = user?.role;
+
+  const currentUser = user ? {
+    id: user.user_id,
+    username: user.first_name || 'User'
+  } : null;
 
   // Function to get navigation items based on user role
   const getNavigationItems = (role) => {
@@ -404,6 +409,7 @@ const DashboardLayout = ({ children }) => {
           <main className="p-4 lg:p-8 flex-1 flex flex-col">
             {children || <Outlet />}
           </main>
+          {currentUser && <FloatingChat currentUser={currentUser} />}
         </div>
       </motion.div>
     </AnimatePresence>

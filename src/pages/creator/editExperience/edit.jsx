@@ -46,6 +46,7 @@ const ExperienceEditForm = () => {
     longitude: "",
     images: [],
     steps: [], // Added steps field
+    inclusions: [], // Added inclusions field
   });
 
   // Track deleted image IDs (not URLs)
@@ -179,6 +180,16 @@ const ExperienceEditForm = () => {
           }));
         }
 
+        // Load experience inclusions
+        let inclusionsData = [];
+        if (data.inclusions && Array.isArray(data.inclusions)) {
+          inclusionsData = data.inclusions.map((inclusion) => ({
+            inclusion_id: inclusion.inclusion_id,
+            title: inclusion.title,
+            order: inclusion.inclusion_order,
+          }));
+        }
+
         // Populate form data
         setFormData({
           category_id: data.category_id || 0,
@@ -202,6 +213,7 @@ const ExperienceEditForm = () => {
           longitude: data.destination?.longitude?.toString() || "",
           images: imageData,
           steps: stepsData, // Added steps to formData
+          inclusions: inclusionsData, // Added inclusions to formData
         });
       } catch (error) {
         console.error("Error loading experience:", error);
@@ -248,18 +260,32 @@ const ExperienceEditForm = () => {
         }
       }
 
-      // Validate steps data before saving (Step 4)
+      // Validate steps and inclusions data before saving (Step 4)
       if (step === 4) {
         if (!formData.steps || formData.steps.length === 0) {
           toast.error("Please add at least one experience step.");
           setIsSaving(false);
           return;
         }
-        const hasEmptyFields = formData.steps.some(
+        const hasEmptyStepFields = formData.steps.some(
           (step) => !step.title?.trim() || !step.description?.trim()
         );
-        if (hasEmptyFields) {
+        if (hasEmptyStepFields) {
           toast.error("Please fill in all step titles and descriptions.");
+          setIsSaving(false);
+          return;
+        }
+
+        if (!formData.inclusions || formData.inclusions.length === 0) {
+          toast.error("Please add at least one inclusion.");
+          setIsSaving(false);
+          return;
+        }
+        const hasEmptyInclusionFields = formData.inclusions.some(
+          (inclusion) => !inclusion.title?.trim()
+        );
+        if (hasEmptyInclusionFields) {
+          toast.error("Please fill in all inclusion titles.");
           setIsSaving(false);
           return;
         }
@@ -332,6 +358,17 @@ const ExperienceEditForm = () => {
         data.append("steps", JSON.stringify(stepsToSend));
       }
 
+      // Add inclusions data
+      if (formData.inclusions && formData.inclusions.length > 0) {
+        console.log("Adding inclusions to FormData:", formData.inclusions);
+        const inclusionsToSend = formData.inclusions.map((inclusion, index) => ({
+          inclusion_id: inclusion.inclusion_id || null,
+          order: index + 1,
+          title: inclusion.title,
+        }));
+        data.append("inclusions", JSON.stringify(inclusionsToSend));
+      }
+
       // Handle new image uploads
       const newImages = formData.images.filter(
         (img) => img.file && img.file instanceof File
@@ -371,6 +408,7 @@ const ExperienceEditForm = () => {
       console.log("Response tags:", response.data.tags);
       console.log("Response images:", response.data.images);
       console.log("Response steps:", response.data.steps);
+      console.log("Response inclusions:", response.data.inclusions);
 
       toast.success("Changes saved successfully!");
 
@@ -382,6 +420,7 @@ const ExperienceEditForm = () => {
         tags: updatedTags,
         images: updatedImages,
         steps: updatedSteps,
+        inclusions: updatedInclusions,
       } = response.data;
 
       console.log("=== UPDATING STATE ===");
@@ -433,6 +472,20 @@ const ExperienceEditForm = () => {
         }));
       }
 
+      // Update inclusions
+      if (updatedInclusions && Array.isArray(updatedInclusions)) {
+        console.log("Updating inclusions:", updatedInclusions);
+        const transformedInclusions = updatedInclusions.map((inclusion) => ({
+          inclusion_id: inclusion.inclusion_id,
+          title: inclusion.title,
+          order: inclusion.inclusion_order,
+        }));
+        setFormData((prev) => ({
+          ...prev,
+          inclusions: transformedInclusions,
+        }));
+      }
+
       // Update destination fields - backend always returns destination object
       if (destination) {
         console.log("Updating destination:", destination);
@@ -479,6 +532,7 @@ const ExperienceEditForm = () => {
           availability: updatedAvailability,
           tags: updatedTags,
           steps: updatedSteps,
+          inclusions: updatedInclusions,
         });
         console.log("Updated experience state with destination:", destination);
       }
@@ -495,6 +549,7 @@ const ExperienceEditForm = () => {
         availability: updatedAvailability,
         tags: updatedTags,
         steps: updatedSteps,
+        inclusions: updatedInclusions,
       });
     } catch (error) {
       console.error("=== SAVE ERROR ===");
@@ -530,7 +585,7 @@ const ExperienceEditForm = () => {
       case 3:
         return true;
       case 4:
-        return true; // Steps changed
+        return true; // Steps and inclusions changed
       case 5:
         return (
           formData.destination_name !== experience.destination?.name ||

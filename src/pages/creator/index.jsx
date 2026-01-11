@@ -17,6 +17,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
@@ -118,6 +119,7 @@ const CreatorDashboard = () => {
     console.log("User ID:", user?.id);
     console.log("Notifications:", notifications);
   }, [user?.id, notifications]);
+
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -278,11 +280,10 @@ const CreatorDashboard = () => {
               {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
-                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${
-                    showNotifications
-                      ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
-                      : "hover:bg-gray-100 active:bg-gray-200"
-                  }`}
+                  className={`w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center cursor-pointer transition-colors relative ${showNotifications
+                    ? "bg-blue-100 hover:bg-blue-200 active:bg-blue-300"
+                    : "hover:bg-gray-100 active:bg-gray-200"
+                    }`}
                   onClick={() => {
                     setShowNotifications(!showNotifications);
                     if (!showNotifications) setHasOpenedDropdown(true);
@@ -361,6 +362,7 @@ const CreatorDashboard = () => {
           </h1>
           <RecentBooking />
         </div>
+
       </div>
     </div>
   );

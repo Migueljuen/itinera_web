@@ -44,7 +44,8 @@ const ExperienceCreationForm = () => {
     latitude: "",
     longitude: "",
     images: [],
-    steps: []
+    steps: [],
+    inclusions: []
   });
 
   const validateFormData = () => {
@@ -66,6 +67,7 @@ const ExperienceCreationForm = () => {
       console.log("No experience steps added");
       return false;
     }
+
 
     if (
       !formData.title ||
@@ -230,6 +232,15 @@ const ExperienceCreationForm = () => {
           }))
         )
       );
+      formDataObj.append(
+        "inclusions",
+        JSON.stringify(
+          formData.inclusions.map((inclusion, index) => ({
+            order: index + 1,
+            title: inclusion.title
+          }))
+        )
+      );
 
       const response = await fetch(`${API_URL}/experience/create`, {
         method: "POST",
@@ -355,7 +366,7 @@ const ExperienceCreationForm = () => {
         return null;
     }
   };
-  if (user && user.status !== "Pending") {
+  if (user && user.status !== "Approved") {
     return (
       <DashboardLayout>
         <div className="min-h-[70vh] max-w-xl mx-auto flex items-center justify-center px-6 ">

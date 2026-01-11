@@ -684,7 +684,7 @@ const ItineraryManagement = () => {
                                             </span>
                                           </div>
                                           <div className="flex justify-between text-[#397ff1]">
-                                            <span>Commission (15%):</span>
+                                            <span>Commission (10%):</span>
                                             <span>
                                               -₱
                                               {creator.total_commission.toFixed(

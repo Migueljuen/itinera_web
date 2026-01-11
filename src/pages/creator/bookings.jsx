@@ -8,6 +8,7 @@ import {
   EyeOff,
   Trash2,
   Calendar,
+  CheckCircle,
   Clock,
   Users,
   MapPin,

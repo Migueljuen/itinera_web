@@ -15,12 +15,18 @@ import {
   Car,
   Languages,
   Info,
+  DollarSign,
+  Download,
+  Edit2,
+  Check,
+  X as XIcon,
 } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../../../constants/api";
 import toast from "react-hot-toast";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+import dayjs from "dayjs";
 
 const PartnerDetailScreen = () => {
   const navigate = useNavigate();
@@ -30,9 +36,26 @@ const PartnerDetailScreen = () => {
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [activeTab, setActiveTab] = useState("Overview");
 
+  // Payout states
+  const [payouts, setPayouts] = useState([]);
+  const [payoutsLoading, setPayoutsLoading] = useState(false);
+  const [editingPayout, setEditingPayout] = useState(null);
+  const [editForm, setEditForm] = useState({
+    payout_status: "",
+    payment_method: "",
+    transaction_reference: "",
+    notes: "",
+  });
+
   useEffect(() => {
     fetchPartnerDetails();
   }, [id]);
+
+  useEffect(() => {
+    if (activeTab === "Payouts") {
+      fetchPayouts();
+    }
+  }, [activeTab]);
 
   const fetchPartnerDetails = async () => {
     try {
@@ -45,6 +68,20 @@ const PartnerDetailScreen = () => {
       toast.error("Failed to load partner details");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPayouts = async () => {
+    try {
+      setPayoutsLoading(true);
+      const response = await axios.get(`${API_URL}/admin-payout/partner/${id}/payouts`);
+      console.log("Payouts:", response.data);
+      setPayouts(response.data.payouts || []);
+    } catch (error) {
+      console.error("Error fetching payouts:", error);
+      toast.error("Failed to load payouts");
+    } finally {
+      setPayoutsLoading(false);
     }
   };
 
@@ -70,6 +107,60 @@ const PartnerDetailScreen = () => {
     }
   };
 
+  const handleEditPayout = (payout) => {
+    setEditingPayout(payout.payout_id);
+    setEditForm({
+      payout_status: payout.payout_status,
+      payment_method: payout.payment_method || "",
+      transaction_reference: payout.transaction_reference || "",
+      notes: payout.notes || "",
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingPayout(null);
+    setEditForm({
+      payout_status: "",
+      payment_method: "",
+      transaction_reference: "",
+      notes: "",
+    });
+  };
+
+  const handleSavePayout = async (payoutId) => {
+    try {
+      const response = await axios.patch(
+        `${API_URL}/admin-payout/${payoutId}`,
+        editForm
+      );
+
+      if (response.data.success) {
+        toast.success("Payout updated successfully");
+        setEditingPayout(null);
+        fetchPayouts(); // Refresh the list
+      }
+    } catch (error) {
+      console.error("Error updating payout:", error);
+      toast.error("Failed to update payout");
+    }
+  };
+
+  const handleMarkAsPaid = async (payoutId) => {
+    try {
+      const response = await axios.patch(`${API_URL}/admin-payout/${payoutId}`, {
+        payout_status: "completed",
+      });
+
+      if (response.data.success) {
+        toast.success("Payout marked as paid");
+        fetchPayouts();
+      }
+    } catch (error) {
+      console.error("Error marking payout as paid:", error);
+      toast.error("Failed to mark payout as paid");
+    }
+  };
+
   const getRoleDisplayName = (role) => {
     const roleNames = {
       Driver: "Transportation Provider",
@@ -86,6 +177,16 @@ const PartnerDetailScreen = () => {
       Pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
     };
     return colors[status] || "bg-gray-100 text-gray-700 border-gray-200";
+  };
+
+  const getPayoutStatusColor = (status) => {
+    const colors = {
+      completed: "bg-green-100 text-green-700",
+      processing: "bg-yellow-100 text-yellow-700",
+      pending: "bg-gray-100 text-gray-700",
+      failed: "bg-red-100 text-red-700",
+    };
+    return colors[status] || "bg-gray-100 text-gray-700";
   };
 
   // Define tabs based on partner role
@@ -107,6 +208,9 @@ const PartnerDetailScreen = () => {
     } else if (partner.user.role === "Creator") {
       baseTabs.push({ name: "Documents", icon: FileText });
     }
+
+    // Add Payouts tab for all roles
+    baseTabs.push({ name: "Payouts", icon: DollarSign });
 
     return baseTabs;
   };
@@ -130,6 +234,20 @@ const PartnerDetailScreen = () => {
 
   const { user, profile } = partner;
   const tabs = getTabs();
+
+  // Calculate payout summary
+  const payoutSummary = payouts.reduce(
+    (acc, payout) => {
+      acc.total += parseFloat(payout.net_amount || 0);
+      if (payout.payout_status === "completed") {
+        acc.paid += parseFloat(payout.net_amount || 0);
+      } else if (payout.payout_status === "pending" || payout.payout_status === "processing") {
+        acc.pending += parseFloat(payout.net_amount || 0);
+      }
+      return acc;
+    },
+    { total: 0, paid: 0, pending: 0 }
+  );
 
   return (
     <div className="min-h-screen">
@@ -298,6 +416,7 @@ const PartnerDetailScreen = () => {
                 )}
               </div>
             )}
+
             {/* Profile Information Tab */}
             {activeTab === "Profile Information" && (
               <>
@@ -594,11 +713,276 @@ const PartnerDetailScreen = () => {
                 </div>
               </div>
             )}
+
+            {/* Payouts Tab */}
+            {activeTab === "Payouts" && (
+              <div className="space-y-6">
+                {/* Payout Summary Cards */}
+                <div className="grid grid-cols-3 gap-6">
+                  <div className="bg-white rounded-xl border-2 border-gray-300 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-black/60">Platform Earnings</p>
+                      <DollarSign size={20} className="text-black/40" />
+                    </div>
+                    <p className="text-2xl font-semibold text-black/80">
+                      ₱{payoutSummary.total.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-black/50 mt-1">Total prepaid bookings</p>
+                  </div>
+
+                  <div className="bg-white rounded-xl border-2 border-gray-300 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-black/60">Paid Out</p>
+                      <CheckCircle size={20} className="text-green-500" />
+                    </div>
+                    <p className="text-2xl font-semibold text-green-600">
+                      ₱{payoutSummary.paid.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-black/50 mt-1">Completed</p>
+                  </div>
+
+                  <div className="bg-white rounded-xl border-2 border-gray-300 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm text-black/60">Pending</p>
+                      <Clock size={20} className="text-yellow-500" />
+                    </div>
+                    <p className="text-2xl font-semibold text-yellow-600">
+                      ₱{payoutSummary.pending.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-black/50 mt-1">To be processed</p>
+                  </div>
+                </div>
+
+                {/* Payouts List */}
+                <div className="bg-white rounded-xl border-2 border-gray-300">
+                  <div className="p-6 border-b border-gray-200">
+                    <h3 className="text-lg font-semibold text-black/80">
+                      Platform Payout History
+                    </h3>
+                    <p className="text-sm text-black/60 mt-1">
+                      Payments processed through the platform (excludes cash collected in person)
+                    </p>
+                  </div>
+
+                  {payoutsLoading ? (
+                    <div className="p-8 text-center">
+                      <div className="inline-block w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      <p className="text-gray-500 mt-2">Loading payouts...</p>
+                    </div>
+                  ) : payouts.length === 0 ? (
+                    <div className="p-8 text-center text-black/60">
+                      No payouts found
+                    </div>
+                  ) : (
+                    <div className="divide-y divide-gray-200">
+                      {payouts.map((payout) => (
+                        <div key={payout.payout_id} className="p-6">
+                          {editingPayout === payout.payout_id ? (
+                            // Edit Mode
+                            <div className="space-y-4">
+                              <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                    Status
+                                  </label>
+                                  <select
+                                    value={editForm.payout_status}
+                                    onChange={(e) =>
+                                      setEditForm({
+                                        ...editForm,
+                                        payout_status: e.target.value,
+                                      })
+                                    }
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  >
+                                    <option value="pending">Pending</option>
+                                    <option value="processing">Processing</option>
+                                    <option value="completed">Completed</option>
+                                    <option value="failed">Failed</option>
+                                  </select>
+                                </div>
+
+                                <div>
+                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                    Payment Method
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={editForm.payment_method}
+                                    onChange={(e) =>
+                                      setEditForm({
+                                        ...editForm,
+                                        payment_method: e.target.value,
+                                      })
+                                    }
+                                    placeholder="e.g., Bank Transfer, GCash"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  />
+                                </div>
+
+                                <div className="col-span-2">
+                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                    Transaction Reference
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={editForm.transaction_reference}
+                                    onChange={(e) =>
+                                      setEditForm({
+                                        ...editForm,
+                                        transaction_reference: e.target.value,
+                                      })
+                                    }
+                                    placeholder="Transaction ID or reference number"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                  />
+                                </div>
+
+                                <div className="col-span-2">
+                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                    Notes
+                                  </label>
+                                  <textarea
+                                    value={editForm.notes}
+                                    onChange={(e) =>
+                                      setEditForm({
+                                        ...editForm,
+                                        notes: e.target.value,
+                                      })
+                                    }
+                                    rows={2}
+                                    placeholder="Additional notes..."
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="flex gap-3 pt-2">
+                                <button
+                                  onClick={() => handleSavePayout(payout.payout_id)}
+                                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                >
+                                  <Check size={16} />
+                                  Save Changes
+                                </button>
+                                <button
+                                  onClick={handleCancelEdit}
+                                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                                >
+                                  <XIcon size={16} />
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            // View Mode
+                            <div className="flex justify-between items-start">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <p className="font-semibold text-black/80">
+                                    {payout.experience_title || "Payout"}
+                                  </p>
+                                  <span
+                                    className={`text-xs px-3 py-1 rounded-full font-medium ${getPayoutStatusColor(
+                                      payout.payout_status
+                                    )}`}
+                                  >
+                                    {payout.payout_status}
+                                  </span>
+                                  <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+                                    Prepaid Booking
+                                  </span>
+                                  {payout.payment_count > 1 && (
+                                    <span className="text-xs px-3 py-1 rounded-full bg-purple-100 text-purple-700">
+                                      {payout.payment_count} payments combined
+                                    </span>
+                                  )}
+                                </div>
+
+                                <div className="grid grid-cols-3 gap-4 mt-4 text-sm">
+                                  <div>
+                                    <p className="text-black/60">Date</p>
+                                    <p className="text-black/80">
+                                      {dayjs(payout.payout_date).format(
+                                        "MMM D, YYYY"
+                                      )}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-black/60">Gross Amount</p>
+                                    <p className="text-black/80">
+                                      ₱{parseFloat(payout.gross_amount).toFixed(2)}
+                                    </p>
+                                  </div>
+                                  <div>
+                                    <p className="text-black/60">Commission</p>
+                                    <p className="text-black/80">
+                                      ₱
+                                      {parseFloat(
+                                        payout.commission_amount
+                                      ).toFixed(2)}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {payout.payment_method && (
+                                  <p className="text-sm text-black/60 mt-3">
+                                    Payment: {payout.payment_method}
+                                  </p>
+                                )}
+
+                                {payout.transaction_reference && (
+                                  <p className="text-sm text-black/60 mt-1">
+                                    Ref: {payout.transaction_reference}
+                                  </p>
+                                )}
+
+                                {payout.notes && (
+                                  <p className="text-sm text-black/60 mt-1 italic">
+                                    {payout.notes}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="text-right ml-6">
+                                <p className="text-sm text-black/50">Net Amount</p>
+                                <p className="text-2xl font-semibold text-black/80 mb-4">
+                                  ₱{parseFloat(payout.net_amount).toFixed(2)}
+                                </p>
+
+                                <div className="flex gap-2">
+                                  {payout.payout_status !== "completed" && (
+                                    <button
+                                      onClick={() =>
+                                        handleMarkAsPaid(payout.payout_id)
+                                      }
+                                      className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition"
+                                    >
+                                      Mark as Paid
+                                    </button>
+                                  )}
+                                  <button
+                                    onClick={() => handleEditPayout(payout)}
+                                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
+                                  >
+                                    <Edit2 size={14} />
+                                    Edit
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
-
   );
 };
 
