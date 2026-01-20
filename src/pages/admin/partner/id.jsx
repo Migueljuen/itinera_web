@@ -1,22 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   ArrowLeft,
   User,
   Mail,
   Phone,
   Calendar,
-  MapPin,
   FileText,
   CheckCircle,
-  XCircle,
   Clock,
   Globe,
-  Briefcase,
   Car,
-  Languages,
   Info,
   DollarSign,
-  Download,
   Edit2,
   Check,
   X as XIcon,
@@ -31,6 +26,7 @@ import dayjs from "dayjs";
 const PartnerDetailScreen = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+
   const [partner, setPartner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updatingStatus, setUpdatingStatus] = useState(false);
@@ -49,13 +45,27 @@ const PartnerDetailScreen = () => {
 
   useEffect(() => {
     fetchPartnerDetails();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
-    if (activeTab === "Payouts") {
-      fetchPayouts();
-    }
+    if (activeTab === "Payouts") fetchPayouts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
+
+  const asArray = (v) => {
+    if (!v) return [];
+    if (Array.isArray(v)) return v;
+    if (typeof v === "string") {
+      try {
+        const parsed = JSON.parse(v);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
 
   const fetchPartnerDetails = async () => {
     try {
@@ -74,7 +84,9 @@ const PartnerDetailScreen = () => {
   const fetchPayouts = async () => {
     try {
       setPayoutsLoading(true);
-      const response = await axios.get(`${API_URL}/admin-payout/partner/${id}/payouts`);
+      const response = await axios.get(
+        `${API_URL}/admin-payout/partner/${id}/payouts`
+      );
       console.log("Payouts:", response.data);
       setPayouts(response.data.payouts || []);
     } catch (error) {
@@ -129,15 +141,14 @@ const PartnerDetailScreen = () => {
 
   const handleSavePayout = async (payoutId) => {
     try {
-      const response = await axios.patch(
-        `${API_URL}/admin-payout/${payoutId}`,
-        editForm
-      );
+      const response = await axios.patch(`${API_URL}/admin-payout/${payoutId}`, {
+        ...editForm,
+      });
 
       if (response.data.success) {
         toast.success("Payout updated successfully");
         setEditingPayout(null);
-        fetchPayouts(); // Refresh the list
+        fetchPayouts();
       }
     } catch (error) {
       console.error("Error updating payout:", error);
@@ -170,64 +181,61 @@ const PartnerDetailScreen = () => {
     return roleNames[role] || role;
   };
 
-  const getStatusColor = (status) => {
-    const colors = {
-      Approved: "bg-green-100 text-green-700 border-green-200",
-      Rejected: "bg-red-100 text-red-700 border-red-200",
-      Pending: "bg-yellow-100 text-yellow-700 border-yellow-200",
-    };
-    return colors[status] || "bg-gray-100 text-gray-700 border-gray-200";
-  };
-
   const getPayoutStatusColor = (status) => {
     const colors = {
       completed: "bg-green-100 text-green-700",
       processing: "bg-yellow-100 text-yellow-700",
-      pending: "bg-gray-100 text-gray-700",
+      pending: "bg-gray-100 text-black/9000",
       failed: "bg-red-100 text-red-700",
     };
-    return colors[status] || "bg-gray-100 text-gray-700";
+    return colors[status] || "bg-gray-100 text-black/9000";
   };
 
-  // Define tabs based on partner role
   const getTabs = () => {
-    if (!partner) return [];
-
-    const baseTabs = [
-      { name: "Overview", icon: User },
-      { name: "Profile Information", icon: Info },
-    ];
+    if (!partner?.user) return [];
+    const baseTabs = [{ name: "Overview", icon: User }];
 
     if (partner.user.role === "Driver") {
-      baseTabs.push(
-        { name: "Vehicles", icon: Car },
-        { name: "Documents", icon: FileText }
-      );
-    } else if (partner.user.role === "Guide") {
-      baseTabs.push({ name: "Documents", icon: FileText });
-    } else if (partner.user.role === "Creator") {
-      baseTabs.push({ name: "Documents", icon: FileText });
+      baseTabs.push({ name: "Vehicles", icon: Car });
     }
 
-    // Add Payouts tab for all roles
+    baseTabs.push({ name: "Documents", icon: FileText });
     baseTabs.push({ name: "Payouts", icon: DollarSign });
 
     return baseTabs;
   };
 
+  const payoutSummary = useMemo(() => {
+    return payouts.reduce(
+      (acc, payout) => {
+        acc.total += parseFloat(payout.net_amount || 0);
+        if (payout.payout_status === "completed") {
+          acc.paid += parseFloat(payout.net_amount || 0);
+        } else if (
+          payout.payout_status === "pending" ||
+          payout.payout_status === "processing"
+        ) {
+          acc.pending += parseFloat(payout.net_amount || 0);
+        }
+        return acc;
+      },
+      { total: 0, paid: 0, pending: 0 }
+    );
+  }, [payouts]);
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-gray-500 mt-2 ml-3">Loading partner details...</p>
+        <p className="text-black/50 mt-2 ml-3">Loading partner details...</p>
       </div>
     );
   }
 
-  if (!partner) {
+  if (!partner?.user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Partner not found</p>
+        <p className="text-black/50">Partner not found</p>
       </div>
     );
   }
@@ -235,19 +243,12 @@ const PartnerDetailScreen = () => {
   const { user, profile } = partner;
   const tabs = getTabs();
 
-  // Calculate payout summary
-  const payoutSummary = payouts.reduce(
-    (acc, payout) => {
-      acc.total += parseFloat(payout.net_amount || 0);
-      if (payout.payout_status === "completed") {
-        acc.paid += parseFloat(payout.net_amount || 0);
-      } else if (payout.payout_status === "pending" || payout.payout_status === "processing") {
-        acc.pending += parseFloat(payout.net_amount || 0);
-      }
-      return acc;
-    },
-    { total: 0, paid: 0, pending: 0 }
-  );
+  // Documents availability (for "No documents uploaded")
+  const hasDocs =
+    !!user?.selfie_document ||
+    !!profile?.id_document ||
+    (user?.role === "Driver" && !!profile?.license_document) ||
+    (user?.role === "Guide" && !!profile?.guide_certificate_document);
 
   return (
     <div className="min-h-screen">
@@ -256,33 +257,35 @@ const PartnerDetailScreen = () => {
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+            className="flex items-center gap-2 text-black/5000 hover:text-black/90 mb-4 transition-colors"
           >
             <ArrowLeft size={20} />
             Back to Partners
           </button>
+
           <div className="flex justify-between w-full items-baseline">
             <div>
-              <h1 className="text-2xl font-semibold text-gray-900">
+              <h1 className="text-2xl font-semibold text-black/90">
                 Partner Profile
               </h1>
               <p className="text-black/60 mt-1">
                 Review and manage partner information
               </p>
             </div>
+
             {user.status === "Pending" && (
               <div className="gap-4 flex">
                 <button
                   onClick={() => handleStatusUpdate("Approved")}
                   disabled={updatingStatus}
-                  className="w-full py-3 px-8 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer"
+                  className="w-full py-3 px-8 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer disabled:opacity-60"
                 >
                   Approve
                 </button>
                 <button
                   onClick={() => handleStatusUpdate("Rejected")}
                   disabled={updatingStatus}
-                  className="w-full py-3 px-8 border-2 border-black/80 text-black/80 rounded-lg hover:bg-black/10 cursor-pointer"
+                  className="w-full py-3 px-8 border-2 border-black/80 text-black/80 rounded-lg hover:bg-black/10 cursor-pointer disabled:opacity-60"
                 >
                   Decline
                 </button>
@@ -302,8 +305,8 @@ const PartnerDetailScreen = () => {
                   key={tab.name}
                   onClick={() => setActiveTab(tab.name)}
                   className={`flex items-center gap-2 px-6 font-medium transition-colors py-2 rounded-lg ${activeTab === tab.name
-                      ? "bg-white text-black/80 shadow-sm/10"
-                      : "text-black/50 hover:text-black/70"
+                    ? "bg-white text-black/80 shadow-sm/10"
+                    : "text-black/50 hover:text-black/70"
                     }`}
                 >
                   <Icon size={18} />
@@ -314,175 +317,273 @@ const PartnerDetailScreen = () => {
           </div>
 
           {/* Tab Content */}
-          <div className="space-y-6">
-            {/* Overview Tab */}
+          <div className="">
+            {/* Overview Tab (NOW includes profile info) */}
             {activeTab === "Overview" && (
-              <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
-                <div className="flex flex-col items-center mb-8">
-                  {/* Profile Picture */}
-                  <div className="w-32 h-32 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden mb-4">
-                    {user.profile_pic ? (
-                      <img
-                        src={`${API_URL}/${user.profile_pic}`}
-                        alt={`${user.first_name} ${user.last_name}`}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <User size={48} className="text-gray-400" />
-                    )}
+              <div className=" flex justify-between gap-8">
+                {/* Top Card */}
+                <div className="bg-white flex-[0.3] rounded-2xl border border-gray-200 p-6 ">
+                  {/* Header */}
+                  <div className="flex flex-col items-center text-center">
+                    <div className="w-28 h-28 bg-gray-100 rounded-full overflow-hidden flex items-center justify-center">
+                      {user.profile_pic ? (
+                        <img
+                          src={`${API_URL}/${user.profile_pic}`}
+                          alt={`${user.first_name} ${user.last_name}`}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <User size={40} className="text-black/40" />
+                      )}
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-center gap-2">
+                      <h2 className="text-lg font-semibold text-black/90">
+                        {user.first_name} {user.last_name}
+                      </h2>
+                      {user?.status === "Approved" && (
+                        <CheckBadgeIcon className="size-5 text-blue-500" />
+                      )}
+                    </div>
+
+                    <p className="text-base text-black/50 mt-1">{getRoleDisplayName(user.role)}</p>
+
+                    <div className="mt-3 inline-flex items-center gap-2 text-base text-black/50">
+                      <Calendar size={14} />
+                      <span>
+                        Registered {new Date(user.created_at).toLocaleDateString()}
+                      </span>
+                    </div>
+
+                    {/* Status pill */}
+                    <div className="mt-4">
+                      <span
+                        className={[
+                          "inline-flex items-center rounded-full px-3 py-1 text-base font-medium border",
+                          user.status === "Approved"
+                            ? "bg-green-50 text-green-700 border-green-200"
+                            : user.status === "Rejected"
+                              ? "bg-red-50 text-red-700 border-red-200"
+                              : "bg-yellow-50 text-yellow-700 border-yellow-200",
+                        ].join(" ")}
+                      >
+                        {user.status}
+                      </span>
+                    </div>
                   </div>
 
-                  {/* Name and Role */}
-                  <h2 className="text-xl flex items-center gap-1 font-semibold text-black/80 text-center">
-                    {user.first_name} {user.last_name}
-                    {user?.status === "Approved" && (
-                      <CheckBadgeIcon className="size-5 text-blue-400" />
-                    )}
-                  </h2>
-                  <p className="text-black/60 mt-1 text-center">
-                    {getRoleDisplayName(user.role)}
-                  </p>
+                  {/* Divider */}
+                  <div className="my-6 h-px bg-gray-200" />
 
-                  {/* Registration Date */}
-                  <div className="flex items-center gap-2 mt-4 text-sm text-black/60">
-                    <Calendar size={16} />
-                    <span>
-                      Registered {new Date(user.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
-                </div>
+                  {/* Contact Information (clean rows) */}
+                  <div>
+                    <p className="text-base font-semibold text-black/90 mb-3">Contact</p>
 
-                <div className="border-t border-gray-200 pt-6">
-                  <h3 className="font-semibold text-black/80 mb-4">
-                    Contact Information
-                  </h3>
-                  <div className="grid grid-cols-3 gap-6">
-                    <div className="flex items-start gap-3">
-                      <Mail size={18} className="text-black/60 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-black/60">Email</p>
-                        <p className="text-sm text-black/80 break-all">
-                          {user.email}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Phone size={18} className="text-black/60 mt-0.5" />
-                      <div>
-                        <p className="text-xs text-black/60">Phone</p>
-                        <p className="text-sm text-black/80">
-                          {user.mobile_number || "Not provided"}
-                        </p>
-                      </div>
-                    </div>
-                    {profile.city && (
-                      <div className="flex items-start gap-3">
-                        <Globe size={18} className="text-black/60 mt-0.5" />
-                        <div>
-                          <p className="text-xs text-black/60">Location</p>
-                          <p className="text-sm text-black/80">{profile.city}</p>
+                    <div className="divide-y divide-gray-200 rounded-xl border border-gray-200 overflow-hidden">
+                      {/* Email */}
+                      <div className="px-4 py-3 flex items-start justify-between gap-4 bg-white">
+                        <div className="flex items-start gap-3">
+                          <Mail size={18} className="text-black/40 mt-0.5" />
+                          <div>
+                            <p className="text-base text-black/50">Email</p>
+                            <p className="text-base text-black/90 break-all">{user.email}</p>
+                          </div>
                         </div>
                       </div>
-                    )}
-                  </div>
-                </div>
 
-                {user.status !== "Pending" && (
-                  <div className="border-t border-gray-200 mt-6 pt-6">
-                    <h3 className="text-sm font-semibold text-black/80 mb-4">
-                      Change Status
-                    </h3>
-                    <div className="flex gap-3">
-                      {user.status !== "Approved" && (
-                        <button
-                          onClick={() => handleStatusUpdate("Approved")}
-                          disabled={updatingStatus}
-                          className="px-6 py-2 border-2 border-green-600 text-green-600 rounded-lg hover:bg-green-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-                        >
-                          Set as Approved
-                        </button>
-                      )}
-                      {user.status !== "Pending" && (
-                        <button
-                          onClick={() => handleStatusUpdate("Pending")}
-                          disabled={updatingStatus}
-                          className="px-6 py-2 border-2 text-black/80 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          Disable User
-                        </button>
+                      {/* Phone */}
+                      <div className="px-4 py-3 flex items-start justify-between gap-4 bg-white">
+                        <div className="flex items-start gap-3">
+                          <Phone size={18} className="text-black/40 mt-0.5" />
+                          <div>
+                            <p className="text-base text-black/50">Phone</p>
+                            <p className="text-base text-black/90">
+                              {user.mobile_number || "Not provided"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Location */}
+                      {(profile?.city || null) && (
+                        <div className="px-4 py-3 flex items-start justify-between gap-4 bg-white">
+                          <div className="flex items-start gap-3">
+                            <Globe size={18} className="text-black/40 mt-0.5" />
+                            <div>
+                              <p className="text-base text-black/50">Location</p>
+                              <p className="text-base text-black/90">{profile.city}</p>
+                            </div>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
-                )}
-              </div>
-            )}
 
-            {/* Profile Information Tab */}
-            {activeTab === "Profile Information" && (
-              <>
-                {/* Guide Profile */}
-                {user.role === "Guide" && profile && (
-                  <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
-                    <h3 className="text-lg font-semibold text-black/80 mb-6">
-                      Guide Information
-                    </h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="rounded-lg p-4">
-                        <p className="text-sm text-black/60 mb-1">
-                          Years of Experience
-                        </p>
-                        <p className="text-lg font-semibold text-black/80">
-                          {profile.experience_years} years
+                  {/* Bio */}
+                  {profile?.short_description ? (
+                    <>
+                      <div className="my-6 h-px bg-gray-200" />
+                      <div>
+                        <p className="text-base font-semibold text-black/90 mb-2">Bio</p>
+                        <p className="text-base text-black/50 leading-relaxed">
+                          {profile.short_description}
                         </p>
                       </div>
-                      <div className="rounded-lg p-4">
-                        <p className="text-sm text-black/60 mb-1">
-                          Areas Covered
+                    </>
+                  ) : null}
+
+                  {/* Status controls */}
+                  {user.status !== "Pending" && (
+                    <>
+                      <div className="my-6 h-px bg-gray-200" />
+                      <div>
+                        <p className="text-base font-semibold text-black/90 mb-3">Change Status</p>
+
+                        <div className="flex flex-col gap-2">
+                          {user.status !== "Approved" && (
+                            <button
+                              onClick={() => handleStatusUpdate("Approved")}
+                              disabled={updatingStatus}
+                              className="w-full px-4 py-2.5 rounded-xl text-base font-semibold
+                         bg-gray-900 text-white hover:bg-gray-800
+                         disabled:opacity-60 disabled:cursor-not-allowed transition"
+                            >
+                              Set as Approved
+                            </button>
+                          )}
+
+                          {user.status !== "Pending" && (
+                            <button
+                              onClick={() => handleStatusUpdate("Pending")}
+                              disabled={updatingStatus}
+                              className="w-full px-4 py-2.5 rounded-xl text-base font-semibold
+                         border border-gray-300 text-black/90 hover:bg-gray-50
+                         disabled:opacity-60 disabled:cursor-not-allowed transition"
+                            >
+                              Disable User
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {user.role === "Guide" && profile && (
+                  <div className="bg-white flex-[0.7] rounded-2xl border border-gray-200 p-6">
+                    {/* Header */}
+                    <div className="mb-6">
+                      <p className="text-base uppercase tracking-wide text-black/50">
+                        Tour Guide
+                      </p>
+                      <h3 className="text-xl font-semibold text-black/90">Guide Information</h3>
+                      <p className="text-base text-black/50 mt-1">
+                        Key details about this partner’s guiding service.
+                      </p>
+                    </div>
+
+                    {/* Clean rows */}
+                    <div className="divide-y divide-gray-200">
+                      {/* Experience */}
+                      <div className="py-4 flex items-start justify-between gap-6">
+                        <div>
+                          <p className="text-base font-medium text-black/90">Years of Experience</p>
+                          <p className="text-base text-black/50 mt-1">
+                            Total time guiding travelers
+                          </p>
+                        </div>
+                        <p className="text-base font-semibold text-black/90 whitespace-nowrap">
+                          {profile.experience_years ?? 0} years
                         </p>
-                        <p className="text-lg font-semibold text-black/80">
+                      </div>
+
+                      {/* Areas */}
+                      <div className="py-4 flex items-start justify-between gap-6">
+                        <div>
+                          <p className="text-base font-medium text-black/90">Areas Covered</p>
+                          <p className="text-base text-black/50 mt-1">
+                            Main destinations / routes
+                          </p>
+                        </div>
+                        <p className="text-base font-semibold text-black/90 text-right max-w-[55%]">
                           {profile.areas_covered || "Not specified"}
                         </p>
                       </div>
-                      <div className="col-span-2">
-                        <p className="text-sm text-black/60 mb-3 font-medium">
-                          Languages Spoken
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.languages && profile.languages.length > 0 ? (
-                            profile.languages.map((lang, index) => (
+
+                      {/* Price */}
+                      {"price_per_day" in profile && (
+                        <div className="py-4 flex items-start justify-between gap-6">
+                          <div>
+                            <p className="text-base font-medium text-black/90">Service Cost (per day)</p>
+                            <p className="text-base text-black/50 mt-1">
+                              Displayed to travelers when booking
+                            </p>
+                          </div>
+                          <p className="text-base font-semibold text-black/90 whitespace-nowrap">
+                            ₱{Number(profile.price_per_day || 0).toLocaleString(undefined, {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2,
+                            })}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Languages */}
+                      <div className="py-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-base font-medium text-black/90">Languages Spoken</p>
+                            <p className="text-base text-black/50 mt-1">
+                              Used to match travelers
+                            </p>
+                          </div>
+                          <span className="text-base text-black/50">
+                            {asArray(profile.languages).length} total
+                          </span>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {asArray(profile.languages).length > 0 ? (
+                            asArray(profile.languages).map((lang, index) => (
                               <span
                                 key={index}
-                                className="px-4 py-2 bg-gray-100 text-black/80 rounded-full text-sm font-medium border border-gray-300"
+                                className="px-3 py-1.5 rounded-full text-base font-medium border border-gray-200 text-black/80 bg-white"
                               >
                                 {lang}
                               </span>
                             ))
                           ) : (
-                            <span className="text-black/60 text-sm">
-                              No languages specified
-                            </span>
+                            <p className="text-base text-black/50">No languages specified</p>
                           )}
                         </div>
                       </div>
-                      <div className="col-span-2">
-                        <p className="text-sm text-black/60 mb-3 font-medium">
-                          Availability Days
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.availability_days &&
-                            profile.availability_days.length > 0 ? (
-                            profile.availability_days.map((day, index) => (
+
+                      {/* Availability */}
+                      <div className="py-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-base font-medium text-black/90">Availability Days</p>
+                            <p className="text-base text-black/50 mt-1">
+                              Days this guide accepts bookings
+                            </p>
+                          </div>
+                          <span className="text-base text-black/50">
+                            {asArray(profile.availability_days).length} selected
+                          </span>
+                        </div>
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {asArray(profile.availability_days).length > 0 ? (
+                            asArray(profile.availability_days).map((day, index) => (
                               <span
                                 key={index}
-                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300"
+                                className="px-3 py-1.5 rounded-full text-base font-medium bg-gray-100 text-black/80 border border-gray-200"
                               >
                                 {day}
                               </span>
                             ))
                           ) : (
-                            <span className="text-black/60 text-sm">
-                              No availability set
-                            </span>
+                            <p className="text-base text-black/50">No availability set</p>
                           )}
                         </div>
                       </div>
@@ -490,186 +591,332 @@ const PartnerDetailScreen = () => {
                   </div>
                 )}
 
-                {/* Driver Profile */}
                 {user.role === "Driver" && profile && (
-                  <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
-                    <h3 className="text-lg font-semibold text-black/80 mb-6">
-                      Driver Information
-                    </h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div>
-                        <p className="text-sm text-black/60 mb-1">
-                          Service Area
-                        </p>
-                        <p className="text-base text-black/80">
-                          {profile.service_area || "Not specified"}
-                        </p>
+                  <div className="bg-white rounded-2xl border flex-[0.7] border-gray-200 p-6 ">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-semibold text-black/90">Driver Information</h3>
+
+                      {/* optional: small role pill */}
+                      <span className="text-base font-medium px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-black/80">
+                        Transport Provider
+                      </span>
+                    </div>
+
+                    <div className="mt-4 divide-y divide-gray-200 rounded-xl border border-gray-200 overflow-hidden">
+                      {/* Service Area */}
+                      <div className="px-4 py-3 bg-white flex items-start justify-between gap-4">
+                        <div>
+                          <p className="text-base text-black/50">Service Area</p>
+                          <p className="text-base font-medium text-black/90 mt-0.5">
+                            {profile.service_area || "Not specified"}
+                          </p>
+                        </div>
                       </div>
-                      <div className="col-span-2">
-                        <p className="text-sm text-black/60 mb-3 font-medium">
-                          Availability Days
-                        </p>
-                        <div className="flex flex-wrap gap-2">
-                          {profile.availability_days &&
-                            profile.availability_days.length > 0 ? (
-                            profile.availability_days.map((day, index) => (
+
+                      {/* Multi-day */}
+                      {/* {"is_multi_day" in profile && (
+                        <div className="px-4 py-3 bg-white flex items-start justify-between gap-4">
+                          <div>
+                            <p className="text-base text-black/50">Multi-day Service</p>
+                            <p className="text-base font-medium text-black/90 mt-0.5">
+                              {Number(profile.is_multi_day) === 1 ? "Yes" : "No"}
+                            </p>
+                          </div>
+                        </div>
+                      )} */}
+
+                      {/* Availability */}
+                      <div className="px-4 py-3 bg-white">
+                        <p className="text-base text-black/50 mb-2">Availability Days</p>
+
+                        {asArray(profile.availability_days).length > 0 ? (
+                          <div className="flex flex-wrap gap-2">
+                            {asArray(profile.availability_days).map((day, index) => (
                               <span
                                 key={index}
-                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-full text-sm font-medium border border-gray-300"
+                                className="px-3 py-1.5 rounded-full text-base font-medium
+                           bg-gray-50 border border-gray-200 text-black/80"
                               >
                                 {day}
                               </span>
-                            ))
-                          ) : (
-                            <span className="text-black/60 text-sm">
-                              No availability set
-                            </span>
-                          )}
-                        </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-base text-black/50">No availability set</p>
+                        )}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Creator Profile */}
+
                 {user.role === "Creator" && profile && (
-                  <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
-                    <h3 className="text-lg font-semibold text-black/80 mb-6">
-                      Activity Partner Information
-                    </h3>
-                    <div className="grid grid-cols-2 gap-6">
-                      <div className="rounded-lg p-4">
-                        <p className="text-sm text-black/60 mb-1">
-                          Availability Status
-                        </p>
-                        <p className="text-lg font-semibold text-black/80">
-                          {profile.availability_status}
-                        </p>
-                      </div>
+                  <div className="bg-white hidden rounded-2xl border flex-[0.7] border-gray-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-semibold text-black/90">
+                        Activity Partner Information
+                      </h3>
+
+                      <span className="text-base font-medium px-3 py-1 rounded-full bg-gray-50 border border-gray-200 text-black/80">
+                        Experience Host
+                      </span>
+                    </div>
+
+                    <div className="mt-4 rounded-xl border border-gray-200 overflow-hidden">
+                      {"availability_status" in profile ? (
+                        <div className="px-4 py-3 bg-white">
+                          <p className="text-base text-black/50">Availability Status</p>
+
+                          <div className="mt-2 inline-flex items-center gap-2">
+                            {/* little status pill */}
+                            <span
+                              className={[
+                                "text-base font-semibold px-3 py-1 rounded-full border",
+                                profile.availability_status === "Available"
+                                  ? "bg-green-50 text-green-700 border-green-200"
+                                  : profile.availability_status === "Busy"
+                                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+                                    : "bg-gray-50 text-black/80 border-gray-200",
+                              ].join(" ")}
+                            >
+                              {profile.availability_status || "Not set"}
+                            </span>
+
+                            <span className="text-base text-black/50">
+                              (Set by partner/admin)
+                            </span>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="px-4 py-3 bg-white">
+                          <p className="text-base text-black/50">No info available</p>
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
-              </>
+
+              </div>
             )}
 
             {/* Vehicles Tab - Only for Drivers */}
             {activeTab === "Vehicles" && user.role === "Driver" && (
-              <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
-                <h3 className="text-lg font-semibold text-black/80 mb-6 flex items-center gap-2">
-                  <Car size={20} />
-                  Registered Vehicles
-                </h3>
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900 flex items-center gap-2">
+                      <Car size={18} className="text-gray-500" />
+                      Registered Vehicles
+                    </h3>
+                    <p className="text-base text-gray-500 mt-1">
+                      Review the driver’s vehicles and uploaded documents.
+                    </p>
+                  </div>
+                </div>
 
-                {profile.vehicles && profile.vehicles.length > 0 ? (
+                {asArray(profile?.vehicles).length > 0 ? (
                   <div className="space-y-4">
-                    {profile.vehicles.map((vehicle) => (
-                      <div
-                        key={vehicle.vehicle_id}
-                        className="p-5 border border-gray-200 rounded-xl bg-gray-50"
-                      >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className="text-base font-semibold text-black/80">
-                              {vehicle.brand} {vehicle.model} ({vehicle.year})
-                            </p>
-                            <p className="text-sm text-black/60 mt-1">
-                              Plate Number: {vehicle.plate_number}
-                            </p>
+                    {asArray(profile.vehicles).map((vehicle) => {
+                      const photos = asArray(vehicle.vehicle_photos);
+
+                      return (
+                        <div
+                          key={vehicle.vehicle_id}
+                          className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden"
+                        >
+                          {/* Top row */}
+                          <div className="p-5 flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <p className="text-base font-semibold text-gray-900 truncate">
+                                {vehicle.brand} {vehicle.model}{" "}
+                                <span className="text-gray-500 font-medium">
+                                  ({vehicle.year})
+                                </span>
+                              </p>
+                              <p className="text-base text-gray-500 mt-1">
+                                Plate Number:{" "}
+                                <span className="text-gray-900 font-medium">
+                                  {vehicle.plate_number || "—"}
+                                </span>
+                              </p>
+                            </div>
+
+                            <span className="shrink-0 text-base px-3 py-1 rounded-full font-semibold border border-gray-200 bg-gray-50 text-gray-700">
+                              {vehicle.vehicle_type || "Vehicle"}
+                            </span>
                           </div>
 
-                          <span className="px-3 py-1 text-xs font-medium border rounded-full bg-white">
-                            {vehicle.vehicle_type}
-                          </span>
-                        </div>
+                          {/* Details */}
+                          <div className="px-5 pb-5">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                                <p className="text-base text-gray-500">Color</p>
+                                <p className="text-base font-semibold text-gray-900 mt-0.5">
+                                  {vehicle.color || "—"}
+                                </p>
+                              </div>
 
-                        <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-                          <div>
-                            <p className="text-black/60">Color</p>
-                            <p className="text-black/80">{vehicle.color}</p>
-                          </div>
-                          <div>
-                            <p className="text-black/60">Passenger Capacity</p>
-                            <p className="text-black/80">
-                              {vehicle.passenger_capacity} pax
-                            </p>
-                          </div>
-                        </div>
+                              <div className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                                <p className="text-base text-gray-500">Passenger Capacity</p>
+                                <p className="text-base font-semibold text-gray-900 mt-0.5">
+                                  {vehicle.passenger_capacity ? `${vehicle.passenger_capacity} pax` : "—"}
+                                </p>
+                              </div>
+                            </div>
 
-                        {/* OR/CR Document */}
-                        {vehicle.or_cr_document && (
-                          <div className="mt-4">
-                            <a
-                              href={`${API_URL}/${vehicle.or_cr_document}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#397ff1] border-2 border-[#397ff1] rounded-lg hover:bg-blue-50 transition"
-                            >
-                              <FileText size={16} />
-                              View OR/CR
-                            </a>
-                          </div>
-                        )}
-
-                        {/* Vehicle Photos */}
-                        {vehicle.vehicle_photos &&
-                          vehicle.vehicle_photos.length > 0 && (
-                            <div className="mt-4 flex gap-3 overflow-x-auto">
-                              {vehicle.vehicle_photos.map((photo, index) => (
+                            {/* OR/CR Document */}
+                            {vehicle.or_cr_document && (
+                              <div className="mt-4">
                                 <a
-                                  key={index}
-                                  href={`${API_URL}/${photo}`}
+                                  href={`${API_URL}/${vehicle.or_cr_document}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="block"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-blue-200 bg-blue-50 text-blue-700 text-base font-semibold hover:bg-blue-100 transition"
                                 >
-                                  <img
-                                    src={`${API_URL}/${photo}`}
-                                    alt="Vehicle"
-                                    className="w-32 h-24 object-cover rounded-lg hover:opacity-90 transition cursor-pointer"
-                                  />
+                                  <FileText size={16} />
+                                  View OR/CR
                                 </a>
-                              ))}
-                            </div>
-                          )}
-                      </div>
-                    ))}
+                              </div>
+                            )}
+
+                            {/* Vehicle Photos */}
+                            {photos.length > 0 && (
+                              <div className="mt-5">
+                                <p className="text-base font-semibold text-gray-900 mb-3">
+                                  Vehicle Photos
+                                </p>
+
+                                <div className="flex gap-3 overflow-x-auto pb-1">
+                                  {photos.map((photo, index) => (
+                                    <a
+                                      key={index}
+                                      href={`${API_URL}/${photo}`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="group block shrink-0"
+                                    >
+                                      <div className="w-40 h-28 rounded-2xl border border-gray-200 overflow-hidden bg-gray-50 shadow-sm">
+                                        <img
+                                          src={`${API_URL}/${photo}`}
+                                          alt="Vehicle"
+                                          className="w-full h-full object-cover group-hover:opacity-95 transition"
+                                        />
+                                      </div>
+                                    </a>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
-                  <p className="text-sm text-black/60 text-center py-4">
-                    No vehicles registered
-                  </p>
+                  <div className="rounded-2xl border border-gray-200 bg-gray-50 p-10 text-center">
+                    <p className="text-base font-semibold text-gray-900">No vehicles registered</p>
+                    <p className="text-base text-gray-500 mt-1">
+                      This driver hasn’t added vehicles yet.
+                    </p>
+                  </div>
                 )}
               </div>
             )}
 
+
             {/* Documents Tab */}
             {activeTab === "Documents" && (
-              <div className="bg-white rounded-2xl border-2 border-gray-300 p-6">
-                <h3 className="text-lg font-semibold text-black/80 mb-6">
-                  Documents
-                </h3>
-                <div className="space-y-3">
-                  {/* Driver's License - Only for Drivers */}
-                  {user.role === "Driver" && profile.license_document && (
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+              <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-semibold text-black/90">Documents</h3>
+                  <span className="text-base text-black/50">Verification files</span>
+                </div>
+
+                <div className="mt-4 rounded-xl border border-gray-200 overflow-hidden divide-y divide-gray-200">
+                  {/* Selfie */}
+                  {user.selfie_document && (
+                    <div className="px-4 py-3 bg-white flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-white rounded-lg">
-                          <FileText size={20} className="text-black/60" />
+                        <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center">
+                          <FileText size={18} className="text-black/50" />
                         </div>
+
                         <div>
-                          <p className="text-sm font-medium text-black/80">
-                            Driver's License
+                          <p className="text-base font-semibold text-black/90">
+                            Selfie Verification
                           </p>
-                          <p className="text-xs text-black/60">
-                            {profile.license_document.split("/").pop()}
+                          <p className="text-base text-black/50">
+                            Photo uploaded by partner
                           </p>
                         </div>
                       </div>
+
+                      <a
+                        href={`${API_URL}/${user.selfie_document}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-xl text-base font-semibold
+                       border border-gray-300 text-black/90\ hover:bg-gray-50 transition"
+                      >
+                        View
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Driver License */}
+                  {user.role === "Driver" && profile?.license_document && (
+                    <div className="px-4 py-3 bg-white flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center">
+                          <FileText size={18} className="text-black/50" />
+                        </div>
+
+                        <div>
+                          <p className="text-base font-semibold text-black/90">
+                            Driver&apos;s License
+                          </p>
+                          <p className="text-base text-black/50">
+                            Government-issued license
+                          </p>
+                        </div>
+                      </div>
+
                       <a
                         href={`${API_URL}/${profile.license_document}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 text-sm font-medium text-[#397ff1] hover:text-[#2e6bd4] border-2 border-[#397ff1] rounded-lg hover:bg-blue-50 transition-colors"
+                        className="px-4 py-2 rounded-xl text-base font-semibold
+                       border border-gray-300 text-black/90\ hover:bg-gray-50 transition"
+                      >
+                        View
+                      </a>
+                    </div>
+                  )}
+
+                  {/* Guide Certificate */}
+                  {user.role === "Guide" && profile?.guide_certificate_document && (
+                    <div className="px-4 py-3 bg-white flex items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center">
+                          <FileText size={18} className="text-black/50" />
+                        </div>
+
+                        <div>
+                          <p className="text-base font-semibold text-black/90">
+                            Tour Guide Certificate / License
+                          </p>
+                          <p className="text-base text-black/50">
+                            Proof of accreditation
+                          </p>
+                        </div>
+                      </div>
+
+                      <a
+                        href={`${API_URL}/${profile.guide_certificate_document}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="px-4 py-2 rounded-xl text-base font-semibold
+                       border border-gray-300 text-black/90\ hover:bg-gray-50 transition"
                       >
                         View
                       </a>
@@ -677,101 +924,125 @@ const PartnerDetailScreen = () => {
                   )}
 
                   {/* ID Document */}
-                  {profile.id_document && (
-                    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  {profile?.id_document && (
+                    <div className="px-4 py-3 bg-white flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="p-2 bg-white rounded-lg">
-                          <FileText size={20} className="text-black/60" />
+                        <div className="w-10 h-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center">
+                          <FileText size={18} className="text-black/50" />
                         </div>
+
                         <div>
-                          <p className="text-sm font-medium text-black/80">
-                            ID Document
-                          </p>
-                          <p className="text-xs text-black/60">
-                            {profile.id_document.split("/").pop()}
+                          <p className="text-base font-semibold text-black/90">ID Document</p>
+                          <p className="text-base text-black/50">
+                            Government-issued ID
                           </p>
                         </div>
                       </div>
+
                       <a
                         href={`${API_URL}/${profile.id_document}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-4 py-2 text-sm font-medium text-[#397ff1] hover:text-[#2e6bd4] border-2 border-[#397ff1] rounded-lg hover:bg-blue-50 transition-colors"
+                        className="px-4 py-2 rounded-xl text-base font-semibold
+                       border border-gray-300 text-black/90\ hover:bg-gray-50 transition"
                       >
                         View
                       </a>
                     </div>
                   )}
 
-                  {/* No documents message */}
-                  {!profile.id_document &&
-                    !(user.role === "Driver" && profile.license_document) && (
-                      <p className="text-sm text-black/60 text-center py-4">
+                  {/* Empty state */}
+                  {!hasDocs && (
+                    <div className="px-4 py-10 bg-white text-center">
+                      <p className="text-base text-black/50 font-medium">
                         No documents uploaded
                       </p>
-                    )}
+                      <p className="text-base text-black/50 mt-1">
+                        This partner hasn&apos;t submitted verification files yet.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Payouts Tab */}
-            {activeTab === "Payouts" && (
+
+            {/* Payouts Tab (hide if Pending) */}
+            {activeTab === "Payouts" && user.status !== "Pending" && (
               <div className="space-y-6">
-                {/* Payout Summary Cards */}
+                {/* Summary cards */}
                 <div className="grid grid-cols-3 gap-6">
-                  <div className="bg-white rounded-xl border-2 border-gray-300 p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm text-black/60">Platform Earnings</p>
-                      <DollarSign size={20} className="text-black/40" />
+                  {/* Total */}
+                  <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <p className="text-base text-black/50">Platform Earnings</p>
+                      <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center">
+                        <DollarSign size={18} className="text-black/50" />
+                      </div>
                     </div>
-                    <p className="text-2xl font-semibold text-black/80">
+
+                    <p className="mt-4 text-2xl font-semibold text-black/90">
                       ₱{payoutSummary.total.toFixed(2)}
                     </p>
-                    <p className="text-xs text-black/50 mt-1">Total prepaid bookings</p>
+
+                    <p className="text-base text-black/50 mt-1">Total prepaid bookings</p>
                   </div>
 
-                  <div className="bg-white rounded-xl border-2 border-gray-300 p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm text-black/60">Paid Out</p>
-                      <CheckCircle size={20} className="text-green-500" />
+                  {/* Paid */}
+                  <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <p className="text-base text-black/50">Paid Out</p>
+                      <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center">
+                        <CheckCircle size={18} className="text-blue-600" />
+                      </div>
                     </div>
-                    <p className="text-2xl font-semibold text-green-600">
+
+                    <p className="mt-4 text-2xl font-semibold text-black/90">
                       ₱{payoutSummary.paid.toFixed(2)}
                     </p>
-                    <p className="text-xs text-black/50 mt-1">Completed</p>
+
+                    <p className="text-base text-black/50 mt-1">Completed payouts</p>
                   </div>
 
-                  <div className="bg-white rounded-xl border-2 border-gray-300 p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <p className="text-sm text-black/60">Pending</p>
-                      <Clock size={20} className="text-yellow-500" />
+                  {/* Pending */}
+                  <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+                    <div className="flex items-center justify-between">
+                      <p className="text-base text-black/50">Pending</p>
+                      <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-200 flex items-center justify-center">
+                        <Clock size={18} className="text-black/50" />
+                      </div>
                     </div>
-                    <p className="text-2xl font-semibold text-yellow-600">
+
+                    <p className="mt-4 text-2xl font-semibold text-black/90">
                       ₱{payoutSummary.pending.toFixed(2)}
                     </p>
-                    <p className="text-xs text-black/50 mt-1">To be processed</p>
+
+                    <p className="text-base text-black/50 mt-1">To be processed</p>
                   </div>
                 </div>
 
-                {/* Payouts List */}
-                <div className="bg-white rounded-xl border-2 border-gray-300">
+                {/* History */}
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                   <div className="p-6 border-b border-gray-200">
-                    <h3 className="text-lg font-semibold text-black/80">
+                    <h3 className="text-base font-semibold text-black/90">
                       Platform Payout History
                     </h3>
-                    <p className="text-sm text-black/60 mt-1">
+                    <p className="text-base text-black/50 mt-1">
                       Payments processed through the platform (excludes cash collected in person)
                     </p>
                   </div>
 
                   {payoutsLoading ? (
-                    <div className="p-8 text-center">
-                      <div className="inline-block w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                      <p className="text-gray-500 mt-2">Loading payouts...</p>
+                    <div className="p-10 text-center">
+                      <div className="inline-block w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                      <p className="text-base text-black/50 mt-3">Loading payouts...</p>
                     </div>
                   ) : payouts.length === 0 ? (
-                    <div className="p-8 text-center text-black/60">
-                      No payouts found
+                    <div className="p-10 text-center">
+                      <p className="text-base text-black/50 font-medium">No payouts found</p>
+                      <p className="text-base text-black/50 mt-1">
+                        This partner has no recorded platform payouts yet.
+                      </p>
                     </div>
                   ) : (
                     <div className="divide-y divide-gray-200">
@@ -782,18 +1053,15 @@ const PartnerDetailScreen = () => {
                             <div className="space-y-4">
                               <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                  <label className="block text-base font-medium text-black/50 mb-2">
                                     Status
                                   </label>
                                   <select
                                     value={editForm.payout_status}
                                     onChange={(e) =>
-                                      setEditForm({
-                                        ...editForm,
-                                        payout_status: e.target.value,
-                                      })
+                                      setEditForm({ ...editForm, payout_status: e.target.value })
                                     }
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                                   >
                                     <option value="pending">Pending</option>
                                     <option value="processing">Processing</option>
@@ -803,25 +1071,22 @@ const PartnerDetailScreen = () => {
                                 </div>
 
                                 <div>
-                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                  <label className="block text-base font-medium text-black/50 mb-2">
                                     Payment Method
                                   </label>
                                   <input
                                     type="text"
                                     value={editForm.payment_method}
                                     onChange={(e) =>
-                                      setEditForm({
-                                        ...editForm,
-                                        payment_method: e.target.value,
-                                      })
+                                      setEditForm({ ...editForm, payment_method: e.target.value })
                                     }
                                     placeholder="e.g., Bank Transfer, GCash"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                                   />
                                 </div>
 
                                 <div className="col-span-2">
-                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                  <label className="block text-base font-medium text-black/50 mb-2">
                                     Transaction Reference
                                   </label>
                                   <input
@@ -834,25 +1099,22 @@ const PartnerDetailScreen = () => {
                                       })
                                     }
                                     placeholder="Transaction ID or reference number"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
                                   />
                                 </div>
 
                                 <div className="col-span-2">
-                                  <label className="block text-sm font-medium text-black/70 mb-2">
+                                  <label className="block text-base font-medium text-black/50 mb-2">
                                     Notes
                                   </label>
                                   <textarea
                                     value={editForm.notes}
                                     onChange={(e) =>
-                                      setEditForm({
-                                        ...editForm,
-                                        notes: e.target.value,
-                                      })
+                                      setEditForm({ ...editForm, notes: e.target.value })
                                     }
                                     rows={2}
                                     placeholder="Additional notes..."
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none text-base"
                                   />
                                 </div>
                               </div>
@@ -860,14 +1122,15 @@ const PartnerDetailScreen = () => {
                               <div className="flex gap-3 pt-2">
                                 <button
                                   onClick={() => handleSavePayout(payout.payout_id)}
-                                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-base font-semibold hover:bg-blue-700 transition"
                                 >
                                   <Check size={16} />
                                   Save Changes
                                 </button>
+
                                 <button
                                   onClick={handleCancelEdit}
-                                  className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition"
+                                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 text-black/80 text-base font-semibold hover:bg-gray-50 transition"
                                 >
                                   <XIcon size={16} />
                                   Cancel
@@ -876,94 +1139,101 @@ const PartnerDetailScreen = () => {
                             </div>
                           ) : (
                             // View Mode
-                            <div className="flex justify-between items-start">
+                            <div className="flex justify-between items-start gap-6">
                               <div className="flex-1">
-                                <div className="flex items-center gap-3 mb-2">
-                                  <p className="font-semibold text-black/80">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <p className="font-semibold text-black/90">
                                     {payout.experience_title || "Payout"}
                                   </p>
+
+                                  {/* Status pill (blue/neutral/red only) */}
                                   <span
-                                    className={`text-xs px-3 py-1 rounded-full font-medium ${getPayoutStatusColor(
-                                      payout.payout_status
-                                    )}`}
+                                    className={[
+                                      "text-base px-3 py-1 rounded-full font-medium capitalize",
+                                      payout.payout_status === "completed"
+                                        ? "bg-green-50 text-green-900"
+                                        : payout.payout_status === "processing"
+                                          ? "bg-gray-50 text-black/80 border-gray-200"
+                                          : payout.payout_status === "failed"
+                                            ? "bg-red-50 text-red-700 border-red-200"
+                                            : "bg-gray-50 text-black/80 border-gray-200",
+                                    ].join(" ")}
                                   >
                                     {payout.payout_status}
                                   </span>
-                                  <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-700">
+
+                                  <span className="text-base px-3 py-1 rounded-full bg-blue-50 text-blue-900  font-medium">
                                     Prepaid Booking
                                   </span>
+
                                   {payout.payment_count > 1 && (
-                                    <span className="text-xs px-3 py-1 rounded-full bg-purple-100 text-purple-700">
+                                    <span className="text-base px-3 py-1 rounded-full bg-gray-50 text-black/80 border border-gray-200 font-semibold">
                                       {payout.payment_count} payments combined
                                     </span>
                                   )}
                                 </div>
 
-                                <div className="grid grid-cols-3 gap-4 mt-4 text-sm">
-                                  <div>
-                                    <p className="text-black/60">Date</p>
-                                    <p className="text-black/80">
-                                      {dayjs(payout.payout_date).format(
-                                        "MMM D, YYYY"
-                                      )}
+                                <div className="mt-4 grid grid-cols-3 gap-4 ">
+                                  <div className="rounded-xl  px-4 py-3">
+                                    <p className="text-base text-black/50">Date</p>
+                                    <p className="font-semibold text-black/90 mt-0.5">
+                                      {dayjs(payout.payout_date).format("MMM D, YYYY")}
                                     </p>
                                   </div>
-                                  <div>
-                                    <p className="text-black/60">Gross Amount</p>
-                                    <p className="text-black/80">
-                                      ₱{parseFloat(payout.gross_amount).toFixed(2)}
+
+                                  <div className=" px-4 py-3">
+                                    <p className=" text-black/50">Gross Amount</p>
+                                    <p className=" font-semibold text-black/90 mt-0.5">
+                                      ₱{parseFloat(payout.gross_amount || 0).toFixed(2)}
                                     </p>
                                   </div>
-                                  <div>
-                                    <p className="text-black/60">Commission</p>
-                                    <p className="text-black/80">
-                                      ₱
-                                      {parseFloat(
-                                        payout.commission_amount
-                                      ).toFixed(2)}
+
+                                  <div className="px-4 py-3">
+                                    <p className="text-black/50">Commission</p>
+                                    <p className="font-semibold text-black/90 mt-0.5">
+                                      ₱{parseFloat(payout.commission_amount || 0).toFixed(2)}
                                     </p>
                                   </div>
                                 </div>
 
                                 {payout.payment_method && (
-                                  <p className="text-sm text-black/60 mt-3">
+                                  <p className="text-base text-black/50 mt-3">
                                     Payment: {payout.payment_method}
                                   </p>
                                 )}
 
                                 {payout.transaction_reference && (
-                                  <p className="text-sm text-black/60 mt-1">
+                                  <p className="text-base text-black/50 mt-1">
                                     Ref: {payout.transaction_reference}
                                   </p>
                                 )}
 
                                 {payout.notes && (
-                                  <p className="text-sm text-black/60 mt-1 italic">
+                                  <p className="text-base text-black/50 mt-1 italic">
                                     {payout.notes}
                                   </p>
                                 )}
                               </div>
 
-                              <div className="text-right ml-6">
-                                <p className="text-sm text-black/50">Net Amount</p>
-                                <p className="text-2xl font-semibold text-black/80 mb-4">
-                                  ₱{parseFloat(payout.net_amount).toFixed(2)}
+                              <div className="text-right min-w-[220px]">
+                                <p className="text-base text-black/50">Net Amount</p>
+                                <p className="mt-1 text-2xl font-semibold text-black/90">
+                                  ₱{parseFloat(payout.net_amount || 0).toFixed(2)}
                                 </p>
 
-                                <div className="flex gap-2">
+                                <div className="mt-4 flex gap-2 justify-end">
                                   {payout.payout_status !== "completed" && (
                                     <button
-                                      onClick={() =>
-                                        handleMarkAsPaid(payout.payout_id)
-                                      }
-                                      className="px-4 py-2 bg-green-600 text-white text-sm rounded-lg hover:bg-green-700 transition"
+                                      onClick={() => handleMarkAsPaid(payout.payout_id)}
+                                      className="px-4 py-2 rounded-xl bg-blue-600 text-white text-base font-semibold hover:bg-blue-700 transition"
                                     >
                                       Mark as Paid
                                     </button>
                                   )}
+
                                   <button
                                     onClick={() => handleEditPayout(payout)}
-                                    className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 text-sm rounded-lg hover:bg-gray-50 transition"
+                                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-gray-300 text-black/80 text-base font-semibold hover:bg-gray-50 transition"
                                   >
                                     <Edit2 size={14} />
                                     Edit
@@ -979,6 +1249,17 @@ const PartnerDetailScreen = () => {
                 </div>
               </div>
             )}
+
+            {/* Optional: Pending state message when Payouts tab selected */}
+            {activeTab === "Payouts" && user.status === "Pending" && (
+              <div className="pt-48 text-center">
+                <p className="text-lg font-semibold text-black/90">Payouts unavailable</p>
+                <p className="text-base text-black/50 mt-1">
+                  This section will appear once the partner is approved.
+                </p>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

@@ -44,6 +44,25 @@ const ItineraryManagement = () => {
 
   const ITEMS_PER_PAGE = 10;
 
+  const getServiceStatusBadge = (status) => {
+    const map = {
+      Accepted: { label: "Accepted", cls: "bg-green-100 text-green-700" },
+      Pending: { label: "Pending", cls: "bg-yellow-100 text-yellow-700" },
+      Declined: { label: "Declined", cls: "bg-red-100 text-red-700" },
+      Expired: { label: "Expired", cls: "bg-gray-100 text-gray-600" },
+      Cancelled: { label: "Cancelled", cls: "bg-gray-100 text-gray-600" },
+    };
+
+    const s = map[status] || { label: status || "Unknown", cls: "bg-gray-100 text-gray-600" };
+
+    return (
+      <span className={`text-[10px] px-2 py-1 rounded-full font-medium ${s.cls}`}>
+        {s.label}
+      </span>
+    );
+  };
+
+
   // Format date helper
   const formatDate = (dateString) => {
     return dayjs(dateString).format("MMM D, YYYY");
@@ -710,94 +729,138 @@ const ItineraryManagement = () => {
                                   <h4 className="font-semibold text-black/80 mb-4">
                                     Additional Services
                                   </h4>
+
                                   <div className="space-y-4">
                                     {/* Tour Guide */}
-                                    {itinerary.guide_info && parseFloat(itinerary.guide_info.guide_cost || 0) > 0 && (
+                                    {itinerary.guide_info && (
                                       <div className="border-t border-gray-100 py-4">
                                         <div className="flex justify-between text-sm">
                                           <div>
-                                            <span className="text-black/80 font-medium">Tour Guide</span>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-black/80 font-medium">Tour Guide</span>
+                                              {getServiceStatusBadge(itinerary.guide_info.status)}
+                                            </div>
+
                                             <p className="text-xs text-gray-500 mt-1">
                                               {itinerary.guide_info.guide_name}
                                             </p>
+
+                                            {itinerary.guide_info.status !== "Accepted" && (
+                                              <p className="text-xs text-yellow-700 mt-1">
+                                                Not confirmed yet — not included in total amount.
+                                              </p>
+                                            )}
                                           </div>
-                                          <div className="flex gap-2 items-center">
-                                            <span className="w-20 text-right text-black/80">
-                                              ₱{parseFloat(itinerary.guide_info.guide_cost).toFixed(2)}
-                                            </span>
-                                            <span className="text-black/60">-</span>
-                                            <span className="w-20 text-xs text-left text-[#397ff1]">
-                                              ₱{(parseFloat(itinerary.guide_info.guide_cost) * 0.1).toFixed(2)}
-                                            </span>
-                                            <span className="w-20 text-right text-black/80 font-medium">
-                                              ₱{(parseFloat(itinerary.guide_info.guide_cost) * 0.9).toFixed(2)}
-                                            </span>
-                                          </div>
+
+                                          {/* Show pricing columns always (you can hide if Pending if you want) */}
+                                          {parseFloat(itinerary.guide_info.guide_cost || 0) > 0 && (
+                                            <div className="flex gap-2 items-center">
+                                              <span className="w-20 text-right text-black/80">
+                                                ₱{parseFloat(itinerary.guide_info.guide_cost).toFixed(2)}
+                                              </span>
+                                              <span className="text-black/60">-</span>
+                                              <span className="w-20 text-xs text-left text-[#397ff1]">
+                                                ₱{(parseFloat(itinerary.guide_info.guide_cost) * 0.1).toFixed(2)}
+                                              </span>
+                                              <span className="w-20 text-right text-black/80 font-medium">
+                                                ₱{(parseFloat(itinerary.guide_info.guide_cost) * 0.9).toFixed(2)}
+                                              </span>
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     )}
 
                                     {/* Vehicle/Driver */}
-                                    {itinerary.vehicle_info && parseFloat(itinerary.vehicle_info.car_cost || 0) > 0 && (
+                                    {itinerary.vehicle_info && (
                                       <div className="border-t border-gray-100 py-4">
                                         <div className="flex justify-between text-sm">
                                           <div>
-                                            <span className="text-black/80 font-medium">Transportation</span>
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-black/80 font-medium">Transportation</span>
+                                              {getServiceStatusBadge(itinerary.vehicle_info.status)}
+                                            </div>
+
                                             <p className="text-xs text-gray-500 mt-1">
                                               {itinerary.vehicle_info.vehicle_type} - {itinerary.vehicle_info.model}
                                               <br />
                                               Driver: {itinerary.vehicle_info.driver_name}
                                             </p>
+
+                                            {itinerary.vehicle_info.status !== "Accepted" && (
+                                              <p className="text-xs text-yellow-700 mt-1">
+                                                Not confirmed yet — not included in total amount.
+                                              </p>
+                                            )}
                                           </div>
-                                          <div className="flex gap-2 items-center">
-                                            <span className="w-20 text-right text-black/80">
-                                              ₱{parseFloat(itinerary.vehicle_info.car_cost).toFixed(2)}
-                                            </span>
-                                            <span className="text-black/60">-</span>
-                                            <span className="w-20 text-xs text-left text-[#397ff1]">
-                                              ₱{(parseFloat(itinerary.vehicle_info.car_cost) * 0.1).toFixed(2)}
-                                            </span>
-                                            <span className="w-20 text-right text-black/80 font-medium">
-                                              ₱{(parseFloat(itinerary.vehicle_info.car_cost) * 0.9).toFixed(2)}
-                                            </span>
-                                          </div>
+
+                                          {parseFloat(itinerary.vehicle_info.car_cost || 0) > 0 && (
+                                            <div className="flex gap-2 items-center">
+                                              <span className="w-20 text-right text-black/80">
+                                                ₱{parseFloat(itinerary.vehicle_info.car_cost).toFixed(2)}
+                                              </span>
+                                              <span className="text-black/60">-</span>
+                                              <span className="w-20 text-xs text-left text-[#397ff1]">
+                                                ₱{(parseFloat(itinerary.vehicle_info.car_cost) * 0.1).toFixed(2)}
+                                              </span>
+                                              <span className="w-20 text-right text-black/80 font-medium">
+                                                ₱{(parseFloat(itinerary.vehicle_info.car_cost) * 0.9).toFixed(2)}
+                                              </span>
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     )}
 
-                                    {/* Services Summary */}
-                                    <div className="border-t border-gray-100 mt-3 pt-3 text-xs text-gray-600">
-                                      <div className="flex justify-between">
-                                        <span>Total Services Cost:</span>
-                                        <span>
-                                          ₱{(
-                                            parseFloat(itinerary.guide_info?.guide_cost || 0) +
-                                            parseFloat(itinerary.vehicle_info?.car_cost || 0)
-                                          ).toFixed(2)}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between text-[#397ff1]">
-                                        <span>Commission (10%):</span>
-                                        <span>
-                                          -₱{(
-                                            (parseFloat(itinerary.guide_info?.guide_cost || 0) +
-                                              parseFloat(itinerary.vehicle_info?.car_cost || 0)) * 0.1
-                                          ).toFixed(2)}
-                                        </span>
-                                      </div>
-                                      <div className="flex justify-between font-semibold text-black/80 mt-1">
-                                        <span>Net Payout to Service Providers:</span>
-                                        <span>
-                                          ₱{(
-                                            (parseFloat(itinerary.guide_info?.guide_cost || 0) +
-                                              parseFloat(itinerary.vehicle_info?.car_cost || 0)) * 0.9
-                                          ).toFixed(2)}
-                                        </span>
-                                      </div>
-                                    </div>
+                                    {/* Services Summary (Accepted only) */}
+                                    {(() => {
+                                      const guideAccepted =
+                                        itinerary.guide_info?.status === "Accepted"
+                                          ? parseFloat(itinerary.guide_info?.guide_cost || 0)
+                                          : 0;
+
+                                      const carAccepted =
+                                        itinerary.vehicle_info?.status === "Accepted"
+                                          ? parseFloat(itinerary.vehicle_info?.car_cost || 0)
+                                          : 0;
+
+                                      const acceptedTotal = guideAccepted + carAccepted;
+
+                                      if (acceptedTotal <= 0) {
+                                        return (
+                                          <div className="border-t border-gray-100 mt-3 pt-3 text-xs text-gray-600">
+                                            <div className="flex justify-between">
+                                              <span>Accepted Services Total:</span>
+                                              <span>₱0.00</span>
+                                            </div>
+                                            <p className="text-[11px] text-gray-500 mt-1">
+                                              Pending services will be included once confirmed.
+                                            </p>
+                                          </div>
+                                        );
+                                      }
+
+                                      return (
+                                        <div className="border-t border-gray-100 mt-3 pt-3 text-xs text-gray-600">
+                                          <div className="flex justify-between">
+                                            <span>Accepted Services Total:</span>
+                                            <span>₱{acceptedTotal.toFixed(2)}</span>
+                                          </div>
+                                          <div className="flex justify-between text-[#397ff1]">
+                                            <span>Commission (10%):</span>
+                                            <span>-₱{(acceptedTotal * 0.1).toFixed(2)}</span>
+                                          </div>
+                                          <div className="flex justify-between font-semibold text-black/80 mt-1">
+                                            <span>Net Payout to Service Providers:</span>
+                                            <span>₱{(acceptedTotal * 0.9).toFixed(2)}</span>
+                                          </div>
+                                        </div>
+                                      );
+                                    })()}
                                   </div>
                                 </div>
                               )}
+
 
                               {/* Traveler Information */}
                               <div className="px-6">

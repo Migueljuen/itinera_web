@@ -247,7 +247,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
               </button>
 
               <button
-                onClick={() => onSubmit("pending")}
+                onClick={() => onSubmit("active")}
                 disabled={isSubmitting}
                 className="px-8 py-3 rounded-lg font-medium bg-black/80 text-white text-sm hover:bg-black/70 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
@@ -257,7 +257,7 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                     Submitting...
                   </div>
                 ) : (
-                  "Submit for Review"
+                  "Publish Activity"
                 )}
               </button>
             </div>
@@ -319,12 +319,13 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                 </div>
                 <div className="mt-12">
                   <div className="flex flex-row justify-between gap-4">
-                    {/* LEFT */}
-                    <div className="flex-1 space-y-4">
-                      <div className="flex justify-between items-center min-h-[24px]">
-                        <label className=" font-base text-black/60">
+                    <div className="flex-1 space-y-6">
+                      {/* Activity Title */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-sm text-black/60">
                           Activity title
                         </label>
+
                         {isEditingBasicDetails ? (
                           <input
                             type="text"
@@ -332,16 +333,21 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("title", e.target.value)
                             }
-                            className=" text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
+                            className="text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent pb-1"
                           />
                         ) : (
-                          <div className="">{formData.title}</div>
+                          <div className="text-black">
+                            {formData.title || "—"}
+                          </div>
                         )}
                       </div>
-                      <div className="flex justify-between">
-                        <label className="font-base text-black/60">
-                          Per {formData.unit}
+
+                      {/* Price */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-sm text-black/60">
+                          Price (per {formData.unit})
                         </label>
+
                         {isEditingBasicDetails ? (
                           <input
                             type="number"
@@ -349,17 +355,22 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("price", e.target.value)
                             }
-                            className="text-sm text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="0"
                           />
                         ) : (
-                          <div className="">₱{formData.price || "0"}</div>
+                          <div className="text-black">
+                            ₱{formData.price || "0"}
+                          </div>
                         )}
                       </div>
-                      <div className="flex justify-between">
-                        <label className=" font-base text-black/60">
-                          Short Description of the activity
+
+                      {/* Description */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-sm text-black/60">
+                          Short description of the activity
                         </label>
+
                         {isEditingBasicDetails ? (
                           <input
                             type="text"
@@ -367,19 +378,22 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("description", e.target.value)
                             }
-                            className=" border-b text-[#0e63be] border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No description provided"
                           />
                         ) : (
-                          <div className="">
+                          <div className="text-black">
                             {formData.description || "No description provided"}
                           </div>
                         )}
                       </div>
-                      <div className="flex justify-between">
-                        <label className=" text-black/60">
-                          Additional Notes
+
+                      {/* Notes */}
+                      <div className="flex flex-col gap-1">
+                        <label className="text-sm text-black/60">
+                          Additional notes
                         </label>
+
                         {isEditingBasicDetails ? (
                           <input
                             type="text"
@@ -387,16 +401,17 @@ const ReviewSubmit = ({ formData, onBack, onSubmit, isSubmitting }) => {
                             onChange={(e) =>
                               handleInputChange("notes", e.target.value)
                             }
-                            className=" text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
+                            className="text-[#0e63be] border-b border-gray-300 focus:outline-none focus:border-blue-500 bg-transparent"
                             placeholder="No additional notes provided"
                           />
                         ) : (
-                          <div className="">
+                          <div className="text-black">
                             {formData.notes || "No additional notes provided"}
                           </div>
                         )}
                       </div>
                     </div>
+
                   </div>
                 </div>
               </div>

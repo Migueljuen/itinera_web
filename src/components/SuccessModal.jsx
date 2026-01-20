@@ -1,23 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { CheckCircle, X } from "lucide-react";
 
-const SuccessModal = ({ isOpen, onClose, status }) => {
+const SuccessModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
-  const isPending = status === "pending";
-  const title = isPending
-    ? "Submitted Successfully"
-    : "Draft Saved Successfully";
+  const title = "Experience Submitted Successfully";
 
-  const message = isPending ? (
+  const message = (
     <>
-      Your experience has been submitted for review.
-    </>
-  ) : (
-    <>
-      Your experience has been saved as a draft. You can continue editing it
-      anytime from your{" "}
-      <span className="text-[#3A81F3] font-semibold">dashboard</span>.
+      Your experience has been successfully submitted and is now under review by
+      our team.
     </>
   );
 
@@ -49,49 +41,42 @@ const SuccessModal = ({ isOpen, onClose, status }) => {
           </div>
 
           {/* Title */}
-          <h2 className="text-xl font-semibold text-black/80 mb-2">{title}</h2>
+          <h2 className="text-xl font-semibold text-black/80 mb-2">
+            {title}
+          </h2>
 
           {/* Message */}
           <p className="text-black/50 mb-8 text-base leading-relaxed">
             {message}
           </p>
 
-          <div className="text-left space-y-4 mb-12">
-            <div>
-              <h3 className="font-semibold text-black/80">
-                What to expect:
-              </h3>
-            </div>
+          {/* Expectations */}
+          {/* <div className="text-left space-y-4 mb-12">
+            <h3 className="font-semibold text-black/80">
+              What happens next
+            </h3>
 
-            <div>
-              <ol className=" text-black/50 text-sm space-y-2 list-disc list-inside">
-                <li className="pl-1   ">
-                  Your submission is now under review.
-                </li>
-                <li className="pl-1">
-                  We'll verify that everything meets our standards.
-
-                </li>
-                <li className="pl-1   ">
-                  Expect approval within <span className="font-medium text-black/80">24–48 hours</span>.
-
-                </li>
-              </ol>
-            </div>
-          </div>
-
+            <ol className="text-black/50 text-sm space-y-2 list-disc list-inside">
+              <li>Your submission is now being reviewed.</li>
+              <li>Our team will verify the details and quality.</li>
+              <li>
+                Expect approval within{" "}
+                <span className="font-medium text-black/80">24–48 hours</span>.
+              </li>
+            </ol>
+          </div> */}
 
           {/* Action Button */}
           <button
             onClick={onClose}
-            className="px-6 py-3 bg-black/80 text-white hover:bg-black/70text-base rounded-lg  w-full"
+            className="px-6 py-3 bg-black/80 text-white rounded-lg hover:bg-black/70 w-full"
           >
             Go to Dashboard
           </button>
-          <p className="text-black/50 mt-4 text-sm text-center leading-relaxed">
-            You can track your submission status anytime from your dashboard.
-          </p>
 
+          <p className="text-black/50 mt-4 text-sm text-center leading-relaxed">
+            You can monitor bookings from now on your dashboard.
+          </p>
         </div>
       </div>
     </div>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   User,
-  Mail,
   Search,
   ChevronRight,
   ChevronLeft,
@@ -12,13 +11,19 @@ import API_URL from "../../constants/api";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { CheckBadgeIcon } from "@heroicons/react/24/solid";
+
 const PartnersManagement = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user } = useAuth(); // (kept as-is, even if unused)
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(false);
+
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = useState("All");
+
+  // ✅ NEW: role filter
+  const [selectedRole, setSelectedRole] = useState("All");
+
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const itemsPerPage = 16;
@@ -43,10 +48,10 @@ const PartnersManagement = () => {
     fetchPartners();
   }, []);
 
-  // Reset to first page when tab or search changes
+  // Reset to first page when tab/role/search changes
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedTab, searchText]);
+  }, [selectedTab, selectedRole, searchText]);
 
   const handleViewDetails = (id) => {
     console.log(`View details for user ${id}`);
@@ -63,21 +68,33 @@ const PartnersManagement = () => {
     return roleNames[role] || role;
   };
 
-  // Filter partners based on search and tab
+  // Filter partners based on search, status tab, and role filter
   const filteredPartners = partners.filter((partner) => {
+    const first = (partner.first_name || "").toLowerCase();
+    const last = (partner.last_name || "").toLowerCase();
+    const email = (partner.email || "").toLowerCase();
+    const roleDisplay = getRoleDisplayName(partner.role || "")
+      .toLowerCase()
+      .trim();
+
+    const q = searchText.toLowerCase().trim();
+
     const matchesSearch =
-      partner.first_name.toLowerCase().includes(searchText.toLowerCase()) ||
-      partner.last_name.toLowerCase().includes(searchText.toLowerCase()) ||
-      partner.email.toLowerCase().includes(searchText.toLowerCase()) ||
-      getRoleDisplayName(partner.role)
-        .toLowerCase()
-        .includes(searchText.toLowerCase());
+      !q ||
+      first.includes(q) ||
+      last.includes(q) ||
+      email.includes(q) ||
+      roleDisplay.includes(q);
 
     const matchesTab =
       selectedTab === "All" ||
-      partner.status.toLowerCase() === selectedTab.toLowerCase();
+      (partner.status || "").toLowerCase() === selectedTab.toLowerCase();
 
-    return matchesSearch && matchesTab;
+    const matchesRole =
+      selectedRole === "All" ||
+      (partner.role || "").toLowerCase() === selectedRole.toLowerCase();
+
+    return matchesSearch && matchesTab && matchesRole;
   });
 
   // Calculate pagination
@@ -93,10 +110,9 @@ const PartnersManagement = () => {
   // Update partner status
   const updatePartnerStatus = async (userId, newStatus) => {
     try {
-      const response = await axios.patch(
-        `${API_URL}/partner/${userId}/status`,
-        { status: newStatus }
-      );
+      const response = await axios.patch(`${API_URL}/partner/${userId}/status`, {
+        status: newStatus,
+      });
 
       if (response.status === 200) {
         setPartners((prevPartners) =>
@@ -139,30 +155,50 @@ const PartnersManagement = () => {
                   <button
                     key={tab}
                     onClick={() => setSelectedTab(tab)}
-                    className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                      selectedTab === tab
+                    className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
                         ? "bg-white text-black/80 shadow-sm/10"
                         : "text-black/50 hover:text-black/70"
-                    }`}
+                      }`}
                   >
                     {tab}
                   </button>
                 ))}
               </div>
 
-              {/* Search */}
-              <div className="relative h-fit">
-                <Search
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                  size={20}
-                />
-                <input
-                  type="text"
-                  placeholder="Search partners..."
-                  className="w-full pl-4 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
+              {/* ✅ Role Filter + Search */}
+              <div className="flex items-center gap-3">
+                {/* Role Filter */}
+                <div className="relative">
+                  <select
+                    value={selectedRole}
+                    onChange={(e) => setSelectedRole(e.target.value)}
+                    className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black/80"
+                  >
+                    <option value="All">All roles</option>
+                    <option value="Creator">Activity Partner</option>
+                    <option value="Guide">Tour Guide</option>
+                    <option value="Driver">Transportation Provider</option>
+                  </select>
+                  <ChevronDown
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                    size={18}
+                  />
+                </div>
+
+                {/* Search */}
+                <div className="relative h-fit">
+                  <Search
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                    size={20}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Search partners..."
+                    className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -230,20 +266,21 @@ const PartnersManagement = () => {
                     <div className="w-full px-8 mt-8">
                       <div className="text-sm text-center text-black/60 mb-2">
                         <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${
-                            item.status === "Approved"
+                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${item.status === "Approved"
                               ? "bg-green-100 text-green-700"
                               : item.status === "Rejected"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
+                                ? "bg-red-100 text-red-700"
+                                : "bg-yellow-100 text-yellow-700"
+                            }`}
                         >
                           {item.status}
                         </span>
                       </div>
                       <div className="text-sm text-center text-black/60 mb-2">
                         Registered:{" "}
-                        {new Date(item.created_at).toLocaleDateString()}
+                        {item.created_at
+                          ? new Date(item.created_at).toLocaleDateString()
+                          : "—"}
                       </div>
                       <button
                         onClick={() => handleViewDetails(item.user_id)}
@@ -254,7 +291,7 @@ const PartnersManagement = () => {
                     </div>
                   </div>
 
-                  {/* Dropdown Menu */}
+                  {/* Dropdown Menu (kept commented out like your original) */}
                   {/* <div className="absolute top-2 right-2">
                     <button
                       onClick={() => toggleDropdown(item.user_id)}
@@ -312,11 +349,10 @@ const PartnersManagement = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 border rounded-lg ${
-                      currentPage === page
+                    className={`px-3 py-2 border rounded-lg ${currentPage === page
                         ? "bg-[#397ff1] text-white cursor-pointer hover:bg-[#2e6bd4]"
                         : "border-gray-300 hover:bg-gray-50"
-                    }`}
+                      }`}
                   >
                     {page}
                   </button>

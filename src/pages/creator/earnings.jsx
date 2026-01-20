@@ -325,8 +325,8 @@ const EarningsManagement = () => {
                                                         key={preset.value}
                                                         onClick={() => applyDatePreset(preset)}
                                                         className={`px-4 py-2 text-sm rounded-lg border transition ${selectedPreset === preset.value
-                                                                ? "bg-[#274b46] text-white border-[#274b46]"
-                                                                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                                                            ? "bg-[#274b46] text-white border-[#274b46]"
+                                                            : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                                                             }`}
                                                     >
                                                         {preset.label}
@@ -716,11 +716,16 @@ const EarningsManagement = () => {
                                                     <p className="text-lg font-semibold text-black/80">
                                                         ₱{parseFloat(item.creator_cash_due || 0).toFixed(2)}
                                                     </p>
+                                                    {parseFloat(item.creator_prepaid_amount || 0) > 0 && (
+                                                        <p className="text-xs text-black/50 mt-1">
+                                                            Paid online: ₱{parseFloat(item.creator_prepaid_amount || 0).toFixed(2)}
+                                                        </p>
+                                                    )}
                                                     <button
                                                         onClick={() => handleMarkCashCollected(item.booking_id)}
-                                                        className="px-4 py-1.5 bg-[#274b46] text-white/90 text-sm rounded-lg hover:bg-[#376a63]"
+                                                        className="px-6 py-2 bg-black/80 text-white/90 text-sm rounded-lg hover:bg-black/70"
                                                     >
-                                                        Mark as Collected
+                                                        Collected in person
                                                     </button>
                                                 </div>
                                             </div>
