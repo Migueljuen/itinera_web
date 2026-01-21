@@ -407,11 +407,11 @@ const ItineraryManagement = () => {
           </div>
 
           {/* Itineraries Table */}
-          <div className="bg-white rounded-lg">
+          <div className="rounded-lg">
             {/* Table Header */}
             <div className="py-4">
               {/* Search and Filters */}
-              <div className="bg-white rounded-lg mb-6">
+              <div className="rounded-lg mb-6">
                 <div className="flex justify-between">
                   {/* Tab Navigation */}
                   <div className="flex bg-gray-50 rounded-lg w-fit p-2">
@@ -473,7 +473,7 @@ const ItineraryManagement = () => {
                       ref={(el) =>
                         (itineraryRefs.current[itinerary.itinerary_id] = el)
                       }
-                      className={`py-8 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                      className={`py-8 mb-4 border rounded-xl border-gray-200 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
                         }`}
                     >
                       {/* Top Row */}

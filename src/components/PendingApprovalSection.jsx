@@ -72,7 +72,7 @@ const PendingApprovalSection = () => {
   };
 
   return (
-    <div className="bg-white flex-1 flex flex-col ">
+    <div className=" flex-1 flex flex-col ">
       <div className="flex items-center justify-between">
         {/* Header */}
         <div className="flex-1 lg:flex-none">
@@ -142,8 +142,8 @@ const PendingApprovalSection = () => {
                           {item.role === "Driver"
                             ? "Transportation Provider"
                             : item.role === "Creator"
-                            ? "Activity Partner"
-                            : "Tour Guide"}
+                              ? "Activity Partner"
+                              : "Tour Guide"}
                         </h3>
                       </div>
                     </div>
@@ -178,11 +178,10 @@ const PendingApprovalSection = () => {
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
-            className={`p-2 rounded-md ${
-              currentPage === 1
+            className={`p-2 rounded-md ${currentPage === 1
                 ? "text-gray-400 cursor-not-allowed"
                 : "text-black/70 hover:bg-gray-100"
-            }`}
+              }`}
           >
             <ChevronLeft size={20} />
           </button>
@@ -191,11 +190,10 @@ const PendingApprovalSection = () => {
             <button
               key={index + 1}
               onClick={() => handlePageChange(index + 1)}
-              className={`px-3 py-1 rounded-md text-sm ${
-                currentPage === index + 1
+              className={`px-3 py-1 rounded-md text-sm ${currentPage === index + 1
                   ? "bg-[#397ff1] text-white"
                   : "text-black/70 hover:bg-gray-100"
-              }`}
+                }`}
             >
               {index + 1}
             </button>
@@ -204,11 +202,10 @@ const PendingApprovalSection = () => {
           <button
             onClick={handleNextPage}
             disabled={currentPage === totalPages}
-            className={`p-2 rounded-md ${
-              currentPage === totalPages
+            className={`p-2 rounded-md ${currentPage === totalPages
                 ? "text-gray-400 cursor-not-allowed"
                 : "text-black/70 hover:bg-gray-100"
-            }`}
+              }`}
           >
             <ChevronRight size={20} />
           </button>

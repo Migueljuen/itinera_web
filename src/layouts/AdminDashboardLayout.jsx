@@ -19,7 +19,7 @@ import logoImage from "../assets/images/alt.png";
 import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
-
+import FloatingChat from '../components/FloatingChat';
 const AdminDashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -29,6 +29,12 @@ const AdminDashboardLayout = ({ children }) => {
   const [isTasksExpanded, setIsTasksExpanded] = useState(true);
   const [unreadCount, setUnreadCount] = useState(0);
   const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
+
+  const currentUser = user ? {
+    id: user.user_id,
+    username: user.first_name || 'User'
+  } : null;
+
 
   // Function to fetch unread notification count
   const fetchUnreadCount = async () => {
@@ -295,11 +301,12 @@ const AdminDashboardLayout = ({ children }) => {
         </aside>
 
         {/* Main Content */}
-        <div className="lg:ml-64 min-h-screen flex flex-col bg-white">
+        <div className="lg:ml-64 min-h-screen flex flex-col bg-gray-50">
           {/* Page Content */}
           <main className="p-4 lg:p-8 flex-1 flex flex-col">
             {children || <Outlet />}
           </main>
+          {currentUser && <FloatingChat currentUser={currentUser} />}
         </div>
       </motion.div>
     </AnimatePresence>

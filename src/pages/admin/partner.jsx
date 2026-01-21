@@ -5,6 +5,8 @@ import {
   ChevronRight,
   ChevronLeft,
   ChevronDown,
+  MapPin,
+  UserPlus,
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import API_URL from "../../constants/api";
@@ -14,21 +16,18 @@ import { CheckBadgeIcon } from "@heroicons/react/24/solid";
 
 const PartnersManagement = () => {
   const navigate = useNavigate();
-  const { user } = useAuth(); // (kept as-is, even if unused)
+  const { user } = useAuth();
   const [partners, setPartners] = useState([]);
   const [loading, setLoading] = useState(false);
 
   const [searchText, setSearchText] = useState("");
   const [selectedTab, setSelectedTab] = useState("All");
-
-  // ✅ NEW: role filter
   const [selectedRole, setSelectedRole] = useState("All");
 
   const [currentPage, setCurrentPage] = useState(1);
   const [openDropdownId, setOpenDropdownId] = useState(null);
   const itemsPerPage = 16;
 
-  // Fetch partners
   const fetchPartners = async () => {
     try {
       setLoading(true);
@@ -43,12 +42,10 @@ const PartnersManagement = () => {
     }
   };
 
-  // Fetch on component mount
   useEffect(() => {
     fetchPartners();
   }, []);
 
-  // Reset to first page when tab/role/search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedTab, selectedRole, searchText]);
@@ -58,7 +55,6 @@ const PartnersManagement = () => {
     navigate(`/partner/${id}`);
   };
 
-  // Get role display name
   const getRoleDisplayName = (role) => {
     const roleNames = {
       Driver: "Transportation Provider",
@@ -68,7 +64,68 @@ const PartnersManagement = () => {
     return roleNames[role] || role;
   };
 
-  // Filter partners based on search, status tab, and role filter
+  // Role badge colors - softer/lighter
+  const getRoleBadgeStyle = (role) => {
+    const styles = {
+      Driver: "bg-blue-50 text-blue-700",
+      Creator: "bg-violet-50 text-violet-600",
+      Guide: "bg-teal-50 text-green-600",
+    };
+    return styles[role] || "bg-gray-50 text-gray-500";
+  };
+
+  // Get location from profile based on role
+  const getPartnerLocation = (partner) => {
+    if (!partner.profile) return null;
+
+    if (partner.role === "Guide") {
+      return partner.profile.city;
+    } else if (partner.role === "Driver") {
+      return partner.profile.city;
+    } else if (partner.role === "Creator") {
+      return partner.profile.business_address || partner.profile.city;
+    }
+    return null;
+  };
+
+  // Get skills/tags from profile based on role
+  const getPartnerSkills = (partner) => {
+    if (!partner.profile) return [];
+
+    if (partner.role === "Guide") {
+      const skills = [];
+      if (partner.profile.languages) {
+        const langs = typeof partner.profile.languages === 'string'
+          ? JSON.parse(partner.profile.languages)
+          : partner.profile.languages;
+        if (Array.isArray(langs)) skills.push(...langs.slice(0, 2));
+      }
+      if (partner.profile.specialization) skills.push(partner.profile.specialization);
+      return skills.slice(0, 3);
+    } else if (partner.role === "Driver") {
+      const skills = [];
+      if (partner.profile.vehicles && partner.profile.vehicles.length > 0) {
+        partner.profile.vehicles.forEach(v => {
+          if (v.vehicle_type && !skills.includes(v.vehicle_type)) {
+            skills.push(v.vehicle_type);
+          }
+        });
+      }
+      return skills.slice(0, 3);
+    } else if (partner.role === "Creator") {
+      const skills = [];
+      if (partner.profile.activity_types) {
+        const types = typeof partner.profile.activity_types === 'string'
+          ? JSON.parse(partner.profile.activity_types)
+          : partner.profile.activity_types;
+        if (Array.isArray(types)) skills.push(...types);
+      }
+      if (partner.profile.category) skills.push(partner.profile.category);
+      return skills.slice(0, 3);
+    }
+    return [];
+  };
+
   const filteredPartners = partners.filter((partner) => {
     const first = (partner.first_name || "").toLowerCase();
     const last = (partner.last_name || "").toLowerCase();
@@ -97,7 +154,6 @@ const PartnersManagement = () => {
     return matchesSearch && matchesTab && matchesRole;
   });
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredPartners.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -107,7 +163,6 @@ const PartnersManagement = () => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
-  // Update partner status
   const updatePartnerStatus = async (userId, newStatus) => {
     try {
       const response = await axios.patch(`${API_URL}/partner/${userId}/status`, {
@@ -131,7 +186,7 @@ const PartnersManagement = () => {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       <div>
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
@@ -146,7 +201,7 @@ const PartnersManagement = () => {
         </div>
 
         {/* Filters and Search */}
-        <div className="bg-white rounded-lg mb-6">
+        <div className=" rounded-lg mb-6">
           <div className="py-4">
             <div className="flex justify-between items-center">
               {/* Tab Navigation */}
@@ -156,8 +211,8 @@ const PartnersManagement = () => {
                     key={tab}
                     onClick={() => setSelectedTab(tab)}
                     className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
-                        ? "bg-white text-black/80 shadow-sm/10"
-                        : "text-black/50 hover:text-black/70"
+                      ? "bg-white text-black/80 shadow-sm/10"
+                      : "text-black/50 hover:text-black/70"
                       }`}
                   >
                     {tab}
@@ -165,14 +220,14 @@ const PartnersManagement = () => {
                 ))}
               </div>
 
-              {/* ✅ Role Filter + Search */}
+              {/* Role Filter + Search */}
               <div className="flex items-center gap-3">
                 {/* Role Filter */}
                 <div className="relative">
                   <select
                     value={selectedRole}
                     onChange={(e) => setSelectedRole(e.target.value)}
-                    className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent text-black/80"
+                    className="appearance-none pl-4 pr-10 py-2  -gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500 focus:-transparent text-black/80"
                   >
                     <option value="All">All roles</option>
                     <option value="Creator">Activity Partner</option>
@@ -194,7 +249,7 @@ const PartnersManagement = () => {
                   <input
                     type="text"
                     placeholder="Search partners..."
-                    className="w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-4 pr-10 py-2  -gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:-transparent"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                   />
@@ -205,11 +260,11 @@ const PartnersManagement = () => {
         </div>
 
         {/* Partners Grid */}
-        <div className="bg-white rounded-lg">
-          <div className="grid grid-cols-4 gap-4">
+        <div className=" rounded-lg">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4">
             {loading ? (
               <div className="col-span-4 py-8 text-center">
-                <div className="inline-block w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                <div className="inline-block w-8 h-8 -4 -blue-500 -t-transparent rounded-full animate-spin"></div>
                 <p className="text-gray-500 mt-2">Loading partners...</p>
               </div>
             ) : paginatedPartners.length === 0 ? (
@@ -217,110 +272,113 @@ const PartnersManagement = () => {
                 <p className="text-gray-500">No partners found</p>
               </div>
             ) : (
-              paginatedPartners.map((item) => (
-                <div
-                  key={item.user_id}
-                  className="flex items-center w-full justify-center border-2 rounded-xl border-gray-300 hover:bg-gray-50 cursor-pointer relative"
-                >
-                  <div className="py-8 space-y-4 w-full">
-                    {/* User Profile Picture */}
-                    <div>
-                      <div className="size-36 bg-gray-200 rounded-full mx-auto flex items-center justify-center overflow-hidden">
-                        {item.profile_pic ? (
-                          <img
-                            src={`${API_URL}/${item.profile_pic}`}
-                            alt={`${item.first_name} ${item.last_name}`}
-                            className="object-cover w-full h-full"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                              e.target.parentElement.innerHTML =
-                                '<div class="flex items-center justify-center w-full h-full"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>';
-                            }}
-                          />
-                        ) : (
-                          <User size={32} className="text-gray-400" />
-                        )}
-                      </div>
-                    </div>
+              paginatedPartners.map((item) => {
+                const location = getPartnerLocation(item);
+                const skills = getPartnerSkills(item);
 
-                    {/* User Details */}
-                    <div className="text-base font-medium text-black/60 px-4 flex flex-col justify-around">
-                      <div>
-                        <div className="flex gap-1 justify-center">
-                          <h3 className="font-semibold text-base text-black/80 ">
+                return (
+                  <div
+                    key={item.user_id}
+                    className="bg-white rounded-2xl  -gray-100 shadow-sm hover:shadow-md transition-shadow duration-200 p-5"
+                  >
+                    {/* Card Layout - Profile left, Content right */}
+                    <div className="flex gap-12">
+                      {/* Left: Profile Picture & Buttons */}
+                      <div className="flex flex-col items-center">
+                        {/* Profile Picture */}
+                        <div className="w-[120px] h-[120px] bg-gray-50 rounded-full flex items-center justify-center overflow-hidden -[3px] -white shadow-sm">
+                          {item.profile_pic ? (
+                            <img
+                              src={`${API_URL}/${item.profile_pic}`}
+                              alt={`${item.first_name} ${item.last_name}`}
+                              className="object-cover w-full h-full"
+                              onError={(e) => {
+                                e.target.style.display = "none";
+                                e.target.parentElement.innerHTML =
+                                  '<div class="flex items-center justify-center w-full h-full"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-300"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>';
+                              }}
+                            />
+                          ) : (
+                            <User size={26} className="text-gray-300" />
+                          )}
+                        </div>
+
+                        {/* Action Buttons - Under profile pic */}
+                        <div className="flex gap-2 mt-4">
+                          <button
+                            onClick={() => handleViewDetails(item.user_id)}
+                            className="px-3 py-1.5 text-sm font-medium text-black/80 bg-white hover:bg-gray-50 rounded-lg border border-gray-300 transition-colors"
+                          >
+                            View profile
+                          </button>
+
+                        </div>
+                      </div>
+
+                      {/* Right: Content */}
+                      <div className="flex-1 min-w-0 pt-0.5">
+                        {/* Role Badge */}
+                        <span
+                          className={`inline-block px-3 py-1 rounded-md text-sm font-medium ${getRoleBadgeStyle(
+                            item.role
+                          )}`}
+                        >
+                          {getRoleDisplayName(item.role)}
+                        </span>
+
+                        {/* Name + Verification */}
+                        <div className="flex items-center gap-1.5 mt-3">
+                          <h3 className="font-semibold text-black/90 capitalize truncate">
                             {item.first_name} {item.last_name}
                           </h3>
                           {item?.status === "Approved" && (
-                            <CheckBadgeIcon className="size-5 text-blue-400" />
+                            <CheckBadgeIcon className="w-5 h-5 text-blue-400 flex-shrink-0" />
                           )}
                         </div>
-                        <div>
-                          <h3 className="text-center">
-                            {getRoleDisplayName(item.role)}
-                          </h3>
-                        </div>
-                      </div>
-                    </div>
 
-                    {/* Status and Actions */}
-                    <div className="w-full px-8 mt-8">
-                      <div className="text-sm text-center text-black/60 mb-2">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${item.status === "Approved"
-                              ? "bg-green-100 text-green-700"
+                        {/* Status + Location Row */}
+                        <div className="flex items-center gap-3 mt-2 text-sm text-gray-500">
+                          {/* <span
+                            className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${item.status === "Approved"
+                              ? "bg-emerald-50 text-emerald-500"
                               : item.status === "Rejected"
-                                ? "bg-red-100 text-red-700"
-                                : "bg-yellow-100 text-yellow-700"
-                            }`}
-                        >
-                          {item.status}
-                        </span>
+                                ? "bg-rose-50 text-rose-400"
+                                : "bg-amber-50 text-amber-500"
+                              }`}
+                          >
+                            {item.status}
+                          </span> */}
+                          {location && (
+                            <div className="flex items-center gap-1 text-black/80">
+                              <MapPin size={16} />
+                              <span className="text- truncate max-w-[100px]">
+                                {location}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Skills/Tags */}
+                        {skills.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-4">
+                            {skills.map((skill, index) => (
+                              <span
+                                key={index}
+                                className="px-3 py-1.5 bg-gray-100 text-black/60 text-sm font-medium rounded-full truncate max-w-[90px]  -gray-100"
+                                title={skill}
+                              >
+                                {skill.length > 10
+                                  ? `${skill.substring(0, 8)}...`
+                                  : skill}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
-                      <div className="text-sm text-center text-black/60 mb-2">
-                        Registered:{" "}
-                        {item.created_at
-                          ? new Date(item.created_at).toLocaleDateString()
-                          : "—"}
-                      </div>
-                      <button
-                        onClick={() => handleViewDetails(item.user_id)}
-                        className="w-full border-2 rounded-full py-2 font-medium text-[#397ff1]"
-                      >
-                        View Profile
-                      </button>
                     </div>
                   </div>
-
-                  {/* Dropdown Menu (kept commented out like your original) */}
-                  {/* <div className="absolute top-2 right-2">
-                    <button
-                      onClick={() => toggleDropdown(item.user_id)}
-                      className="p-2 hover:bg-gray-100 rounded-full"
-                    >
-                      <ChevronDown size={16} />
-                    </button>
-
-                    {openDropdownId === item.user_id && (
-                      <div className="absolute top-full right-0 mt-1 w-48 bg-white shadow-lg rounded-md z-50 border border-gray-200">
-                        <p className="text-sm p-3 font-medium text-black/80 border-b">
-                          Update Status
-                        </p>
-                        {["Approved", "Rejected", "Pending"].map((status) => (
-                          <button
-                            key={status}
-                            onClick={() =>
-                              updatePartnerStatus(item.user_id, status)
-                            }
-                            className="block w-full text-left px-4 py-2 text-sm text-black/60 hover:bg-gray-100"
-                          >
-                            {status}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </div> */}
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
@@ -338,7 +396,7 @@ const PartnersManagement = () => {
               <button
                 onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                 disabled={currentPage === 1}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2  -gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft size={16} />
               </button>
@@ -349,9 +407,9 @@ const PartnersManagement = () => {
                   <button
                     key={page}
                     onClick={() => setCurrentPage(page)}
-                    className={`px-3 py-2 border rounded-lg ${currentPage === page
-                        ? "bg-[#397ff1] text-white cursor-pointer hover:bg-[#2e6bd4]"
-                        : "border-gray-300 hover:bg-gray-50"
+                    className={`px-3 py-2  rounded-lg ${currentPage === page
+                      ? "bg-[#397ff1] text-white cursor-pointer hover:bg-[#2e6bd4]"
+                      : "-gray-300 hover:bg-gray-50"
                       }`}
                   >
                     {page}
@@ -364,7 +422,7 @@ const PartnersManagement = () => {
                   setCurrentPage((prev) => Math.min(totalPages, prev + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-2  -gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={16} />
               </button>

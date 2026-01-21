@@ -294,7 +294,7 @@ const EarningsManagement = () => {
                                 className="flex items-center gap-2 px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                             >
                                 <Calendar size={16} />
-                                <span className="text-sm">{getDateRangeLabel()}</span>
+                                <span className="text-base">{getDateRangeLabel()}</span>
                                 <ChevronDown size={16} />
                             </button>
 
@@ -324,7 +324,7 @@ const EarningsManagement = () => {
                                                     <button
                                                         key={preset.value}
                                                         onClick={() => applyDatePreset(preset)}
-                                                        className={`px-4 py-2 text-sm rounded-lg border transition ${selectedPreset === preset.value
+                                                        className={`px-4 py-2 text-base rounded-lg border transition ${selectedPreset === preset.value
                                                             ? "bg-[#274b46] text-white border-[#274b46]"
                                                             : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                                                             }`}
@@ -336,7 +336,7 @@ const EarningsManagement = () => {
 
                                             <div className="space-y-4">
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                                         Start Date
                                                     </label>
                                                     <input
@@ -355,7 +355,7 @@ const EarningsManagement = () => {
                                                 </div>
 
                                                 <div>
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                    <label className="block text-base font-medium text-gray-700 mb-1">
                                                         End Date
                                                     </label>
                                                     <input
@@ -379,13 +379,13 @@ const EarningsManagement = () => {
                                         <div className="p-4 border-t border-gray-200 flex gap-3">
                                             <button
                                                 onClick={handleResetDateFilter}
-                                                className="flex-1 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                                                className="flex-1 px-4 py-2 text-base text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                                             >
                                                 Reset
                                             </button>
                                             <button
                                                 onClick={handleApplyDateFilter}
-                                                className="flex-1 px-4 py-2 text-sm text-white bg-[#274b46] rounded-lg hover:bg-[#376a63]"
+                                                className="flex-1 px-4 py-2 text-base text-white bg-[#274b46] rounded-lg hover:bg-[#376a63]"
                                             >
                                                 Apply Filter
                                             </button>
@@ -439,46 +439,46 @@ const EarningsManagement = () => {
                                 <div className="grid grid-cols-4 gap-6 mb-8">
                                     <div className="bg-white border border-gray-300 rounded-xl p-6">
                                         <div className="flex items-center justify-between mb-2">
-                                            <p className="text-sm text-black/60">Total Earnings</p>
+                                            <p className="text-base text-black/60">Total Earnings</p>
                                             <TrendingUp size={20} className="text-black/40" />
                                         </div>
                                         <p className="text-2xl font-semibold text-black/80">
                                             ₱{parseFloat(overview.total_earnings || 0).toFixed(2)}
                                         </p>
-                                        <p className="text-xs text-black/50 mt-1">Completed bookings</p>
+                                        <p className="text-sm text-black/50 mt-1">Completed bookings</p>
                                     </div>
 
                                     <div className="bg-white border border-gray-300 rounded-xl p-6">
                                         <div className="flex items-center justify-between mb-2">
-                                            <p className="text-sm text-black/60">Pending Payouts</p>
+                                            <p className="text-base text-black/60">Pending Payouts</p>
                                             <Clock size={20} className="text-black/40" />
                                         </div>
                                         <p className="text-2xl font-semibold text-black/80">
                                             ₱{parseFloat(overview.pending_payouts || 0).toFixed(2)}
                                         </p>
-                                        <p className="text-xs text-black/50 mt-1">To be processed</p>
+                                        <p className="text-sm text-black/50 mt-1">To be processed</p>
                                     </div>
 
                                     <div className="bg-white border border-gray-300 rounded-xl p-6">
                                         <div className="flex items-center justify-between mb-2">
-                                            <p className="text-sm text-black/60">Cash Collected</p>
+                                            <p className="text-base text-black/60">Cash Collected</p>
                                             <CheckCircle size={20} className="text-black/40" />
                                         </div>
                                         <p className="text-2xl font-semibold text-black/80">
                                             ₱{parseFloat(overview.cash_collected || 0).toFixed(2)}
                                         </p>
-                                        <p className="text-xs text-black/50 mt-1">In-person payments</p>
+                                        <p className="text-sm text-black/50 mt-1">In-person payments</p>
                                     </div>
 
                                     <div className="bg-white border border-gray-300 rounded-xl p-6">
                                         <div className="flex items-center justify-between mb-2">
-                                            <p className="text-sm text-black/60">Cash Due</p>
+                                            <p className="text-base text-black/60">Cash Due</p>
                                             <AlertCircle size={20} className="text-black/40" />
                                         </div>
                                         <p className="text-2xl font-semibold text-black/80">
                                             ₱{parseFloat(overview.cash_due || 0).toFixed(2)}
                                         </p>
-                                        <p className="text-xs text-black/50 mt-1">To collect</p>
+                                        <p className="text-sm text-black/50 mt-1">To collect</p>
                                     </div>
                                 </div>
 
@@ -503,7 +503,7 @@ const EarningsManagement = () => {
 
                                         <div className="bg-white border border-gray-300 rounded-xl p-6">
                                             <h4 className="font-semibold mb-4 text-black/80">Commission Breakdown</h4>
-                                            <div className="space-y-2 text-sm">
+                                            <div className="space-y-2 text-base">
                                                 <div className="flex justify-between">
                                                     <span className="text-black/60">Gross Revenue:</span>
                                                     <span className="font-semibold text-black/80">
@@ -536,28 +536,28 @@ const EarningsManagement = () => {
                                     <table className="w-full">
                                         <thead className="bg-gray-50 border-b border-gray-200">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-left text-sm font-medium text-black/60 uppercase">
                                                     Activity
                                                 </th>
-                                                <th className="px-6 py-3 text-center text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-center text-sm font-medium text-black/60 uppercase">
                                                     Total Bookings
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-right text-sm font-medium text-black/60 uppercase">
                                                     Gross Revenue
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-right text-sm font-medium text-black/60 uppercase">
                                                     Platform Commission
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-right text-sm font-medium text-black/60 uppercase">
                                                     Your Earnings
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-right text-sm font-medium text-black/60 uppercase">
                                                     Paid Online
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-right text-sm font-medium text-black/60 uppercase">
                                                     Cash Collected
                                                 </th>
-                                                <th className="px-6 py-3 text-right text-xs font-medium text-black/60 uppercase">
+                                                <th className="px-6 py-3 text-right text-sm font-medium text-black/60 uppercase">
                                                     Cash To Collect
                                                 </th>
                                             </tr>
@@ -565,28 +565,28 @@ const EarningsManagement = () => {
                                         <tbody className="divide-y divide-gray-200">
                                             {paginate(experienceEarnings).map((exp) => (
                                                 <tr key={exp.experience_id} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 text-sm font-medium text-black/80">
+                                                    <td className="px-6 py-4 text-base font-medium text-black/80">
                                                         {exp.experience_title}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-center text-black/60">
+                                                    <td className="px-6 py-4 text-base text-center text-black/60">
                                                         {exp.total_bookings}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-right text-black/80">
+                                                    <td className="px-6 py-4 text-base text-right text-black/80">
                                                         ₱{parseFloat(exp.gross_revenue || 0).toFixed(2)}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-right text-black/60">
+                                                    <td className="px-6 py-4 text-base text-right text-black/60">
                                                         ₱{parseFloat(exp.total_commission || 0).toFixed(2)}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-right font-semibold text-black/80">
+                                                    <td className="px-6 py-4 text-base text-right font-semibold text-black/80">
                                                         ₱{parseFloat(exp.your_earnings || 0).toFixed(2)}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-right text-black/60">
+                                                    <td className="px-6 py-4 text-base text-right text-black/60">
                                                         ₱{parseFloat(exp.prepaid || 0).toFixed(2)}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-right text-black/60">
+                                                    <td className="px-6 py-4 text-base text-right text-black/60">
                                                         ₱{parseFloat(exp.cash_collected || 0).toFixed(2)}
                                                     </td>
-                                                    <td className="px-6 py-4 text-sm text-right text-black/60">
+                                                    <td className="px-6 py-4 text-base text-right text-black/60">
                                                         ₱{parseFloat(exp.cash_due || 0).toFixed(2)}
                                                     </td>
                                                 </tr>
@@ -598,7 +598,7 @@ const EarningsManagement = () => {
                                 {/* Pagination */}
                                 {totalPages(experienceEarnings) > 1 && (
                                     <div className="flex justify-between items-center p-4 border-t border-gray-200">
-                                        <p className="text-sm text-black/60">
+                                        <p className="text-base text-black/60">
                                             Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
                                             {Math.min(currentPage * ITEMS_PER_PAGE, experienceEarnings.length)} of{" "}
                                             {experienceEarnings.length}
@@ -646,7 +646,7 @@ const EarningsManagement = () => {
                                                     <div className="flex items-center gap-3 mb-2">
                                                         <p className="font-semibold text-black/80">{txn.experience_title}</p>
                                                         <span
-                                                            className={`text-xs px-2 py-1 rounded-full ${txn.transaction_type === "Cash Collected"
+                                                            className={`text-sm px-2 py-1 rounded-full ${txn.transaction_type === "Cash Collected"
                                                                 ? "bg-gray-100 text-black/70"
                                                                 : txn.transaction_type === "Prepaid"
                                                                     ? "bg-blue-100 text-blue-700"
@@ -656,10 +656,10 @@ const EarningsManagement = () => {
                                                             {txn.transaction_type}
                                                         </span>
                                                     </div>
-                                                    <p className="text-sm text-black/60">
+                                                    <p className="text-base text-black/60">
                                                         Booking #{txn.booking_id} • {txn.traveler_name}
                                                     </p>
-                                                    <p className="text-xs text-black/50 mt-1">
+                                                    <p className="text-sm text-black/50 mt-1">
                                                         {dayjs(txn.transaction_date).format("MMM D, YYYY h:mm A")}
                                                     </p>
                                                 </div>
@@ -693,7 +693,7 @@ const EarningsManagement = () => {
                                                     <div className="flex items-center gap-3 mb-2">
                                                         <p className="font-semibold text-black/80">{item.experience_title}</p>
                                                         <span
-                                                            className={`text-xs px-2 py-1 rounded-full ${item.collection_status === "Overdue"
+                                                            className={`text-sm px-2 py-1 rounded-full ${item.collection_status === "Overdue"
                                                                 ? "bg-gray-200 text-black/70"
                                                                 : item.collection_status === "Today"
                                                                     ? "bg-yellow-100 text-yellow-700"
@@ -705,10 +705,10 @@ const EarningsManagement = () => {
                                                             {item.collection_status}
                                                         </span>
                                                     </div>
-                                                    <p className="text-sm text-black/60">
+                                                    <p className="text-base text-black/60">
                                                         {item.traveler_name} • {item.traveler_mobile || "No phone"}
                                                     </p>
-                                                    <p className="text-xs text-black/50 mt-1">
+                                                    <p className="text-sm text-black/50 mt-1">
                                                         Booking Date: {dayjs(item.booking_date).format("MMM D, YYYY")}
                                                     </p>
                                                 </div>
@@ -717,13 +717,13 @@ const EarningsManagement = () => {
                                                         ₱{parseFloat(item.creator_cash_due || 0).toFixed(2)}
                                                     </p>
                                                     {parseFloat(item.creator_prepaid_amount || 0) > 0 && (
-                                                        <p className="text-xs text-black/50 mt-1">
+                                                        <p className="text-sm text-black/50 mt-1">
                                                             Paid online: ₱{parseFloat(item.creator_prepaid_amount || 0).toFixed(2)}
                                                         </p>
                                                     )}
                                                     <button
                                                         onClick={() => handleMarkCashCollected(item.booking_id)}
-                                                        className="px-6 py-2 bg-black/80 text-white/90 text-sm rounded-lg hover:bg-black/70"
+                                                        className="px-6 py-2 bg-black/80 text-white/90 text-base rounded-lg hover:bg-black/70"
                                                     >
                                                         Collected in person
                                                     </button>
@@ -755,7 +755,7 @@ const EarningsManagement = () => {
                                                             {payout.experience_title || "Platform Payout"}
                                                         </p>
                                                         <span
-                                                            className={`text-xs px-2 py-1 rounded-full ${payout.payout_status === "completed"
+                                                            className={`text-sm px-2 py-1 rounded-full ${payout.payout_status === "completed"
                                                                 ? "bg-gray-100 text-black/70"
                                                                 : payout.payout_status === "processing"
                                                                     ? "bg-yellow-100 text-yellow-700"
@@ -767,26 +767,26 @@ const EarningsManagement = () => {
                                                             {payout.payout_status}
                                                         </span>
                                                     </div>
-                                                    <p className="text-sm text-black/60">
+                                                    <p className="text-base text-black/60">
                                                         {payout.payout_type === "prepaid"
                                                             ? "Prepaid Payout"
                                                             : "Cash Collection"}
                                                     </p>
-                                                    <p className="text-xs text-black/50 mt-1">
+                                                    <p className="text-sm text-black/50 mt-1">
                                                         {dayjs(payout.payout_date).format("MMM D, YYYY h:mm A")}
                                                     </p>
                                                     {payout.transaction_reference && (
-                                                        <p className="text-xs text-black/50 mt-1">
+                                                        <p className="text-sm text-black/50 mt-1">
                                                             Ref: {payout.transaction_reference}
                                                         </p>
                                                     )}
                                                 </div>
                                                 <div className="text-right">
-                                                    <p className="text-sm text-black/50">Gross</p>
+                                                    <p className="text-base text-black/50">Gross</p>
                                                     <p className="text-base font-medium text-black/70">
                                                         ₱{parseFloat(payout.gross_amount || 0).toFixed(2)}
                                                     </p>
-                                                    <p className="text-sm text-black/50 mt-1">Net</p>
+                                                    <p className="text-base text-black/50 mt-1">Net</p>
                                                     <p className="text-lg font-semibold text-black/80">
                                                         ₱{parseFloat(payout.net_amount || 0).toFixed(2)}
                                                     </p>
