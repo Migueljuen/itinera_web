@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Trash2, GripVertical, Save, Loader2, CheckCircle, ChevronUp, ChevronDown } from "lucide-react";
+import { Plus, Trash2, GripVertical, Save, Loader2, CheckCircle, ChevronUp, ChevronDown, ArrowLeft, } from "lucide-react";
 import toast from "react-hot-toast";
 
 const Step5ExperienceSteps = ({
@@ -165,6 +165,14 @@ const Step5ExperienceSteps = ({
 
             {/* Action Buttons */}
             <div className="flex gap-3">
+              <button
+                onClick={onBack}
+                className="flex items-center justify-center gap-2 px-8 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl max-h-[44px] font-medium hover:bg-gray-50 transition-colors"
+              >
+                <ArrowLeft size={20} />
+                Previous Step
+              </button>
+
               {isEditMode && onSave && (
                 <button
                   onClick={handleSave}
@@ -257,10 +265,10 @@ const Step5ExperienceSteps = ({
                           <input
                             type="text"
                             placeholder={`E.g. ${index === 0
-                                ? "Meet at the starting point"
-                                : index === 1
-                                  ? "Begin the journey"
-                                  : "Explore the destination"
+                              ? "Meet at the starting point"
+                              : index === 1
+                                ? "Begin the journey"
+                                : "Explore the destination"
                               }`}
                             value={step.title}
                             onChange={(e) =>
@@ -334,12 +342,7 @@ const Step5ExperienceSteps = ({
                     className="rounded-lg p-3 bg-gray-50 hover:bg-gray-100 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      {/* Checkmark Icon */}
-                      <div className="flex-shrink-0">
-                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                          <CheckCircle size={16} className="text-green-600" />
-                        </div>
-                      </div>
+
 
                       {/* Move Controls */}
                       <div className="flex flex-col gap-0.5">
@@ -365,10 +368,10 @@ const Step5ExperienceSteps = ({
                       <input
                         type="text"
                         placeholder={`E.g. ${index === 0
-                            ? "Professional guide"
-                            : index === 1
-                              ? "Equipment rental"
-                              : "Entrance fees"
+                          ? "Professional guide"
+                          : index === 1
+                            ? "Equipment rental"
+                            : "Entrance fees"
                           }`}
                         value={inclusion.title}
                         onChange={(e) =>
@@ -398,17 +401,7 @@ const Step5ExperienceSteps = ({
                 </p>
               </div>
 
-              {/* Disclaimer Preview */}
-              <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-start gap-2">
-                  <div className="w-4 h-4 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-gray-600 text-xs font-medium">i</span>
-                  </div>
-                  <p className="text-xs text-gray-600 leading-relaxed">
-                    Only items listed above are included in the price. Any additional services or expenses are at the traveler's own cost.
-                  </p>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>

@@ -247,11 +247,10 @@ const ExperienceManagement = () => {
                         <button
                           key={tab}
                           onClick={() => setSelectedTab(tab)}
-                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${
-                            selectedTab === tab
-                              ? "bg-white text-black/80 shadow-sm/10"
-                              : "text-black/50 hover:text-black/70"
-                          }`}
+                          className={`px-8 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
+                            ? "bg-white text-black/80 shadow-sm/10"
+                            : "text-black/50 hover:text-black/70"
+                            }`}
                         >
                           {tab}
                         </button>
@@ -265,22 +264,20 @@ const ExperienceManagement = () => {
                     <div className="flex bg-gray-50 rounded-lg p-1">
                       <button
                         onClick={() => setViewMode("card")}
-                        className={`p-2 rounded transition-colors ${
-                          viewMode === "card"
-                            ? "bg-white text-black/80 shadow-sm"
-                            : "text-black/50 hover:text-black/70"
-                        }`}
+                        className={`p-2 rounded transition-colors ${viewMode === "card"
+                          ? "bg-white text-black/80 shadow-sm"
+                          : "text-black/50 hover:text-black/70"
+                          }`}
                         title="Card view"
                       >
                         <LayoutGrid size={16} />
                       </button>
                       <button
                         onClick={() => setViewMode("table")}
-                        className={`p-2 rounded transition-colors ${
-                          viewMode === "table"
-                            ? "bg-white text-black/80 shadow-sm"
-                            : "text-black/50 hover:text-black/70"
-                        }`}
+                        className={`p-2 rounded transition-colors ${viewMode === "table"
+                          ? "bg-white text-black/80 shadow-sm"
+                          : "text-black/50 hover:text-black/70"
+                          }`}
                         title="Table view"
                       >
                         <List size={16} />
@@ -361,28 +358,44 @@ const ExperienceManagement = () => {
                       {/* Price and Status */}
                       <div className="flex flex-col justify-around px-4">
                         <div>
-                          <span className="text-lg font-semibold text-black/80">
-                            ₱{item.price.toLocaleString()}
-                          </span>
-                          <span className="text-sm text-black/60">
-                            /{item.unit}
-                          </span>
+                          {item.price != null ? (
+                            <>
+                              <span className="text-lg font-semibold text-black/80">
+                                ₱{Number(item.price).toLocaleString()}
+                              </span>
+                              <span className="text-sm text-black/60">
+                                {" "}/ {item.unit}
+                              </span>
+                            </>
+                          ) : item.price_estimate ? (
+                            <>
+                              <span className="text-sm font-medium text-black/70">
+                                ₱ {item.price_estimate}
+                              </span>
+                              {/* <span className="text-sm text-black/50">
+                                {" "}({item.unit})
+                              </span> */}
+                            </>
+                          ) : (
+                            <span className="text-sm text-black/50">—</span>
+                          )}
                         </div>
+
                         <div className="flex items-center gap-2">
                           <div
-                            className={`w-2 h-2 rounded-full ${
-                              item.status === "active"
-                                ? "bg-green-500"
-                                : item.status === "inactive"
+                            className={`w-2 h-2 rounded-full ${item.status === "active"
+                              ? "bg-green-500"
+                              : item.status === "inactive"
                                 ? "bg-gray-500"
                                 : "bg-yellow-500"
-                            }`}
-                          ></div>
+                              }`}
+                          />
                           <span className="text-sm capitalize text-black/70">
                             {item.status}
                           </span>
                         </div>
                       </div>
+
                     </div>
 
                     {/* Actions Dropdown */}
@@ -440,11 +453,10 @@ const ExperienceManagement = () => {
                                   setOpenDropdownId(null);
                                 }}
                                 disabled={item.status === "pending"} // disable button
-                                className={`block w-full text-left px-4 py-1 text-sm capitalize ${
-                                  item.status === "pending"
-                                    ? "text-gray-400 cursor-not-allowed"
-                                    : "text-black/60 hover:bg-gray-100"
-                                }`}
+                                className={`block w-full text-left px-4 py-1 text-sm capitalize ${item.status === "pending"
+                                  ? "text-gray-400 cursor-not-allowed"
+                                  : "text-black/60 hover:bg-gray-100"
+                                  }`}
                               >
                                 {status}
                               </button>
@@ -518,13 +530,12 @@ const ExperienceManagement = () => {
                         <div className="justify-self-center">
                           <div className="flex items-center gap-2">
                             <div
-                              className={`w-2 h-2 rounded-full ${
-                                item.status === "active"
-                                  ? "bg-green-500"
-                                  : item.status === "inactive"
+                              className={`w-2 h-2 rounded-full ${item.status === "active"
+                                ? "bg-green-500"
+                                : item.status === "inactive"
                                   ? "bg-gray-500"
                                   : "bg-yellow-500"
-                              }`}
+                                }`}
                             ></div>
                             <span className="text-sm capitalize text-black/70">
                               {item.status}
@@ -575,11 +586,10 @@ const ExperienceManagement = () => {
                     <button
                       key={page}
                       onClick={() => setCurrentPage(page)}
-                      className={`px-3 py-2 border rounded-lg ${
-                        currentPage === page
-                          ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
-                          : "border-gray-300 hover:bg-gray-50"
-                      }`}
+                      className={`px-3 py-2 border rounded-lg ${currentPage === page
+                        ? "bg-[#274b46] text-white/90 cursor-pointer hover:bg-[#376a63]"
+                        : "border-gray-300 hover:bg-gray-50"
+                        }`}
                     >
                       {page}
                     </button>

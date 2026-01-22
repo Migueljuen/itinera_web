@@ -8,8 +8,7 @@ const SuccessModal = ({ isOpen, onClose }) => {
 
   const message = (
     <>
-      Your experience has been successfully submitted and is now under review by
-      our team.
+      Your experience has been successfully submitted. Others can see your listing now.
     </>
   );
 

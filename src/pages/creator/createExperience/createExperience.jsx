@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ClockIcon } from "@heroicons/react/24/outline";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 // Step components (web versions)
 import Step01CategorySelection from "./steps/Step01CategorySelection";
 import Step1Tag from "./steps/Step1Tag";
@@ -25,12 +25,14 @@ const ExperienceCreationForm = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [submissionStatus, setSubmissionStatus] = useState("pending");
   const { user } = useAuth();
+
   const [formData, setFormData] = useState({
     category_id: 0,
     title: "",
     description: "",
     notes: "",
     price: "",
+    price_estimate: "", // ✅ NEW (optional): for pay-on-site / variable pricing
     unit: "",
     availability: [],
     tags: [],
@@ -45,8 +47,10 @@ const ExperienceCreationForm = () => {
     longitude: "",
     images: [],
     steps: [],
-    inclusions: []
+    inclusions: [],
   });
+
+  const isEmpty = (v) => v === undefined || v === null || v === "";
 
   const validateFormData = () => {
     const requiredUnits = ["Entry", "Hour", "Day", "Package"];
@@ -63,17 +67,21 @@ const ExperienceCreationForm = () => {
       console.log("No tags selected");
       return false;
     }
+
     if (!Array.isArray(formData.steps) || formData.steps.length === 0) {
       console.log("No experience steps added");
       return false;
     }
 
+    // ✅ Updated: allow either price OR price_estimate
+    const priceEmpty = isEmpty(formData.price);
+    const estimateEmpty = isEmpty(formData.price_estimate);
 
     if (
       !formData.title ||
       !formData.description ||
-      !formData.price ||
-      isNaN(Number(formData.price)) ||
+      (priceEmpty && estimateEmpty) || // ✅ must have at least one
+      (!priceEmpty && isNaN(Number(formData.price))) ||
       !requiredUnits.includes(formData.unit) ||
       !Array.isArray(formData.tags) ||
       formData.tags.length === 0 ||
@@ -83,6 +91,15 @@ const ExperienceCreationForm = () => {
     ) {
       console.log("Basic form data validation failed");
       return false;
+    }
+
+    // If price provided, ensure non-negative
+    if (!priceEmpty) {
+      const numericPrice = Number(formData.price);
+      if (Number.isNaN(numericPrice) || numericPrice < 0) {
+        console.log("Invalid price");
+        return false;
+      }
     }
 
     for (const day of formData.availability) {
@@ -153,9 +170,7 @@ const ExperienceCreationForm = () => {
 
       // Show loading toast
       const loadingToastId = toast.loading(
-        status === "active"
-          ? "Publishing activity..."
-          : "Saving draft..."
+        status === "active" ? "Publishing activity..." : "Saving draft..."
       );
 
       const formDataObj = new FormData();
@@ -165,7 +180,25 @@ const ExperienceCreationForm = () => {
       formDataObj.append("title", formData.title);
       formDataObj.append("description", formData.description);
       formDataObj.append("notes", formData.notes);
-      formDataObj.append("price", Number(formData.price).toString());
+
+      // ✅ Pricing payload:
+      // - If price provided, send it
+      // - If not, omit price and send price_estimate (backend should store price as NULL)
+      const priceEmpty = isEmpty(formData.price);
+      const estimateEmpty = isEmpty(formData.price_estimate);
+
+      if (!priceEmpty) {
+        formDataObj.append("price", Number(formData.price).toString());
+      } else {
+        // Don’t force 0 — leave it out so backend can store NULL for "pay on site"
+        // If your backend REQUIRES `price`, you should adjust backend validation to allow NULL.
+        // If you still must send something, consider sending empty string and handle it server-side.
+      }
+
+      if (!estimateEmpty) {
+        formDataObj.append("price_estimate", String(formData.price_estimate));
+      }
+
       formDataObj.append("unit", formData.unit);
       formDataObj.append("status", status);
 
@@ -185,36 +218,26 @@ const ExperienceCreationForm = () => {
           slot_id: slot.slot_id,
           availability_id: slot.availability_id,
           start_time:
-            slot.start_time.length === 5
-              ? slot.start_time + ":00"
-              : slot.start_time,
+            slot.start_time.length === 5 ? slot.start_time + ":00" : slot.start_time,
           end_time:
             slot.end_time.length === 5 ? slot.end_time + ":00" : slot.end_time,
         })),
       }));
-      formDataObj.append(
-        "availability",
-        JSON.stringify(transformedAvailability)
-      );
+
+      formDataObj.append("availability", JSON.stringify(transformedAvailability));
 
       if (formData.useExistingDestination && formData.destination_id) {
-        formDataObj.append(
-          "destination_id",
-          formData.destination_id.toString()
-        );
+        formDataObj.append("destination_id", formData.destination_id.toString());
       } else {
         formDataObj.append("destination_name", formData.destination_name);
         formDataObj.append("city", formData.city);
-        formDataObj.append(
-          "destination_description",
-          formData.destination_description
-        );
+        formDataObj.append("destination_description", formData.destination_description);
         formDataObj.append("latitude", formData.latitude);
         formDataObj.append("longitude", formData.longitude);
       }
 
       if (formData.images && formData.images.length > 0) {
-        formData.images.forEach((img, index) => {
+        formData.images.forEach((img) => {
           if (img instanceof File) {
             formDataObj.append("images", img);
           } else if (typeof img === "object" && img.file instanceof File) {
@@ -222,22 +245,24 @@ const ExperienceCreationForm = () => {
           }
         });
       }
+
       formDataObj.append(
         "steps",
         JSON.stringify(
           formData.steps.map((step, index) => ({
             order: index + 1,
             title: step.title,
-            description: step.description
+            description: step.description,
           }))
         )
       );
+
       formDataObj.append(
         "inclusions",
         JSON.stringify(
           formData.inclusions.map((inclusion, index) => ({
             order: index + 1,
-            title: inclusion.title
+            title: inclusion.title,
           }))
         )
       );
@@ -254,7 +279,6 @@ const ExperienceCreationForm = () => {
 
       // Dismiss loading toast
       await new Promise((resolve) => setTimeout(resolve, 1200));
-
       toast.dismiss(loadingToastId);
 
       if (!response.ok) {
@@ -268,9 +292,7 @@ const ExperienceCreationForm = () => {
     } catch (err) {
       console.error("Submit error:", err);
       toast.dismiss(); // remove any active loading toast
-      toast.error(
-        err instanceof Error ? err.message : "Failed to submit experience"
-      );
+      toast.error(err instanceof Error ? err.message : "Failed to submit experience");
     } finally {
       setIsSubmitting(false);
     }
@@ -329,9 +351,7 @@ const ExperienceCreationForm = () => {
             onNext={handleNext}
             onBack={handleBack}
           />
-
         );
-
       case 6:
         return (
           <Step5ExperienceSteps
@@ -341,7 +361,6 @@ const ExperienceCreationForm = () => {
             onBack={handleBack}
           />
         );
-
       case 7:
         return (
           <Step6Destination
@@ -351,7 +370,6 @@ const ExperienceCreationForm = () => {
             onBack={handleBack}
           />
         );
-
       case 8:
         return (
           <ReviewSubmit
@@ -361,16 +379,16 @@ const ExperienceCreationForm = () => {
             isSubmitting={isSubmitting}
           />
         );
-
       default:
         return null;
     }
   };
+
   if (user && user.status === "Pending") {
     return (
       <DashboardLayout>
         <div className="min-h-[70vh] max-w-xl mx-auto flex items-center justify-center px-6 ">
-          <div className="  text-center">
+          <div className="text-center">
             <div className="bg-gray-100 rounded-full w-fit p-2 mx-auto mb-8">
               <ClockIcon className="size-8 " />
             </div>
@@ -389,7 +407,7 @@ const ExperienceCreationForm = () => {
 
             <button
               onClick={() => navigate("/owner/dashboard")}
-              className="  gap-2 w-full py-3 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer"
+              className="gap-2 w-full py-3 bg-black/80 text-white rounded-lg hover:bg-black/70 cursor-pointer"
             >
               Back to dashboard
             </button>

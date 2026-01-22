@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ArrowRight, Upload, X, FileImage, Loader2, Save } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import { Upload, X, FileImage, Loader2, Save } from "lucide-react";
+import toast from "react-hot-toast";
 import API_URL from "../../../../constants/api";
 
 const units = ["Entry", "Hour", "Day", "Package"];
@@ -41,7 +41,7 @@ const Step3ExperienceDetails = ({
   onSave,
   isSaving = false,
   deletedImageIds = [],
-  setDeletedImageIds = () => {},
+  setDeletedImageIds = () => { },
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -60,6 +60,8 @@ const Step3ExperienceDetails = ({
   const handleChange = (field, value) => {
     setFormData({ ...formData, [field]: value });
   };
+
+  const isEmpty = (v) => v === undefined || v === null || v === "";
 
   // Image handling functions
   const handleFileSelect = async (files) => {
@@ -216,14 +218,31 @@ const Step3ExperienceDetails = ({
       toast.error("Please enter a description.");
       return;
     }
-    if (!formData.price) {
-      toast.error("Please enter a price.");
+
+    // ✅ Updated pricing validation:
+    // Allow either a fixed price OR a price estimate
+    const priceEmpty = isEmpty(formData.price);
+    const estimateEmpty = isEmpty(formData.price_estimate);
+
+    if (priceEmpty && estimateEmpty) {
+      toast.error("Please enter a fixed price OR an estimated price range.");
       return;
     }
-    if (!units.includes(formData.unit)) {
-      toast.error("Please select a unit.");
-      return;
+
+    // If they typed a number, ensure it's not negative
+    if (!priceEmpty) {
+      const numeric = Number(formData.price);
+      if (Number.isNaN(numeric) || numeric < 0) {
+        toast.error("Please enter a valid price (0 or higher).");
+        return;
+      }
     }
+
+    // if (!units.includes(formData.unit)) {
+    //   toast.error("Please select a unit.");
+    //   return;
+    // }
+
     onNext();
   };
 
@@ -248,6 +267,7 @@ const Step3ExperienceDetails = ({
                   needed.
                 </p>
               </div>
+
               {/* Action Buttons */}
               <div className="flex gap-3">
                 {isEditMode && onSave && (
@@ -295,7 +315,7 @@ const Step3ExperienceDetails = ({
                   <input
                     type="text"
                     placeholder="E.g. Sunset in the mountains"
-                    value={formData.title}
+                    value={formData.title || ""}
                     onChange={(e) => handleChange("title", e.target.value)}
                     className="w-full px-4 py-2 text-sm text-gray-600 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                   />
@@ -311,7 +331,7 @@ const Step3ExperienceDetails = ({
                   </p>
                   <textarea
                     placeholder="Short description of the activity"
-                    value={formData.description}
+                    value={formData.description || ""}
                     onChange={(e) =>
                       handleChange("description", e.target.value)
                     }
@@ -334,14 +354,14 @@ const Step3ExperienceDetails = ({
                   </p>
                   <textarea
                     placeholder="E.g. Bring sunscreen, comfortable shoes recommended, etc."
-                    value={formData.notes}
+                    value={formData.notes || ""}
                     onChange={(e) => handleChange("notes", e.target.value)}
                     className="w-full p-4 text-sm text-gray-800 h-24 rounded-sm border border-gray-300 resize-none focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                     rows={3}
                   />
                 </div>
 
-                {/* Price Input */}
+                {/* Price + Unit */}
                 <div className="flex gap-4">
                   <div className="flex-[0.7] text-left">
                     <label className="font-medium text-black/90">
@@ -349,13 +369,35 @@ const Step3ExperienceDetails = ({
                     </label>
                     <input
                       type="number"
-                      placeholder="₱ Price"
-                      value={formData.price}
+                      placeholder="₱ Price (leave blank if pay-on-site)"
+                      value={formData.price ?? ""}
                       onChange={(e) => handleChange("price", e.target.value)}
                       className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
                       min="0"
                       step="0.01"
                     />
+
+                    {/* ✅ NEW: Price estimate */}
+                    <div className="mt-8">
+                      <label className="block font-medium text-black/80">
+                        Price estimate (optional)
+                        <span className="text-gray-400 text-xs font-normal ml-2">
+                          for pay-on-site / variable pricing
+                        </span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="E.g. 200-400, 300+, Varies"
+                        value={formData.price_estimate ?? ""}
+                        onChange={(e) =>
+                          handleChange("price_estimate", e.target.value)
+                        }
+                        className="w-full px-4 py-2 mt-2 text-sm text-gray-800 rounded-sm border border-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <p className="text-xs text-black/50 mt-1">
+
+                      </p>
+                    </div>
                   </div>
 
                   {/* Units Selection */}
@@ -365,7 +407,7 @@ const Step3ExperienceDetails = ({
                     </label>
                     <div className="mb-2">
                       <select
-                        value={formData.unit}
+                        value={formData.unit || ""}
                         onChange={(e) => handleChange("unit", e.target.value)}
                         className="w-full px-4 py-2 mt-2 rounded-sm border border-gray-300 text-black/80 bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-black/50 transition-colors duration-200"
                       >
@@ -403,11 +445,10 @@ const Step3ExperienceDetails = ({
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   onClick={pickImage}
-                  className={`border-2 border-dashed rounded-sm p-6 text-center cursor-pointer transition-colors ${
-                    dragOver
-                      ? "border-blue-400 bg-blue-50"
-                      : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                  } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                  className={`border-2 border-dashed rounded-sm p-6 text-center cursor-pointer transition-colors ${dragOver
+                    ? "border-blue-400 bg-blue-50"
+                    : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+                    } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
                 >
                   {isLoading ? (
                     <div className="flex flex-col items-center">
@@ -444,9 +485,8 @@ const Step3ExperienceDetails = ({
 
                 <p className="text-xs text-gray-500 text-center italic py-4">
                   {formData.images?.length > 0
-                    ? `${formData.images.length} image${
-                        formData.images.length > 1 ? "s" : ""
-                      } selected`
+                    ? `${formData.images.length} image${formData.images.length > 1 ? "s" : ""
+                    } selected`
                     : "Optional: Add images to showcase your experience"}
                 </p>
 
@@ -544,6 +584,18 @@ const Step3ExperienceDetails = ({
                 </div>
               </div>
             </div>
+
+            {/* Back button (if you use it) */}
+            {onBack && (
+              <div className="flex justify-start mt-6">
+                <button
+                  onClick={onBack}
+                  className="px-6 py-2 rounded-lg border border-gray-300 text-sm text-black/70 hover:bg-gray-50"
+                >
+                  Back
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

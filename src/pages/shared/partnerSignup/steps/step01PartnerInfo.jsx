@@ -1,24 +1,78 @@
+// steps/Step01PartnerInfo.jsx
 import React, { useState, useRef } from "react";
-import { Upload, X, Loader2 } from "lucide-react";
-import toast, { Toaster } from "react-hot-toast";
+import { Upload, X, Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 import {
-  MapIcon,
   ChatBubbleOvalLeftEllipsisIcon,
   MapPinIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
+
 const logoImage = new URL("../../../../assets/images/logo.png", import.meta.url)
   .href;
+
+/**
+ * FocusableField - Styled input matching the React Native version
+ */
+function FocusableField({
+  label,
+  value,
+  onChange,
+  inputRef,
+  placeholder,
+  type = "text",
+  autoCapitalize = "words",
+  isLast = false,
+  rightElement,
+}) {
+  return (
+    <div
+      className={`flex flex-col items-start px-4 py-2 cursor-text ${isLast ? "" : "border-b border-black/40"
+        }`}
+      style={{ height: 55 }}
+      onClick={() => inputRef.current?.focus()}
+    >
+      <label className="text-sm text-black/50">{label}</label>
+      <div className="flex items-center w-full flex-1">
+        <input
+          ref={inputRef}
+          type={type}
+          className="flex-1 text-lg text-black/90 bg-transparent outline-none"
+          value={value}
+          onChange={(e) => {
+            let val = e.target.value;
+            if (autoCapitalize === "words") {
+              // Optional: auto-capitalize first letter of each word
+            }
+            onChange(val);
+          }}
+          placeholder={placeholder}
+          autoComplete={type === "password" ? "new-password" : "off"}
+        />
+        {rightElement && <div className="ml-2">{rightElement}</div>}
+      </div>
+    </div>
+  );
+}
+
 const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
-  const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef(null);
+  const [isPicking, setIsPicking] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [dragOver, setDragOver] = useState(false);
 
-  console.log(formData);
+  const fileInputRef = useRef(null);
+  const firstNameRef = useRef(null);
+  const lastNameRef = useRef(null);
+  const emailRef = useRef(null);
+  const phoneRef = useRef(null);
+  const passwordRef = useRef(null);
+  const shortDescRef = useRef(null);
+
   const handleChange = (field, value) => {
-    setFormData({ ...formData, [field]: value });
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Profile photo handlers
   const pickImage = () => {
     fileInputRef.current?.click();
   };
@@ -44,8 +98,10 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
     }
 
     const uri = URL.createObjectURL(file);
-
-    setFormData({ ...formData, profile_pic: { file, uri } });
+    setFormData((prev) => ({
+      ...prev,
+      profile_pic: { file, uri, name: file.name },
+    }));
     toast.success("Profile photo added");
   };
 
@@ -53,7 +109,7 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
     if (formData.profile_pic?.uri?.startsWith("blob:")) {
       URL.revokeObjectURL(formData.profile_pic.uri);
     }
-    setFormData({ ...formData, profile_pic: null });
+    setFormData((prev) => ({ ...prev, profile_pic: null }));
     toast.success("Profile photo removed");
   };
 
@@ -75,59 +131,17 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
   };
 
   const handleContinue = () => {
-    // Validate first name
-    // if (!formData.first_name || formData.first_name.trim() === "") {
-    //   toast.error("Please enter your first name.");
-    //   return;
-    // }
-
-    // // Validate last name
-    // if (!formData.last_name || formData.last_name.trim() === "") {
-    //   toast.error("Please enter your last name.");
-    //   return;
-    // }
-
-    // // Validate email
-    // if (!formData.email || formData.email.trim() === "") {
-    //   toast.error("Please enter your email.");
-    //   return;
-    // }
-
-    // // Basic email format validation
-    // const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    // if (!emailRegex.test(formData.email)) {
-    //   toast.error("Please enter a valid email address.");
-    //   return;
-    // }
-
-    // // Validate mobile number
-    // if (!formData.mobile_number || formData.mobile_number.trim() === "") {
-    //   toast.error("Please enter your mobile number.");
-    //   return;
-    // }
-
-    // // Validate password
-    // if (!formData.password || formData.password.trim() === "") {
-    //   toast.error("Please create a password.");
-    //   return;
-    // }
-
-    // // Validate profile picture
-    // if (!formData.profile_pic) {
-    //   toast.error("Please provide a profile picture.");
-    //   return;
-    // }
-
+    // Add validation as needed
     onNext();
   };
 
   return (
-    <div className="min-h-screen w-full flex font-display ">
-      <Toaster />
+    <div className="min-h-screen w-full flex font-display">
+      {/* Left Sidebar */}
       <div className="flex-[0.3] flex flex-col py-8 pl-12 justify-between items-start border-r border-gray-200">
         <div>
-          {/* logo */}
-          <div className="">
+          {/* Logo */}
+          <div>
             <img
               src={logoImage}
               alt="Itinera Logo"
@@ -188,9 +202,10 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
           </div>
         </div>
 
+        {/* Social Links */}
         <div>
           <div className="flex space-x-4">
-            <div className="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center cursor-pointer  transition-colors">
+            <div className="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center cursor-pointer transition-colors">
               <svg
                 className="w-5 h-5 text-black/90"
                 fill="currentColor"
@@ -199,7 +214,7 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
                 <path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z" />
               </svg>
             </div>
-            <div className="w-10 h-10 g-white border border-gray-300 rounded-lg flex items-center justify-center cursor-pointer transition-colors">
+            <div className="w-10 h-10 bg-white border border-gray-300 rounded-lg flex items-center justify-center cursor-pointer transition-colors">
               <svg
                 className="w-5 h-5 text-black/90"
                 fill="currentColor"
@@ -211,148 +226,221 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
           </div>
         </div>
       </div>
-      <div className="flex-[0.7]  flex items-center justify-center">
-        <div className="max-w-3xl w-full px-6">
-          <h2 className="text-3xl font-semibold mb-12">
+
+      {/* Right Content */}
+      <div className="flex-[0.7] overflow-y-auto">
+        <div className="max-w-2xl mx-auto px-10 py-12">
+          {/* Header */}
+          <h1 className="text-3xl font-semibold text-black/90 leading-tight mb-12">
             Tell us a little more about yourself and we'll get going.
-          </h2>
+          </h1>
 
-          {/* Form Fields */}
-          <div className="flex flex-col gap-4">
-            <div className="flex gap-4">
-              <div className="w-full">
-                <label className="block font-medium text-black/80 mb-1">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your first name"
-                  value={formData.first_name || ""}
-                  onChange={(e) => handleChange("first_name", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+          {/* LEGAL NAME */}
+          <div>
+            <h2 className="text-xl font-medium text-black/90">Legal name</h2>
 
-              <div className="w-full">
-                <label className="block font-medium text-black/80 mb-1">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Your last name"
-                  value={formData.last_name || ""}
-                  onChange={(e) => handleChange("last_name", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
+            <div className="mt-4 border border-black/40 rounded-lg overflow-hidden">
+              <FocusableField
+                label="First name on your ID"
+                value={formData.first_name || ""}
+                onChange={(v) => handleChange("first_name", v)}
+                inputRef={firstNameRef}
+                placeholder="John"
+              />
+
+              <FocusableField
+                label="Last name on your ID"
+                value={formData.last_name || ""}
+                onChange={(v) => handleChange("last_name", v)}
+                inputRef={lastNameRef}
+                placeholder="Doe"
+                isLast
+              />
             </div>
-            <div className="flex gap-4">
-              <div className="w-full">
-                <label className="block font-medium text-black/80 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  placeholder="your.email@example.com"
-                  value={formData.email || ""}
-                  onChange={(e) => handleChange("email", e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-              </div>
 
-              <div className="w-full">
-                <label className="block font-medium text-black/80 mb-1">
-                  Mobile Number
-                </label>
-                <input
-                  type="text"
-                  placeholder="09171234567"
-                  value={formData.mobile_number || ""}
-                  onChange={(e) =>
-                    handleChange("mobile_number", e.target.value)
-                  }
-                  className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Enter Philippine mobile number format
-                </p>
-              </div>
+            <p className="mt-2 text-sm text-black/50">
+              Ensure this matches the name on your government-issued ID.
+            </p>
+          </div>
+
+          {/* CONTACT INFO */}
+          <div className="mt-12">
+            <h2 className="text-xl font-medium text-black/90">Contact info</h2>
+
+            <div className="mt-4 border border-black/40 rounded-lg overflow-hidden">
+              <FocusableField
+                label="Email"
+                value={formData.email || ""}
+                onChange={(v) => handleChange("email", v)}
+                inputRef={emailRef}
+                placeholder="your.email@example.com"
+                type="email"
+                autoCapitalize="none"
+              />
+
+              <FocusableField
+                label="Phone number"
+                value={formData.mobile_number || ""}
+                onChange={(v) => handleChange("mobile_number", v)}
+                inputRef={phoneRef}
+                placeholder="09171234567"
+                type="tel"
+                autoCapitalize="none"
+                isLast
+              />
             </div>
-            <div>
-              <label className="block font-medium text-black/80 mb-1">
-                Password
-              </label>
-              <input
-                type="password"
-                placeholder="Create a secure password"
+
+            <p className="mt-2 text-sm text-black/50">
+              We'll email you application updates and receipts.
+            </p>
+          </div>
+
+          {/* SET PASSWORD */}
+          <div className="mt-12">
+            <h2 className="text-xl font-medium text-black/90">Set password</h2>
+
+            <div className="mt-4 border border-black/40 rounded-lg overflow-hidden">
+              <FocusableField
+                label="Password"
                 value={formData.password || ""}
-                onChange={(e) => handleChange("password", e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                onChange={(v) => handleChange("password", v)}
+                inputRef={passwordRef}
+                placeholder="Create a secure password"
+                type={showPassword ? "text" : "password"}
+                autoCapitalize="none"
+                isLast
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowPassword((prev) => !prev);
+                      passwordRef.current?.focus();
+                    }}
+                    className="p-1 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                  </button>
+                }
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Minimum 8 characters recommended
-              </p>
             </div>
+          </div>
 
-            {/* Short description */}
-            <div>
-              <label className="block font-medium text-black/80 mb-1">
-                Short description about yourself
-              </label>
-              <input
-                type="text"
-                placeholder="Adventure enthusiast, food lover, and travel guide."
-                value={formData.short_description || ""}
-                onChange={(e) => handleChange("short_description", e.target.value)}
-                className="w-full px-4 pt-4 pb-12 border border-gray-300 rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
+          {/* ABOUT YOU */}
+          <div className="mt-12">
+            <h2 className="text-xl font-medium text-black/90">About you</h2>
 
-            </div>
-
-            {/* Profile Photo Upload */}
-            <div>
-              <label className="block font-medium text-black/80 mb-1">
-                Profile Photo
-              </label>
+            <div className="mt-4 border border-black/40 rounded-lg overflow-hidden">
               <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={pickImage}
-                className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${dragOver
-                  ? "border-blue-400 bg-blue-50"
-                  : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                  } ${isLoading ? "pointer-events-none opacity-50" : ""}`}
+                className="flex flex-col items-start px-4 py-3 cursor-text"
+                onClick={() => shortDescRef.current?.focus()}
               >
-                {formData.profile_pic ? (
-                  <div className="relative inline-block">
+                <label className="text-sm text-black/50">
+                  Short description about yourself
+                </label>
+                <textarea
+                  ref={shortDescRef}
+                  className="w-full text-lg text-black/90 bg-transparent outline-none mt-2 resize-none"
+                  value={formData.short_description || ""}
+                  onChange={(e) =>
+                    handleChange("short_description", e.target.value)
+                  }
+                  placeholder="Adventure enthusiast, food lover, and travel guide."
+                  rows={3}
+                  style={{ minHeight: 80 }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* PROFILE PHOTO */}
+          <div className="mt-12">
+            <h2 className="text-xl font-medium text-black/90">Profile photo</h2>
+            <p className="mt-2 text-sm text-black/50">
+              This will be shown to travelers. Use a clear face photo.
+            </p>
+
+            <div
+              className="mt-4 rounded-2xl p-5 flex flex-col items-center"
+              style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}
+            >
+              <div className="relative">
+                {isPicking ? (
+                  <div className="w-28 h-28 rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 border-2 border-gray-800 border-t-transparent rounded-full animate-spin" />
+                  </div>
+                ) : formData.profile_pic?.uri ? (
+                  <div className="relative">
                     <img
                       src={formData.profile_pic.uri}
                       alt="Profile"
-                      className="w-32 h-32 rounded-full object-cover mx-auto"
+                      className="w-28 h-28 rounded-full object-cover"
                     />
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeImage();
                       }}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                      className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
                     >
-                      <X size={16} />
+                      <X size={14} />
                     </button>
                   </div>
                 ) : (
-                  <div className="flex flex-col items-center">
-                    <Upload size={36} className="text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600">
-                      Click or drag to upload your profile photo
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Max file size: 5MB
-                    </p>
+                  <div
+                    onDragOver={handleDragOver}
+                    onDragLeave={handleDragLeave}
+                    onDrop={handleDrop}
+                    onClick={pickImage}
+                    className={`w-28 h-28 rounded-full flex items-center justify-center cursor-pointer transition-colors ${dragOver
+                        ? "bg-blue-100 border-2 border-blue-400"
+                        : "bg-gray-100 hover:bg-gray-200"
+                      }`}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-12 w-12 text-gray-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                    </svg>
                   </div>
                 )}
+
+                {/* Edit button */}
+                {!isPicking && (
+                  <button
+                    type="button"
+                    onClick={pickImage}
+                    className="absolute bottom-0 right-0 bg-[#191313] rounded-full p-2 hover:bg-[#2a2a2a] transition-colors"
+                    style={{
+                      boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+                    }}
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4 text-gray-200"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                    </svg>
+                  </button>
+                )}
               </div>
+
+              <p className="mt-4 text-sm text-black/60 text-center">
+                Tap the pencil to take a photo, choose from gallery, or remove.
+              </p>
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -363,19 +451,28 @@ const Step01PartnerInfo = ({ formData, setFormData, onNext, onBack }) => {
             </div>
           </div>
 
-          {/* Buttons */}
-          <div className="flex justify-between mt-6">
+          {/* Action buttons */}
+          <div className="flex gap-3 mt-8">
             <button
+              type="button"
               onClick={onBack}
-              className="px-6 py-2 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors"
+              disabled={isPicking}
+              className="flex-1 px-6 py-4 rounded-xl bg-gray-200 text-black/70 text-center font-medium hover:bg-gray-300 transition-colors disabled:opacity-60"
             >
               Back
             </button>
+
             <button
+              type="button"
               onClick={handleContinue}
-              className="px-6 py-2 bg-black text-white rounded hover:bg-gray-800 transition-colors"
+              disabled={isPicking}
+              className="flex-1 bg-[#191313] py-4 px-8 rounded-xl text-white/90 text-center font-medium hover:bg-[#2a2a2a] transition-colors disabled:opacity-60"
             >
-              Continue
+              {isPicking ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+              ) : (
+                "Continue"
+              )}
             </button>
           </div>
         </div>
