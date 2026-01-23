@@ -8,6 +8,7 @@ import { Toaster } from "react-hot-toast";
 import LandingPage from "./pages/shared/LandingPage";
 import Login from "./pages/shared/Login";
 import Signup from "./pages/shared/signup";
+import Terms from "./pages/shared/Terms.jsx";
 import DashboardLayout from "./layouts/DashboardLayout";
 import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 
@@ -100,6 +101,14 @@ export default function App() {
           element={
             <PublicRoute>
               <VerifyOtp />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/Terms"
+          element={
+            <PublicRoute>
+              <Terms />
             </PublicRoute>
           }
         />

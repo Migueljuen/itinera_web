@@ -1,6 +1,6 @@
 // steps/Step02Verification.jsx
 import React, { useState, useRef } from "react";
-import { X, Camera, CreditCard, Info } from "lucide-react";
+import { X, Camera, CreditCard, Info, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   ChatBubbleOvalLeftEllipsisIcon,
@@ -122,7 +122,7 @@ function UploadTile({
 const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
   const [uploadingKey, setUploadingKey] = useState(null);
 
-  // Required documents for Creator (simplified)
+  // ✅ Add business permit image upload (no status column needed, admin checks manually)
   const requiredDocuments = [
     {
       key: "selfie_document",
@@ -137,6 +137,14 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
       required: true,
       helper: "Readable and not expired.",
       icon: CreditCard,
+    },
+    {
+      key: "business_permit_document",
+      label: "Business Permit",
+      required: true,
+      helper:
+        "Upload a clear photo of your Mayor’s/Business Permit (or proof of legal authority to operate).",
+      icon: FileText,
     },
   ];
 
@@ -199,7 +207,7 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
   };
 
   const noteText =
-    "Experience Creators must provide a selfie and valid government-issued ID for verification.";
+    "Experience Creators must provide a selfie, a valid government-issued ID, and a business permit for verification. Admin review is required before approval.";
 
   return (
     <div className="min-h-screen w-full flex font-display">
@@ -261,7 +269,7 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
                   Verification usually takes 1–3 business days
                 </p>
                 <h1 className="font-semibold mt-2">
-                  Secure & review-based approval
+                  Secure &amp; review-based approval
                 </h1>
               </div>
             </div>

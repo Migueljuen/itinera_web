@@ -528,6 +528,7 @@ const Step4AvailabilityCompanion = ({
                             <option value={240}>4 hours</option>
                             <option value={300}>5 hours</option>
                             <option value={360}>6 hours</option>
+                            <option value={480}>8 hours</option>
                           </select>
                         </div>
 

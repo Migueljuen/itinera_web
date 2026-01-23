@@ -14,7 +14,7 @@ import API_URL from "../../../constants/api";
 // --- Creator-only flow ---
 // Step 0: Requirements
 // Step 1: Partner Info
-// Step 2: Verification (ID + Selfie)
+// Step 2: Verification (Selfie + ID + Business Permit)
 // Step 3: Review & Submit
 
 const DEFAULT_TIMEZONE =
@@ -47,6 +47,7 @@ const PartnerOnboardingForm = () => {
 
         // verification
         id_document: null,
+        business_permit_document: null, // ✅ NEW
     });
 
     const handleNext = () => {
@@ -84,6 +85,7 @@ const PartnerOnboardingForm = () => {
             appendFile(fd, "profile_pic", formData.profile_pic);
             appendFile(fd, "id_document", formData.id_document);
             appendFile(fd, "selfie_document", formData.selfie_document);
+            appendFile(fd, "business_permit_document", formData.business_permit_document); // ✅ NEW
 
             console.log("=== Data being sent to backend ===");
             for (let [key, value] of fd.entries()) {
@@ -196,7 +198,7 @@ const PartnerOnboardingForm = () => {
             default:
                 return null;
         }
-    }, [step, formData, isSubmitting]);
+    }, [step, formData, isSubmitting, navigate]);
 
     return (
         <div className="">

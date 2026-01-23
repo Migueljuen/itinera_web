@@ -1,14 +1,19 @@
 // steps/Step00Requirements.jsx - Partner Only (Web)
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function SectionCard({ title, subtitle, items }) {
   return (
     <div className="py-4 mb-4">
       <div className="flex items-center mb-1">
         <div className="flex-1">
-          <h3 className="text-lg font-semibold text-black/90 font-display">{title}</h3>
+          <h3 className="text-lg font-semibold text-black/90 font-display">
+            {title}
+          </h3>
           {subtitle && (
-            <p className="text-sm text-black/50 mt-0.5 font-display">{subtitle}</p>
+            <p className="text-sm text-black/50 mt-0.5 font-display">
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
@@ -27,6 +32,14 @@ function SectionCard({ title, subtitle, items }) {
 
 const Step00Requirements = ({ formData, onNext, onBack }) => {
   const [confirmed, setConfirmed] = useState(false);
+  const navigate = useNavigate();
+
+  const goToTerms = (e) => {
+    // prevent toggling the checkbox when clicking the link
+    e.preventDefault();
+    e.stopPropagation();
+    navigate("/Terms");
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -60,8 +73,19 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             ]}
           />
 
+          {/* ✅ NEW: Business permit requirement */}
           <SectionCard
-            title="3. Partner agreement"
+            title="3. Business permit (required)"
+            subtitle="Required to list paid experiences/services"
+            items={[
+              "Upload a valid business permit (e.g., Mayor’s/Business Permit) or other proof of legal authority to operate.",
+              "Failure to provide this may delay approval or prevent your listings from being published.",
+            ]}
+          />
+
+          {/* Renumbered */}
+          <SectionCard
+            title="4. Partner agreement"
             items={[
               "Follow local laws.",
               "No prohibited activities.",
@@ -69,8 +93,9 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             ]}
           />
 
+          {/* Renumbered */}
           <SectionCard
-            title="4. What you can do as a Partner"
+            title="5. What you can do as a Partner"
             subtitle="Create and manage unique travel experiences"
             items={[
               "Design custom tours and activities.",
@@ -80,22 +105,24 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
           />
         </div>
 
-        {/* Confirmation */}
+        {/* ✅ Confirmation - updated (web version of your RN snippet) */}
         <button
           type="button"
           onClick={() => setConfirmed((v) => !v)}
           className="flex items-center mt-2 w-full text-left"
         >
           <div
-            className={`w-6 h-6 rounded-md flex items-center justify-center mr-3 transition-colors ${confirmed ? "bg-[#191313]" : "bg-black/10"
+            className={`w-6 h-6 rounded-md flex items-center justify-center mr-3 ${confirmed ? "bg-primary" : "bg-black/10"
               }`}
           >
-            {confirmed && (
+            {/* Checkmark icon (inline SVG) */}
+            {confirmed ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 text-white"
                 viewBox="0 0 20 20"
                 fill="currentColor"
+                aria-hidden="true"
               >
                 <path
                   fillRule="evenodd"
@@ -103,10 +130,22 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
                   clipRule="evenodd"
                 />
               </svg>
+            ) : (
+              // Placeholder to match RN "remove" icon spacing
+              <div className="h-4 w-4" />
             )}
           </div>
-          <span className="flex-1 text-sm text-black/70 font-display">
-            I understand these requirements and I'm ready to proceed.
+
+          <span className="flex-1 text-sm text-black/90 font-display">
+            I understand these requirements and I'm ready to proceed. By selecting
+            Agree and continue, I indicate my agreement to Itinera's{" "}
+            <a
+              href="/Terms"
+              onClick={goToTerms}
+              className="text-blue-500 underline font-display font-medium"
+            >
+              Terms of Service
+            </a>
           </span>
         </button>
 
@@ -129,7 +168,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
               : "bg-black/40 cursor-not-allowed"
               }`}
           >
-            Continue
+            Agree and continue
           </button>
         </div>
       </div>

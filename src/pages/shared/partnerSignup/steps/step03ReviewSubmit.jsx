@@ -5,7 +5,15 @@ import {
   MapPinIcon,
   ShieldCheckIcon,
 } from "@heroicons/react/24/outline";
-import { Check, User, Mail, Phone, FileText, Camera, CreditCard } from "lucide-react";
+import {
+  Check,
+  User,
+  Mail,
+  Phone,
+  FileText,
+  Camera,
+  CreditCard,
+} from "lucide-react";
 
 const logoImage = new URL("../../../../assets/images/logo.png", import.meta.url)
   .href;
@@ -83,9 +91,7 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
                 <p className="text-sm text-black/70">
                   Questions or need help getting started?
                 </p>
-                <h1 className="font-semibold mt-2">
-                  itinera.team.app@gmail.com
-                </h1>
+                <h1 className="font-semibold mt-2">itinera.team.app@gmail.com</h1>
               </div>
             </div>
 
@@ -116,7 +122,7 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
                   Verification usually takes 1–3 business days
                 </p>
                 <h1 className="font-semibold mt-2">
-                  Secure & review-based approval
+                  Secure &amp; review-based approval
                 </h1>
               </div>
             </div>
@@ -168,11 +174,7 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
                 label="Full Name"
                 value={`${formData.first_name} ${formData.last_name}`.trim()}
               />
-              <ReviewItem
-                icon={Mail}
-                label="Email"
-                value={formData.email}
-              />
+              <ReviewItem icon={Mail} label="Email" value={formData.email} />
               <ReviewItem
                 icon={Phone}
                 label="Phone Number"
@@ -196,7 +198,9 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
               <ReviewItem
                 icon={Camera}
                 label="Selfie Verification"
-                value={formData.selfie_document?.uri || formData.selfie_document?.preview}
+                value={
+                  formData.selfie_document?.uri || formData.selfie_document?.preview
+                }
                 isImage
               />
               <ReviewItem
@@ -205,12 +209,20 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
                 value={formData.id_document?.uri || formData.id_document?.preview}
                 isImage
               />
+              {/* ✅ NEW: Business Permit */}
+              <ReviewItem
+                icon={FileText}
+                label="Business Permit"
+                value={
+                  formData.business_permit_document?.uri ||
+                  formData.business_permit_document?.preview
+                }
+                isImage
+              />
             </ReviewSection>
 
             {/* Terms Notice */}
-            <div
-              className="p-4 rounded-2xl bg-amber-50 border border-amber-200 mb-8"
-            >
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 mb-8">
               <p className="text-sm text-amber-800">
                 <span className="font-semibold">By submitting:</span> You agree to
                 our Terms of Service and confirm that all information provided is
