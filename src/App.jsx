@@ -20,23 +20,26 @@ import ExperienceCreationForm from "./pages/creator/createExperience/createExper
 import ExperienceEditForm from "./pages/creator/editExperience/edit.jsx";
 import CreatorSettings from "./pages/creator/settings";
 
-// Guide Pages
-import GuideDashboard from "./pages/guide/index";
-// import GuideItineraries from "./pages/guide/itineraries"; // TODO: Create
-import GuideAvailability from "./pages/guide/availability";
-import GuideSettings from "./pages/guide/settings";
+// ✅ removed Guide Pages
+// import GuideDashboard from "./pages/guide/index";
+// import GuideAvailability from "./pages/guide/availability";
+// import GuideSettings from "./pages/guide/settings";
 
-// Driver Pages
-import DriverDashboard from "./pages/driver/index"; // TODO: Create
-// import DriverTrips from "./pages/driver/trips"; // TODO: Create
-import DriverAvailability from "./pages/driver/availability";
-import DriverSettings from "./pages/driver/settings"; // TODO: Create
+// ✅ removed Driver Pages
+// import DriverDashboard from "./pages/driver/index";
+// import DriverAvailability from "./pages/driver/availability";
+// import DriverSettings from "./pages/driver/settings";
+
+// ✅ removed Driver vehicle pages
+// import VehicleManagement from "./pages/driver/vehicle.jsx";
+// import VehicleRegistrationPage from "./pages/driver/registerVehicle/index.jsx";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/index";
 import ItineraryManagement from "./pages/admin/itinerary.jsx";
 import PartnersManagement from "./pages/admin/partner.jsx";
 import PartnerDetailScreen from "./pages/admin/partner/id.jsx";
+import RefundManagement from "./pages/admin/refund.jsx"; // ✅ ADD THIS
 
 // Shared Components
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -45,8 +48,6 @@ import ForgotPassword from "./pages/shared/forgot";
 import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
 import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx";
-import VehicleManagement from "./pages/driver/vehicle.jsx";
-import VehicleRegistrationPage from "./pages/driver/registerVehicle/index.jsx";
 
 export default function App() {
   return (
@@ -137,11 +138,11 @@ export default function App() {
           }
         />
 
-        {/* ==================== OWNER DASHBOARD LAYOUT (All Roles) ==================== */}
+        {/* ==================== OWNER DASHBOARD LAYOUT (CREATOR ONLY) ==================== */}
         <Route
           path="/owner"
           element={
-            <ProtectedRoute allowedRoles={["Creator", "Driver", "Guide"]}>
+            <ProtectedRoute allowedRoles={["Creator"]}>
               <DashboardLayout />
             </ProtectedRoute>
           }
@@ -195,109 +196,6 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-
-          {/* GUIDE ROUTES */}
-          <Route
-            path="guide"
-            element={
-              <ProtectedRoute allowedRoles={["Guide"]}>
-                <GuideDashboard />
-              </ProtectedRoute>
-            }
-          />
-          {/* TODO: Create GuideItineraries component */}
-          {/* <Route 
-            path="itineraries" 
-            element={
-              <ProtectedRoute allowedRoles={["Guide"]}>
-                <GuideItineraries />
-              </ProtectedRoute>
-            } 
-          /> */}
-          {/* <Route 
-            path="itineraries/schedule" 
-            element={
-              <ProtectedRoute allowedRoles={["Guide"]}>
-                <GuideItineraries />
-              </ProtectedRoute>
-            } 
-          /> */}
-          <Route
-            path="availability"
-            element={
-              <ProtectedRoute allowedRoles={["Guide"]}>
-                <GuideAvailability />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="guide/settings"
-            element={
-              <ProtectedRoute allowedRoles={["Guide"]}>
-                <GuideSettings />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* DRIVER ROUTES */}
-          <Route
-            path="driver"
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <DriverDashboard />
-              </ProtectedRoute>
-            }
-          />
-
-          {/* TODO: Create DriverTrips component */}
-          {/* <Route 
-            path="trips" 
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <DriverTrips />
-              </ProtectedRoute>
-            } 
-          /> */}
-          {/* <Route 
-            path="trips/history" 
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <DriverTrips />
-              </ProtectedRoute>
-            } 
-          /> */}
-          <Route
-            path="driver/vehicle/add"
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <VehicleRegistrationPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="driver/vehicle"
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <VehicleManagement />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="driver/availability"
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <DriverAvailability />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="driver/settings"
-            element={
-              <ProtectedRoute allowedRoles={["Driver"]}>
-                <DriverSettings />
-              </ProtectedRoute>
-            }
-          />
         </Route>
 
         {/* ==================== ADMIN ROUTES ==================== */}
@@ -313,6 +211,8 @@ export default function App() {
           <Route path="itineraries" element={<ItineraryManagement />} />
           <Route path="partners" element={<PartnersManagement />} />
           <Route path="partner/:id" element={<PartnerDetailScreen />} />
+          \
+          <Route path="refunds" element={<RefundManagement />} />
         </Route>
 
         {/* ==================== FALLBACK ==================== */}

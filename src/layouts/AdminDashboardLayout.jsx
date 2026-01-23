@@ -13,13 +13,15 @@ import {
   X,
   ChevronDown,
   Plus,
+  BadgeDollarSign, // ✅ add
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import logoImage from "../assets/images/alt.png";
 import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
-import FloatingChat from '../components/FloatingChat';
+import FloatingChat from "../components/FloatingChat";
+
 const AdminDashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -30,11 +32,12 @@ const AdminDashboardLayout = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
 
-  const currentUser = user ? {
-    id: user.user_id,
-    username: user.first_name || 'User'
-  } : null;
-
+  const currentUser = user
+    ? {
+      id: user.user_id,
+      username: user.first_name || "User",
+    }
+    : null;
 
   // Function to fetch unread notification count
   const fetchUnreadCount = async () => {
@@ -121,6 +124,15 @@ const AdminDashboardLayout = ({ children }) => {
       path: "/itineraries",
       expandable: false,
     },
+
+    {
+      id: "refunds",
+      label: "Refunds",
+      icon: BadgeDollarSign,
+      path: "/refunds",
+      expandable: false,
+    },
+
     {
       id: "activities",
       label: "Activities",
@@ -269,26 +281,8 @@ const AdminDashboardLayout = ({ children }) => {
               ))}
             </nav>
 
-            {/* Upgrade Section */}
-            {/* <div className="p-4 border-t border-gray-200">
-              <div className=" rounded-lg p-4  text-center text-primary">
-                <h3 className="font-bold mb-1">Upgrade Plan</h3>
-                <p className="text-sm opacity-90 mb-3">
-                  Showcase more activities
-                </p>
-                <button className="bg-[#376a63] text-gray-50 px-4 py-2 rounded-4xl text-sm font-medium hover:bg-[#376a63]/80 cursor-pointer transition-colors w-3/4">
-                  Upgrade
-                </button>
-              </div>
-            </div> */}
-
             {/* Bottom Section */}
             <div className="p-4   space-y-1">
-              {/* <p className="pl-4 text-black/60 text-xs font-medium">SETTINGS</p>
-              <button className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors">
-                <Settings size={20} className="text-gray-500" />
-                <span className="font-medium">Settings</span>
-              </button> */}
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"

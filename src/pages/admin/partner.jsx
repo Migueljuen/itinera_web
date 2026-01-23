@@ -68,7 +68,7 @@ const PartnersManagement = () => {
   const getRoleBadgeStyle = (role) => {
     const styles = {
       Driver: "bg-blue-50 text-blue-700",
-      Creator: "bg-violet-50 text-violet-600",
+      Creator: "bg-violet-50 text-violet-900",
       Guide: "bg-teal-50 text-green-600",
     };
     return styles[role] || "bg-gray-50 text-gray-500";

@@ -136,8 +136,8 @@ const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
     className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
-        ? "border-gray-900 bg-[#376a63]/5"
-        : "border-gray-200 bg-white hover:border-gray-900"
+      ? "border-gray-900 bg-[#376a63]/5"
+      : "border-gray-200 bg-white hover:border-gray-900"
       }`}
   >
     <div className="flex items-start justify-between">
@@ -300,8 +300,8 @@ const Step4AvailabilityCompanion = ({
     }));
 
     // Keep selectedDays (as you wanted)
-    setStart("");
-    setEnd("");
+    // setStart("");
+    // setEnd("");
   };
 
   const removeSlot = (dayIndex, slotIndex) => {
@@ -466,8 +466,8 @@ const Step4AvailabilityCompanion = ({
                         type="button"
                         onClick={() => setAddMode("single")}
                         className={`px-3 py-2 rounded-xl text-sm font-medium border transition-colors ${addMode === "single"
-                            ? "bg-black/80 text-white border-black/80"
-                            : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
+                          ? "bg-black/80 text-white border-black/80"
+                          : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
                           }`}
                       >
                         Single slot
@@ -476,8 +476,8 @@ const Step4AvailabilityCompanion = ({
                         type="button"
                         onClick={() => setAddMode("generate")}
                         className={`px-3 py-2 rounded-xl text-sm font-medium border transition-colors ${addMode === "generate"
-                            ? "bg-black/80 text-white border-black/80"
-                            : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
+                          ? "bg-black/80 text-white border-black/80"
+                          : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
                           }`}
                       >
                         Generate slots
@@ -524,6 +524,10 @@ const Step4AvailabilityCompanion = ({
                             <option value={60}>1 hour</option>
                             <option value={90}>1 hour 30 mins</option>
                             <option value={120}>2 hours</option>
+                            <option value={180}>3 hours</option>
+                            <option value={240}>4 hours</option>
+                            <option value={300}>5 hours</option>
+                            <option value={360}>6 hours</option>
                           </select>
                         </div>
 
@@ -598,8 +602,8 @@ const Step4AvailabilityCompanion = ({
                         onClick={addAvailability}
                         disabled={!start || !end || selectedDays.length === 0}
                         className={`px-6 py-3 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
-                            ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
-                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                          ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
                           }`}
                       >
                         Add to Selected Days
@@ -643,8 +647,8 @@ const Step4AvailabilityCompanion = ({
                             <div
                               key={index}
                               className={`flex flex-col justify-start min-h-[100px] relative p-3 rounded-lg border transition-all ${timeSlots.length > 0
-                                  ? "bg-white border-gray-200 hover:border-blue-300"
-                                  : "bg-gray-50 border-gray-200"
+                                ? "bg-white border-gray-200 hover:border-blue-300"
+                                : "bg-gray-50 border-gray-200"
                                 }`}
                             >
                               {timeSlots.length > 0 ? (
