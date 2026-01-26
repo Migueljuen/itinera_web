@@ -10,6 +10,7 @@ import {
   ChevronUp,
   Calendar,
   Save,
+  Users,
 } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -58,12 +59,7 @@ const minutesToHHMM = (mins) => {
   return `${h}:${m}`;
 };
 
-const buildGeneratedSlots = ({
-  start,
-  end,
-  durationMins,
-  gapMins,
-}) => {
+const buildGeneratedSlots = ({ start, end, durationMins, gapMins, maxGuests }) => {
   const startM = parseTimeToMinutes(start);
   const endM = parseTimeToMinutes(end);
 
@@ -79,6 +75,7 @@ const buildGeneratedSlots = ({
     slots.push({
       start_time: formatTimeWithSeconds(s),
       end_time: formatTimeWithSeconds(e),
+      max_guests: Number.isFinite(Number(maxGuests)) ? Number(maxGuests) : null,
     });
 
     cursor = cursor + durationMins + gapMins;
@@ -91,7 +88,8 @@ const dedupeSlots = (slots) => {
   const seen = new Set();
   const out = [];
   for (const s of slots) {
-    const key = `${s.start_time}-${s.end_time}`;
+    const mg = s.max_guests ?? "";
+    const key = `${s.start_time}-${s.end_time}-${mg}`;
     if (seen.has(key)) continue;
     seen.add(key);
     out.push(s);
@@ -136,8 +134,8 @@ const CompanionCard = ({ companion, isSelected, onToggle }) => (
   <button
     onClick={() => onToggle(companion.id)}
     className={`relative p-3 rounded-xl border border-gray-300 transition-all duration-200 text-left ${isSelected
-      ? "border-gray-900 bg-[#376a63]/5"
-      : "border-gray-200 bg-white hover:border-gray-900"
+        ? "border-gray-900 bg-[#376a63]/5"
+        : "border-gray-200 bg-white hover:border-gray-900"
       }`}
   >
     <div className="flex items-start justify-between">
@@ -171,10 +169,13 @@ const Step4AvailabilityCompanion = ({
   const [expandedDay, setExpandedDay] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // NEW: add mode + slot generator controls
+  // add mode + generator controls
   const [addMode, setAddMode] = useState("single"); // "single" | "generate"
   const [slotDurationMins, setSlotDurationMins] = useState(60);
   const [gapMins, setGapMins] = useState(0);
+
+  // NEW: max guests per slot
+  const [maxGuests, setMaxGuests] = useState(1);
 
   const toggleCompanion = (companion) => {
     const currentCompanions = formData.travel_companions || [];
@@ -217,8 +218,9 @@ const Step4AvailabilityCompanion = ({
       end,
       durationMins: slotDurationMins,
       gapMins,
+      maxGuests,
     });
-  }, [addMode, start, end, slotDurationMins, gapMins]);
+  }, [addMode, start, end, slotDurationMins, gapMins, maxGuests]);
 
   const addAvailability = () => {
     if (!start || !end || selectedDays.length === 0) {
@@ -234,6 +236,12 @@ const Step4AvailabilityCompanion = ({
       return;
     }
 
+    const mg = Number(maxGuests);
+    if (!Number.isFinite(mg) || mg <= 0) {
+      toast.error("Max guests must be a positive number.");
+      return;
+    }
+
     let slotsToAdd = [];
 
     if (addMode === "single") {
@@ -241,6 +249,7 @@ const Step4AvailabilityCompanion = ({
         {
           start_time: formatTimeWithSeconds(start),
           end_time: formatTimeWithSeconds(end),
+          max_guests: mg,
         },
       ];
     } else {
@@ -249,6 +258,7 @@ const Step4AvailabilityCompanion = ({
         end,
         durationMins: slotDurationMins,
         gapMins,
+        maxGuests: mg,
       });
 
       if (slotsToAdd.length === 0) {
@@ -260,12 +270,10 @@ const Step4AvailabilityCompanion = ({
       const last = slotsToAdd[slotsToAdd.length - 1];
       const lastEndM = parseTimeToMinutes(last.end_time);
 
-      // optional helpful warning if it doesn't perfectly land on end time
       if (lastEndM !== endM) {
-        toast(
-          "Note: your timeframe doesn't divide evenly — leftover minutes were ignored.",
-          { icon: "🕒" }
-        );
+        toast("Note: your timeframe doesn't divide evenly — leftover minutes were ignored.", {
+          icon: "🕒",
+        });
       }
     }
 
@@ -298,10 +306,6 @@ const Step4AvailabilityCompanion = ({
       ...prev,
       availability: updatedAvailability,
     }));
-
-    // Keep selectedDays (as you wanted)
-    // setStart("");
-    // setEnd("");
   };
 
   const removeSlot = (dayIndex, slotIndex) => {
@@ -310,6 +314,28 @@ const Step4AvailabilityCompanion = ({
     if (updated[dayIndex].time_slots.length === 0) {
       updated.splice(dayIndex, 1);
     }
+    setFormData({ ...formData, availability: updated });
+  };
+
+  // NEW: edit max guests of an existing slot
+  const updateSlotMaxGuests = (dayIndex, slotIndex, nextVal) => {
+    const mg = Number(nextVal);
+    if (!Number.isFinite(mg) || mg <= 0) return;
+
+    const updated = [...(formData.availability || [])];
+    const slots = [...(updated[dayIndex].time_slots || [])];
+    const current = slots[slotIndex];
+
+    slots[slotIndex] = {
+      ...current,
+      max_guests: mg,
+    };
+
+    updated[dayIndex] = {
+      ...updated[dayIndex],
+      time_slots: dedupeSlots(slots),
+    };
+
     setFormData({ ...formData, availability: updated });
   };
 
@@ -331,6 +357,19 @@ const Step4AvailabilityCompanion = ({
       return;
     }
 
+    // ensure every slot has max_guests (fallback to 1 if missing)
+    const normalized = (formData.availability || []).map((day) => ({
+      ...day,
+      time_slots: (day.time_slots || []).map((s) => ({
+        ...s,
+        max_guests:
+          Number.isFinite(Number(s.max_guests)) && Number(s.max_guests) > 0
+            ? Number(s.max_guests)
+            : 1,
+      })),
+    }));
+
+    setFormData((prev) => ({ ...prev, availability: normalized }));
     onNext();
   };
 
@@ -460,14 +499,14 @@ const Step4AvailabilityCompanion = ({
                       ))}
                     </div>
 
-                    {/* NEW: Mode selector */}
+                    {/* Mode selector */}
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
                         onClick={() => setAddMode("single")}
                         className={`px-3 py-2 rounded-xl text-sm font-medium border transition-colors ${addMode === "single"
-                          ? "bg-black/80 text-white border-black/80"
-                          : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
+                            ? "bg-black/80 text-white border-black/80"
+                            : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
                           }`}
                       >
                         Single slot
@@ -476,8 +515,8 @@ const Step4AvailabilityCompanion = ({
                         type="button"
                         onClick={() => setAddMode("generate")}
                         className={`px-3 py-2 rounded-xl text-sm font-medium border transition-colors ${addMode === "generate"
-                          ? "bg-black/80 text-white border-black/80"
-                          : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
+                            ? "bg-black/80 text-white border-black/80"
+                            : "bg-white text-black/70 border-gray-200 hover:bg-gray-50"
                           }`}
                       >
                         Generate slots
@@ -505,7 +544,34 @@ const Step4AvailabilityCompanion = ({
                       </div>
                     </div>
 
-                    {/* NEW: Generator controls */}
+                    {/* NEW: Max guests per slot */}
+                    <div className="bg-gray-50 rounded-xl p-3 border border-gray-200">
+                      <label className="block text-xs font-semibold text-black/70 mb-2">
+                        Max guests per time slot
+                      </label>
+
+                      <div className="flex items-center gap-2">
+                        <div className="inline-flex items-center gap-2 text-black/60">
+                          <Users size={16} />
+                        </div>
+
+                        <input
+                          type="number"
+                          min={1}
+                          value={maxGuests}
+                          onChange={(e) => setMaxGuests(e.target.value)}
+                          className="w-full bg-white border border-gray-200 rounded-xl p-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          placeholder="e.g. 10"
+                        />
+                      </div>
+
+                      <p className="text-[11px] text-black/40 mt-2 text-left">
+                        This will be saved to <span className="font-medium">availability_time_slots.max_guests</span>.
+                        In generate mode, the same max applies to every generated slot.
+                      </p>
+                    </div>
+
+                    {/* Generator controls */}
                     {addMode === "generate" && (
                       <div className="grid grid-cols-2 gap-3">
                         <div className="bg-gray-50 rounded-xl p-3 border border-gray-200">
@@ -538,9 +604,7 @@ const Step4AvailabilityCompanion = ({
                           </label>
                           <select
                             value={gapMins}
-                            onChange={(e) =>
-                              setGapMins(parseInt(e.target.value, 10))
-                            }
+                            onChange={(e) => setGapMins(parseInt(e.target.value, 10))}
                             className="w-full bg-white border border-gray-200 rounded-xl p-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                           >
                             <option value={0}>No gap</option>
@@ -557,8 +621,7 @@ const Step4AvailabilityCompanion = ({
                               Preview
                             </p>
                             <p className="text-xs text-black/50">
-                              {previewSlots.length} slot
-                              {previewSlots.length !== 1 ? "s" : ""}
+                              {previewSlots.length} slot{previewSlots.length !== 1 ? "s" : ""}
                             </p>
                           </div>
 
@@ -581,8 +644,10 @@ const Step4AvailabilityCompanion = ({
                                   key={i}
                                   className="text-xs bg-blue-50 border border-blue-100 text-[#0e63be] rounded-full px-3 py-1"
                                 >
-                                  {formatTimeForDisplay(s.start_time)}–{" "}
-                                  {formatTimeForDisplay(s.end_time)}
+                                  {formatTimeForDisplay(s.start_time)}–{formatTimeForDisplay(s.end_time)}
+                                  <span className="ml-2 text-[10px] text-[#0e63be]/80">
+                                    Max: {s.max_guests ?? 1}
+                                  </span>
                                 </div>
                               ))}
                               {previewSlots.length > 10 && (
@@ -597,14 +662,13 @@ const Step4AvailabilityCompanion = ({
                     )}
 
                     <div className="flex justify-end">
-                      {/* Add Button */}
                       <button
                         type="button"
                         onClick={addAvailability}
                         disabled={!start || !end || selectedDays.length === 0}
                         className={`px-6 py-3 rounded-xl font-medium text-sm transition-colors ${start && end && selectedDays.length > 0
-                          ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
-                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            ? "bg-black/80 text-white hover:bg-black/70 cursor-pointer"
+                            : "bg-gray-300 text-gray-500 cursor-not-allowed"
                           }`}
                       >
                         Add to Selected Days
@@ -648,49 +712,79 @@ const Step4AvailabilityCompanion = ({
                             <div
                               key={index}
                               className={`flex flex-col justify-start min-h-[100px] relative p-3 rounded-lg border transition-all ${timeSlots.length > 0
-                                ? "bg-white border-gray-200 hover:border-blue-300"
-                                : "bg-gray-50 border-gray-200"
+                                  ? "bg-white border-gray-200 hover:border-blue-300"
+                                  : "bg-gray-50 border-gray-200"
                                 }`}
                             >
                               {timeSlots.length > 0 ? (
                                 <div className="space-y-2">
                                   {timeSlots
                                     .slice(0, isExpanded ? timeSlots.length : 2)
-                                    .map((slot, slotIndex) => (
-                                      <div key={slotIndex} className="group relative">
-                                        <div
-                                          className="text-sm bg-blue-50 border-l-4 border-[#0e63be]/70 rounded-lg py-1.5 px-2 text-[#0e63be] cursor-pointer hover:bg-blue-100 transition-colors"
-                                          title={`${formatTimeForDisplay(
-                                            slot.start_time
-                                          )} - ${formatTimeForDisplay(slot.end_time)}`}
-                                        >
-                                          <div className="flex flex-col items-center justify-center">
-                                            <span className="text-xs">
-                                              {formatTimeForDisplay(slot.start_time)}
+                                    .map((slot, slotIndex) => {
+                                      const mg =
+                                        Number.isFinite(Number(slot.max_guests)) &&
+                                          Number(slot.max_guests) > 0
+                                          ? Number(slot.max_guests)
+                                          : 1;
+
+                                      return (
+                                        <div key={slotIndex} className="group relative">
+                                          <div
+                                            className="text-sm bg-blue-50 border-l-4 border-[#0e63be]/70 rounded-lg py-1.5 px-2 text-[#0e63be] cursor-pointer hover:bg-blue-100 transition-colors"
+                                            title={`${formatTimeForDisplay(slot.start_time)} - ${formatTimeForDisplay(slot.end_time)} | Max guests: ${mg}`}
+                                          >
+                                            <div className="flex flex-col items-center justify-center relative">
+                                              <span className="text-xs">
+                                                {formatTimeForDisplay(slot.start_time)}
+                                              </span>
+
+                                              {/* delete */}
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
+                                                  const dayIndex = (formData.availability || []).findIndex(
+                                                    (item) => item.day_of_week === fullDay
+                                                  );
+                                                  removeSlot(dayIndex, slotIndex);
+                                                }}
+                                                className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 transition-opacity p-0.5 hover:bg-gray-100 rounded-full"
+                                              >
+                                                <X size={16} className="text-b-500" />
+                                              </button>
+                                            </div>
+
+                                            <span className="text-xs text-[#0e63be]">
+                                              {formatTimeForDisplay(slot.end_time)}
                                             </span>
 
-                                            <button
-                                              onClick={(e) => {
-                                                e.stopPropagation();
-                                                const dayIndex = (
-                                                  formData.availability || []
-                                                ).findIndex(
-                                                  (item) => item.day_of_week === fullDay
-                                                );
-                                                removeSlot(dayIndex, slotIndex);
-                                              }}
-                                              className="opacity-0 group-hover:opacity-100 absolute -top-2 -right-2 transition-opacity p-0.5 hover:bg-gray-100 rounded-full"
-                                            >
-                                              <X size={16} className="text-b-500" />
-                                            </button>
-                                          </div>
+                                            {/* NEW: max guests display + quick edit */}
+                                            <div className="mt-1 flex items-center justify-between gap-2">
+                                              <span className="text-[11px] text-[#0e63be]/80 flex items-center gap-1">
+                                                <Users size={12} />
+                                                Max: {mg}
+                                              </span>
 
-                                          <span className="text-xs text-[#0e63be]">
-                                            {formatTimeForDisplay(slot.end_time)}
-                                          </span>
+                                              {/* quick edit max guests */}
+                                              <input
+                                                type="number"
+                                                min={1}
+                                                value={mg}
+                                                onClick={(e) => e.stopPropagation()}
+                                                onChange={(e) => {
+                                                  e.stopPropagation();
+                                                  const dayIndex = (formData.availability || []).findIndex(
+                                                    (item) => item.day_of_week === fullDay
+                                                  );
+                                                  updateSlotMaxGuests(dayIndex, slotIndex, e.target.value);
+                                                }}
+                                                className="w-[72px] text-[11px] bg-white border border-blue-100 rounded-lg px-2 py-1 text-[#0e63be] focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                title="Edit max guests"
+                                              />
+                                            </div>
+                                          </div>
                                         </div>
-                                      </div>
-                                    ))}
+                                      );
+                                    })}
 
                                   {timeSlots.length > 2 && (
                                     <button

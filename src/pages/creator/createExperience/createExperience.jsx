@@ -52,12 +52,17 @@ const ExperienceCreationForm = () => {
 
   const isEmpty = (v) => v === undefined || v === null || v === "";
 
+  const normalizeMaxGuests = (v) => {
+    const n = Number(v);
+    if (!Number.isFinite(n) || n <= 0) return 1; // fallback
+    return Math.floor(n);
+  };
+
   const validateFormData = () => {
     const requiredUnits = ["Entry", "Hour", "Day", "Package"];
     const hasCompanions =
       formData.travel_companions && formData.travel_companions.length > 0;
 
-    // Add validation for new fields
     if (!formData.category_id) {
       console.log("Category not selected");
       return false;
@@ -80,7 +85,7 @@ const ExperienceCreationForm = () => {
     if (
       !formData.title ||
       !formData.description ||
-      (priceEmpty && estimateEmpty) || // ✅ must have at least one
+      (priceEmpty && estimateEmpty) ||
       (!priceEmpty && isNaN(Number(formData.price))) ||
       !requiredUnits.includes(formData.unit) ||
       !Array.isArray(formData.tags) ||
@@ -127,12 +132,18 @@ const ExperienceCreationForm = () => {
           return false;
         }
 
+        // ✅ NEW: validate max_guests
+        const mg = Number(slot.max_guests);
+        if (!Number.isFinite(mg) || mg <= 0) {
+          console.log("Invalid max_guests in slot:", slot, "Day:", day.day_of_week);
+          toast.error(`Please set a valid max guests for ${day.day_of_week}.`);
+          return false;
+        }
+
         const startTime = new Date(`2000-01-01T${slot.start_time}`);
         const endTime = new Date(`2000-01-01T${slot.end_time}`);
         if (endTime <= startTime) {
-          window.alert(
-            `End time must be after start time for ${day.day_of_week}`
-          );
+          window.alert(`End time must be after start time for ${day.day_of_week}`);
           return false;
         }
       }
@@ -168,7 +179,6 @@ const ExperienceCreationForm = () => {
     try {
       setIsSubmitting(true);
 
-      // Show loading toast
       const loadingToastId = toast.loading(
         status === "active" ? "Publishing activity..." : "Saving draft..."
       );
@@ -181,18 +191,11 @@ const ExperienceCreationForm = () => {
       formDataObj.append("description", formData.description);
       formDataObj.append("notes", formData.notes);
 
-      // ✅ Pricing payload:
-      // - If price provided, send it
-      // - If not, omit price and send price_estimate (backend should store price as NULL)
       const priceEmpty = isEmpty(formData.price);
       const estimateEmpty = isEmpty(formData.price_estimate);
 
       if (!priceEmpty) {
         formDataObj.append("price", Number(formData.price).toString());
-      } else {
-        // Don’t force 0 — leave it out so backend can store NULL for "pay on site"
-        // If your backend REQUIRES `price`, you should adjust backend validation to allow NULL.
-        // If you still must send something, consider sending empty string and handle it server-side.
       }
 
       if (!estimateEmpty) {
@@ -210,17 +213,21 @@ const ExperienceCreationForm = () => {
         JSON.stringify(formData.travel_companions || [])
       );
 
-      const transformedAvailability = formData.availability.map((day) => ({
+      // ✅ UPDATED: include max_guests per slot
+      const transformedAvailability = (formData.availability || []).map((day) => ({
         availability_id: day.availability_id,
         experience_id: day.experience_id,
         day_of_week: day.day_of_week,
-        time_slots: day.time_slots.map((slot) => ({
+        time_slots: (day.time_slots || []).map((slot) => ({
           slot_id: slot.slot_id,
           availability_id: slot.availability_id,
           start_time:
             slot.start_time.length === 5 ? slot.start_time + ":00" : slot.start_time,
           end_time:
             slot.end_time.length === 5 ? slot.end_time + ":00" : slot.end_time,
+
+          // ✅ NEW FIELD
+          max_guests: normalizeMaxGuests(slot.max_guests),
         })),
       }));
 
@@ -277,7 +284,6 @@ const ExperienceCreationForm = () => {
 
       const responseData = await response.json();
 
-      // Dismiss loading toast
       await new Promise((resolve) => setTimeout(resolve, 1200));
       toast.dismiss(loadingToastId);
 
@@ -291,7 +297,7 @@ const ExperienceCreationForm = () => {
       }, 600);
     } catch (err) {
       console.error("Submit error:", err);
-      toast.dismiss(); // remove any active loading toast
+      toast.dismiss();
       toast.error(err instanceof Error ? err.message : "Failed to submit experience");
     } finally {
       setIsSubmitting(false);
@@ -444,7 +450,6 @@ const ExperienceCreationForm = () => {
         </div>
       </div>
 
-      {/* Success Modal */}
       <SuccessModal
         isOpen={showSuccessModal}
         onClose={handleModalClose}

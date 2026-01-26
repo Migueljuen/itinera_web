@@ -49,6 +49,7 @@ import ForgotPassword from "./pages/shared/forgot";
 import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
 import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx";
+import CancellationManagement from "./pages/admin/cancellation.jsx";
 
 export default function App() {
   return (
@@ -222,6 +223,7 @@ export default function App() {
           <Route path="partner/:id" element={<PartnerDetailScreen />} />
           \
           <Route path="refunds" element={<RefundManagement />} />
+          <Route path="cancellations" element={<CancellationManagement />} />
         </Route>
 
         {/* ==================== FALLBACK ==================== */}

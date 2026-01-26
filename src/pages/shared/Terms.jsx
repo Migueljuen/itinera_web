@@ -6,10 +6,7 @@ import { ArrowLeft } from "lucide-react";
 
 function SectionCard({ title, items }) {
     return (
-        <div
-            className="py-4 mb-4 rounded-2xl bg-white"
-
-        >
+        <div className="py-4 mb-4 rounded-2xl bg-white">
             <div className="flex items-center mb-1">
                 <div className="flex-1">
                     <h3 className="text-lg font-display font-semibold text-black/90">
@@ -242,6 +239,8 @@ export default function Terms() {
                         title="D. Partner-Initiated Cancellation"
                         items={[
                             "If the Partner cancels a confirmed booking (except force majeure/safety), the Traveler is entitled to a full refund of amounts paid (downpayment or full).",
+                            "The Partner must provide valid proof/reason for cancelling (e.g., emergency, verified safety issue, unavailability due to uncontrollable circumstances).",
+                            "Frequent or repeated Partner-initiated cancellations may result in warnings, reduced visibility, temporary suspension, or account termination.",
                         ]}
                     />
 

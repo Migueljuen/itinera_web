@@ -801,6 +801,29 @@ const PartnerDetailScreen = () => {
                 <p className="text-black/50 mt-1">Verification files submitted by partner</p>
               </div>
 
+              {/* Business Permit (Creator) */}
+              {user.role === "Creator" && profile?.business_permit_document && (
+                <div className="py-5 flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center">
+                      <FileText size={18} className="text-black/40" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-black/90">Business Permit</p>
+                      <p className="text-sm text-black/50">Permit uploaded by creator</p>
+                    </div>
+                  </div>
+                  <a
+                    href={`${API_URL}/${profile.business_permit_document}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-4 py-2 rounded-xl bg-gray-50 text-black/70 font-medium hover:bg-gray-100 transition"
+                  >
+                    View
+                  </a>
+                </div>
+              )}
+
               {hasDocs ? (
                 <div className="space-y-0 divide-y divide-gray-200">
                   {/* Selfie */}

@@ -270,13 +270,7 @@ const CreatorDashboard = () => {
           </div>
           <div className="flex items-center gap-4">
             <div className="flex gap-4 border-r border-gray-400 px-4">
-              <div className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-gray-300 grid place-items-center">
-                <img
-                  src={envelope}
-                  alt="Inbox"
-                  className="w-5 cursor-pointer"
-                />
-              </div>
+
               {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
@@ -348,15 +342,15 @@ const CreatorDashboard = () => {
           <div className="flex-1 min-h-[600px]">
             <CalendarView events={confirmedEvents} />
           </div>
-          <div className="bg-blue-200 h-72 rounded-4xl flex-shrink-0"></div>
+          {/* <div className="bg-blue-200 h-72 rounded-4xl flex-shrink-0"></div> */}
         </div>
 
         {/* RIGHT COLUMN */}
         <div className="xl:bg-white flex-[0.3] lg:w-full min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300 flex flex-col items-start justify-start">
-          <h1 className="text-xl font-semibold p-8 text-gray-900">
+          {/* <h1 className="text-xl font-semibold p-8 text-gray-900">
             Booking Statistic
           </h1>
-          <BarChartTest />
+          <BarChartTest /> */}
           <h1 className="text-xl font-semibold p-8 text-gray-900">
             Recent Bookings
           </h1>

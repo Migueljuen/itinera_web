@@ -9,6 +9,7 @@ import {
   Settings,
   HelpCircle,
   Inbox,
+  Ban,
   LogOut,
   X,
   ChevronDown,
@@ -132,14 +133,15 @@ const AdminDashboardLayout = ({ children }) => {
       path: "/refunds",
       expandable: false,
     },
-
     {
-      id: "activities",
-      label: "Activities",
-      icon: () => <img src={Calendars} alt="Bookings" className="w-5 h-5" />,
-      path: "/owner/activities",
+      id: "cancellations",
+      label: "Cancellations",
+      icon: Ban,
+      path: "/cancellations",
       expandable: false,
     },
+
+
   ];
 
   useEffect(() => {

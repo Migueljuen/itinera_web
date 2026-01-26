@@ -374,75 +374,7 @@ const AdminDashboard = () => {
         {/* Overview */}
 
         <div className="flex gap-2 w-full h-[490px] ">
-          <div className="flex gap-2 flex-col flex-[0.3] h-full ">
-            {/* New Tickets / Active Activities */}
-            <div className="bg-white  px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between h-full">
-              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-                <div className="p-2 bg-green-50 rounded-md">
-                  <PresentationChartLineIcon className="w-7 h-7 text-green-900/50" />
-                </div>
-                <p className="font-medium text-black/80">Active Activities</p>
-              </div>
 
-              <div className="flex justify-between items-end mt-4 ">
-                <div className="flex items-start gap-6 flex-col ">
-                  <p className="text-3xl font-semibold text-black/80">
-                    {stats.activeExperiences.count}
-                  </p>
-                  <div className="flex gap-2">
-                    <span className="flex items-center w-fit text-green-600 bg-green-50 h-fit py-0.5 px-3 rounded-full border border-green-300 text-sm">
-                      <ArrowTrendingUpIcon className="w-4 h-4 text-green-600" />
-                      +18%
-                    </span>
-                    <p className="text-black/40 text-sm  "> Than last month</p>
-                  </div>
-                </div>
-
-                {/* Dummy mini-bar */}
-                <div className="flex items-end justify-end gap-1 h-full w-3/6 ">
-                  <div className="w-4 h-8 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
-                  <div className="w-4 h-12 bg-gradient-to-b from-gray-400 to-white rounded-full"></div>
-                  <div className="w-4 h-8 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
-                  <div className="w-4 h-14 bg-gradient-to-b from-gray-500 to-white rounded-full"></div>
-                  <div className="w-4 h-16 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
-                </div>
-              </div>
-            </div>
-
-            {/* Review needed*/}
-            <div className=" px-6 py-8 rounded-2xl bg-white border-2 border-gray-300 flex flex-col justify-between h-full">
-              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
-                <div className="p-2 bg-yellow-50 rounded-md">
-                  <ClockIcon className="w-7 h-7 text-yellow-600" />
-                </div>
-                <p className="font-medium text-black/80">Review Needed</p>
-              </div>
-
-              <div className="flex justify-between items-end mt-4">
-                <div className="flex items-start gap-4 flex-col ">
-                  <p className="text-3xl font-semibold text-black/80">
-                    {stats.pendingExperiences.count}
-                  </p>
-                  <div className="flex gap-2">
-                    <span className="flex items-center w-fit text-green-600 bg-green-50 h-fit py-0.5 px-3 rounded-full border border-green-300 text-sm">
-                      <ArrowTrendingUpIcon className="w-4 h-4 text-green-600" />
-                      +24%
-                    </span>
-                    <p className="text-black/40 text-sm  "> Than last month</p>
-                  </div>
-                </div>
-
-                {/* Dummy mini-bar */}
-                <div className="flex items-end justify-end gap-1 h-full w-3/6 ">
-                  <div className="w-4 h-12 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
-                  <div className="w-4 h-7 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
-                  <div className="w-4 h-16 bg-gradient-to-b from-gray-500 to-white rounded-full"></div>
-                  <div className="w-4 h-12 bg-gradient-to-b from-gray-300 to-white rounded-full"></div>
-                  <div className="w-4 h-16 bg-gradient-to-b from-gray-900 to-white rounded-full"></div>
-                </div>
-              </div>
-            </div>
-          </div>
 
           {/* Itinerary Payments Section */}
           <div className="bg-white p-6 rounded-2xl border-2 border-gray-300 flex flex-col flex-[0.7] h-full">
@@ -545,6 +477,37 @@ const AdminDashboard = () => {
                 ))
               )}
             </div>
+          </div>
+          <div className="flex gap-2 flex-col flex-[0.3] h-full ">
+            {/* New Tickets / Active Activities */}
+            <div className="bg-white  px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between h-fit">
+              <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                <div className="p-2 bg-green-50 rounded-md">
+                  <PresentationChartLineIcon className="w-7 h-7 text-green-900/50" />
+                </div>
+                <p className="font-medium text-black/80">Active Activities</p>
+              </div>
+
+              <div className="flex justify-between items-end mt-4 ">
+                <div className="flex items-start gap-6 flex-col ">
+                  <p className="text-3xl font-semibold text-black/80">
+                    {stats.activeExperiences.count}
+                  </p>
+                  {/* <div className="flex gap-2">
+                    <span className="flex items-center w-fit text-green-600 bg-green-50 h-fit py-0.5 px-3 rounded-full border border-green-300 text-sm">
+                      <ArrowTrendingUpIcon className="w-4 h-4 text-green-600" />
+                      +18%
+                    </span>
+                    <p className="text-black/40 text-sm  "> Than last month</p>
+                  </div> */}
+                </div>
+
+
+              </div>
+            </div>
+
+            {/* Review needed*/}
+
           </div>
         </div>
 

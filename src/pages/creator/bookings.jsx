@@ -32,10 +32,8 @@ import API_URL from "../../constants/api";
 import toast, { Toaster } from "react-hot-toast";
 import dayjs from "dayjs";
 import BookingFilters from "../../components/BookingFilters";
-
 import isBetween from "dayjs/plugin/isBetween";
 
-// Extend dayjs with the plugin
 dayjs.extend(isBetween);
 
 const BookingManagement = () => {
@@ -52,28 +50,26 @@ const BookingManagement = () => {
   const [expandedBookingId, setExpandedBookingId] = useState(null);
   const [filters, setFilters] = useState({});
 
+  const [cancelReasonById, setCancelReasonById] = useState({});
+  const [cancelSubmittingId, setCancelSubmittingId] = useState(null);
+
   const bookingRefs = useRef({});
 
   const ITEMS_PER_PAGE = 10;
 
-  //convert booking date
   const formatDate = (dateString) => {
     return dayjs(dateString).format("MMM D");
   };
 
   const isOngoing = (booking) => {
     const now = dayjs();
-    const bookingDate = dayjs(booking.booking_date);
-
     if (!booking.start_time || !booking.end_time) return false;
 
     const start = dayjs(`${booking.booking_date}T${booking.start_time}`);
     const end = dayjs(`${booking.booking_date}T${booking.end_time}`);
-
     return now.isAfter(start) && now.isBefore(end);
   };
 
-  // Function to fetch bookings
   const fetchBookings = async () => {
     if (!user?.user_id) return;
 
@@ -101,14 +97,12 @@ const BookingManagement = () => {
     }
   };
 
-  // Initial data loading
   useEffect(() => {
     if (user?.user_id) {
       fetchBookings();
     }
   }, [user]);
 
-  // Handle selected booking from URL parameter
   useEffect(() => {
     const selectedId = searchParams.get("selectedId");
 
@@ -117,10 +111,8 @@ const BookingManagement = () => {
       const booking = bookings.find((b) => b.booking_id === bookingId);
 
       if (booking) {
-        // Expand the booking
         setExpandedBookingId(bookingId);
 
-        // Set the appropriate tab based on booking status
         const status = booking.status;
         if (isOngoing(booking) || status?.toLowerCase() === "ongoing") {
           setSelectedTab("Ongoing");
@@ -134,7 +126,6 @@ const BookingManagement = () => {
           setSelectedTab("All");
         }
 
-        // Scroll to the booking after a short delay to ensure rendering
         setTimeout(() => {
           bookingRefs.current[bookingId]?.scrollIntoView({
             behavior: "smooth",
@@ -145,7 +136,6 @@ const BookingManagement = () => {
     }
   }, [searchParams, bookings]);
 
-  // Reset to first page when tab or search changes
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedTab, searchText]);
@@ -155,13 +145,11 @@ const BookingManagement = () => {
     const dateA = dayjs(a.booking_date);
     const dateB = dayjs(b.booking_date);
 
-    // Difference in days from today
     const diffA = Math.abs(dateA.diff(today, "day"));
     const diffB = Math.abs(dateB.diff(today, "day"));
 
-    // Sort by which date is closer to today
     if (diffA === diffB) {
-      return dateA.isBefore(dateB) ? -1 : 1; // if equal distance, earlier date first
+      return dateA.isBefore(dateB) ? -1 : 1;
     }
     return diffA - diffB;
   });
@@ -174,9 +162,7 @@ const BookingManagement = () => {
       booking.traveler_last_name
         ?.toLowerCase()
         .includes(searchText.toLowerCase()) ||
-      booking.traveler_email
-        ?.toLowerCase()
-        .includes(searchText.toLowerCase()) ||
+      booking.traveler_email?.toLowerCase().includes(searchText.toLowerCase()) ||
       booking.booking_id?.toString().includes(searchText.toLowerCase());
 
     const matchesTab =
@@ -186,53 +172,49 @@ const BookingManagement = () => {
       (selectedTab !== "Ongoing" &&
         booking.status?.toLowerCase() === selectedTab.toLowerCase());
 
-    // Date filter
     let matchesDate = true;
-    if (filters.dateFilter && filters.dateFilter !== 'all') {
+    if (filters.dateFilter && filters.dateFilter !== "all") {
       const bookingDate = dayjs(booking.booking_date);
       const today = dayjs();
 
-      if (filters.dateFilter === 'today') {
-        matchesDate = bookingDate.isSame(today, 'day');
-      } else if (filters.dateFilter === 'week') {
-        matchesDate = bookingDate.isSame(today, 'week');
-      } else if (filters.dateFilter === 'month') {
-        matchesDate = bookingDate.isSame(today, 'month');
-      } else if (filters.dateFilter === 'custom') {
+      if (filters.dateFilter === "today") {
+        matchesDate = bookingDate.isSame(today, "day");
+      } else if (filters.dateFilter === "week") {
+        matchesDate = bookingDate.isSame(today, "week");
+      } else if (filters.dateFilter === "month") {
+        matchesDate = bookingDate.isSame(today, "month");
+      } else if (filters.dateFilter === "custom") {
         if (filters.customDateRange?.start && filters.customDateRange?.end) {
           const startDate = dayjs(filters.customDateRange.start);
           const endDate = dayjs(filters.customDateRange.end);
 
-          matchesDate = (bookingDate.isAfter(startDate) || bookingDate.isSame(startDate, 'day')) &&
-            (bookingDate.isBefore(endDate) || bookingDate.isSame(endDate, 'day'));
+          matchesDate =
+            (bookingDate.isAfter(startDate) ||
+              bookingDate.isSame(startDate, "day")) &&
+            (bookingDate.isBefore(endDate) || bookingDate.isSame(endDate, "day"));
         }
       }
     }
 
-    // Experience filter
     const matchesExperience =
       !filters.selectedExperience ||
-      filters.selectedExperience === 'all' ||
+      filters.selectedExperience === "all" ||
       booking.experience_title === filters.selectedExperience;
 
-    // Booking status filter
     const matchesStatus =
       !filters.statusFilter ||
-      filters.statusFilter === 'all' ||
+      filters.statusFilter === "all" ||
       booking.status?.toLowerCase() === filters.statusFilter.toLowerCase();
 
     return matchesSearch && matchesTab && matchesDate && matchesExperience && matchesStatus;
   });
 
-  // Calculate pagination
   const totalPages = Math.ceil(filteredBookings.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedBookings = filteredBookings.slice(startIndex, endIndex);
 
-  // Function to format date and time
   const formatDateTime = (createdAt, startTime, endTime) => {
-    // Convert times to Date objects if they aren't already
     const start = new Date(`1970-01-01T${startTime}`);
     const end = new Date(`1970-01-01T${endTime}`);
 
@@ -251,21 +233,80 @@ const BookingManagement = () => {
     return `${startFormatted} - ${endFormatted}`;
   };
 
+  const canRequestCancel = (booking) => {
+    const s = (booking.status || "").toLowerCase();
+    return s === "pending" || s === "confirmed";
+  };
+
+  const isCancelRequested = (booking) => {
+    return (booking.status || "").toLowerCase() === "cancellationrequested";
+  };
+
+  const submitPartnerCancellation = async (booking) => {
+    const bookingId = booking.booking_id;
+    const reason = (cancelReasonById[bookingId] || "").trim();
+
+    if (!reason) {
+      toast.error("Please provide a cancellation reason.");
+      return;
+    }
+
+    const ok = window.confirm(
+      "Submit cancellation request?\n\nThis will be reviewed by admin."
+    );
+    if (!ok) return;
+
+    try {
+      setCancelSubmittingId(bookingId);
+
+      const res = await axios.post(
+        `${API_URL}/cancellation/partner/bookings/${bookingId}/cancel`,
+        {
+          cancellation_reason: reason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to request cancellation");
+      }
+
+      toast.success("Cancellation requested. Pending admin review.");
+
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.booking_id === bookingId ? { ...b, status: "CancellationRequested" } : b
+        )
+      );
+
+      setCancelReasonById((prev) => ({ ...prev, [bookingId]: "" }));
+    } catch (err) {
+      console.error("submitPartnerCancellation error:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to request cancellation";
+      toast.error(msg);
+    } finally {
+      setCancelSubmittingId(null);
+    }
+  };
+
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
 
   const getTabCounts = () => ({
     All: bookings.length,
-    Confirmed: bookings.filter((b) => b.status?.toLowerCase() === "confirmed")
-      .length,
-    Ongoing: bookings.filter(
-      (b) => isOngoing(b) || b.status?.toLowerCase() === "ongoing"
-    ).length,
-    Completed: bookings.filter((b) => b.status?.toLowerCase() === "completed")
-      .length,
-    Cancelled: bookings.filter((b) => b.status?.toLowerCase() === "cancelled")
-      .length,
+    Confirmed: bookings.filter((b) => b.status?.toLowerCase() === "confirmed").length,
+    Ongoing: bookings.filter((b) => isOngoing(b) || b.status?.toLowerCase() === "ongoing").length,
+    Completed: bookings.filter((b) => b.status?.toLowerCase() === "completed").length,
+    Cancelled: bookings.filter((b) => b.status?.toLowerCase() === "cancelled").length,
   });
 
   const tabCounts = getTabCounts();
@@ -275,15 +316,12 @@ const BookingManagement = () => {
       <Toaster position="top-center" />
       <div className="min-h-screen">
         <div className="">
-          {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-semibold text-gray-900">
                 Booking Management
               </h1>
-              <p className="text-gray-600 mt-1">
-                Manage your experience bookings
-              </p>
+              <p className="text-gray-600 mt-1">Manage your experience bookings</p>
             </div>
             <div className="flex gap-3">
               <button className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
@@ -293,12 +331,8 @@ const BookingManagement = () => {
             </div>
           </div>
 
-          {/* Bookings Table */}
           <div className="bg-white rounded-lg">
-            {/* Table Header */}
             <div className="py-4">
-              {/* Search and Filters */}
-
               <BookingFilters
                 bookings={bookings}
                 searchText={searchText}
@@ -307,7 +341,6 @@ const BookingManagement = () => {
               />
             </div>
 
-            {/* Table Body */}
             <div className="divide-y divide-gray-200">
               {loading ? (
                 <div className="py-8 text-center">
@@ -321,19 +354,22 @@ const BookingManagement = () => {
               ) : (
                 paginatedBookings.map((booking) => {
                   const isExpanded = expandedBookingId === booking.booking_id;
+
+                  // ✅ Payment should show ONLY if this booking’s experience requires payment
+                  // Backend must return booking.reservation_requires_payment (from experience.reservation_requires_payment)
+                  const requiresPayment =
+                    booking.reservation_requires_payment === 1 ||
+                    booking.reservation_requires_payment === true;
+
                   return (
                     <div
                       key={booking.booking_id}
-                      ref={(el) =>
-                        (bookingRefs.current[booking.booking_id] = el)
-                      }
+                      ref={(el) => (bookingRefs.current[booking.booking_id] = el)}
                       className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
                         }`}
                     >
-                      {/* Top Row */}
                       <div className="flex items-center justify-between px-2">
                         <div className="grid grid-cols-[120px_240px_300px] gap-4">
-                          {/* DAY NUMBER AND DAY OF WEEK */}
                           <div
                             className={`text-center px-4 border-r border-gray-300 ${dayjs(booking.booking_date).isSame(dayjs(), "day")
                               ? "text-[#3A81F3]"
@@ -348,7 +384,6 @@ const BookingManagement = () => {
                             </p>
                           </div>
 
-                          {/* Date & Time */}
                           <div className="text-sm font-medium text-black/60 px-4 flex flex-col justify-around">
                             <div className="flex items-center gap-3">
                               <Clock size={16} className="text-black/60" />
@@ -366,7 +401,6 @@ const BookingManagement = () => {
                             </div>
                           </div>
 
-                          {/* Activity booked and user */}
                           <div className="flex flex-col justify-around px-4">
                             <span className="font-medium text-sm text-black/70">
                               {booking.experience_title}
@@ -386,12 +420,9 @@ const BookingManagement = () => {
                           </div>
                         </div>
 
-                        {/* Expand Button */}
                         <button
                           onClick={() =>
-                            setExpandedBookingId(
-                              isExpanded ? null : booking.booking_id
-                            )
+                            setExpandedBookingId(isExpanded ? null : booking.booking_id)
                           }
                           className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
                         >
@@ -404,227 +435,89 @@ const BookingManagement = () => {
                         </button>
                       </div>
 
-                      {/* Expanded Content (Sliding Section) */}
                       <div
                         className={`transition-all duration-300 ease-in-out overflow-hidden ${isExpanded
-                          ? "max-h-[1000px] opacity-100 mt-4"
+                          ? "max-h-[1300px] opacity-100 mt-4"
                           : "max-h-0 opacity-0"
                           }`}
                       >
-                        <div className="border-t border-gray-200 pt-4 px-8">
+                        <div className="border-t border-gray-200 py-12 px-12">
                           <div className="grid grid-cols-2 gap-8">
-                            {/* Left Column */}
-                            <div className="space-y-6">
-                              {/* Traveler Details */}
+                            <div className="flex flex-row justify-between gap-12">
                               <div>
-                                <h4 className="font-semibold mb-2 flex items-center gap-2">
-                                  <User size={18} />
+                                <h4 className="text-lg font-medium text-black/80 mb-4 flex items-center gap-2">
                                   Traveler Details
                                 </h4>
-                                <div className="space-y-1 text-sm">
-                                  <p className="text-black/50">
-                                    Full Name: {booking.traveler_first_name}{" "}
+                                <div className="space-y-3 text-sm">
+                                  <p className="text-black/60">
+                                    <span className="font-medium text-black/80">Full Name:</span> &nbsp;{booking.traveler_first_name}{" "}
                                     {booking.traveler_last_name}
                                   </p>
-                                  <p className="text-black/50">
-                                    Mobile Number:{" "}
+                                  <p className="text-black/60">
+                                    <span className="font-medium text-black/80">Mobile Number:</span>{" "}&nbsp;
                                     {booking.traveler_mobile_number || "N/A"}
                                   </p>
-                                  <p className="text-black/50">
-                                    Email: {booking.traveler_email}
+                                  <p className="text-black/60">
+                                    <span className="font-medium text-black/80">Email:</span>{" "}&nbsp; {booking.traveler_email}
                                   </p>
                                 </div>
                               </div>
 
-                              {/* Booking Details */}
                               <div>
-                                <h4 className="font-semibold mb-2 flex items-center gap-4">
-                                  Booking Details
-                                  {(() => {
-                                    const statusMap = {
-                                      Confirmed: {
-                                        label: "Upcoming",
-                                        color:
-                                          "text-purple-950/60 bg-purple-200",
-                                        dot: "bg-purple-950/60",
-                                      },
-                                      Ongoing: {
-                                        label: "Ongoing",
-                                        color:
-                                          "text-yellow-800/60 bg-yellow-100",
-                                        dot: "bg-yellow-800/60",
-                                      },
-                                      Completed: {
-                                        label: "Completed",
-                                        color:
-                                          "text-green-950/60 bg-green-100/80",
-                                        dot: "bg-green-950/60",
-                                      },
-                                      Cancelled: {
-                                        label: "Cancelled",
-                                        color: "text-gray-700/60 bg-gray-100",
-                                        dot: "bg-gray-700/60",
-                                      },
-                                    };
-
-                                    const status = statusMap[
-                                      booking.status
-                                    ] || {
-                                      label: booking.status,
-                                      color: "text-gray-600 bg-gray-100",
-                                      dot: "bg-gray-600",
-                                    };
-
-                                    return (
-                                      <p
-                                        className={`text-xs w-fit px-3 py-1 flex items-center rounded-xl gap-2 ${status.color}`}
-                                      >
-                                        <div
-                                          className={`size-2 rounded-full ${status.dot}`}
-                                        ></div>
-                                        {status.label}
-                                      </p>
-                                    );
-                                  })()}
+                                <h4 className="mb-4 font-medium text-black/80 text-lg flex items-center gap-4">
+                                  Booking Information
                                 </h4>
 
-                                <div className="space-y-1 text-sm">
-                                  <p className="text-black/50">
-                                    Booking ID: 0000{booking.booking_id}
+                                <div className="space-y-3 text-sm">
+                                  <p className="text-black/60">
+                                    <span className="font-medium text-black/80">Booking ID: </span>
+                                    0000{booking.booking_id}
                                   </p>
-                                  <p className="text-black/50">
-                                    {booking.experience_title}
+                                  <p className="text-black/60">
+                                    <span className="font-medium text-black/80">Guest count: </span> {booking.guest_count}
                                   </p>
-                                </div>
-                              </div>
 
-                              {/* Actions */}
-                              <div>
-                                <button className="px-6 py-2 bg-[#3A81F3] text-white/90 text-base rounded-lg hover:bg-[#3A81F3]/75">
-                                  Contact Traveler
-                                </button>
+                                </div>
                               </div>
                             </div>
 
-                            {/* Right Column - Earnings Breakdown */}
                             <div className="space-y-6">
-                              {/* Earnings Breakdown Card */}
-                              <div className="rounded-xl p-6 border border-gray-200 ">
-                                <h4 className="font-semibold mb-4 flex items-center gap-2">
-                                  Earnings Breakdown
-                                </h4>
+                              {/* ✅ Only show this section when payment is required */}
+                              {requiresPayment && (
+                                <div>
+                                  <h4 className="text-lg mb-3">Payment Details</h4>
 
-                                <div className="space-y-4">
-                                  {/* Activity Price */}
-                                  <div className="flex justify-between items-center pb-3 border-b border-gray-200">
-                                    <span className="text-sm text-black/60">
-                                      Activity Price
-                                    </span>
-                                    <span className="text-lg font-semibold text-black/80">
-                                      ₱
-                                      {parseFloat(
-                                        booking.activity_price || 0
-                                      ).toFixed(2)}
-                                    </span>
-                                  </div>
-
-                                  {/* Platform Commission */}
-                                  <div className="bg-white rounded-lg p-4">
-                                    <div className="flex justify-between items-center mb-2">
-                                      <span className="text-sm font-medium text-black/70">
-                                        Platform Commission
+                                  <div className="space-y-2 text-sm">
+                                    <div className="flex justify-between py-2 border-b border-gray-100">
+                                      <span className="text-black/60">
+                                        Prepaid / Online Paid:
                                       </span>
-                                      <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded">
-                                        {booking.platform_commission_rate}%
+                                      <span className="font-medium text-black/80">
+                                        ₱
+                                        {parseFloat(
+                                          booking.creator_prepaid_amount || 0
+                                        ).toFixed(2)}
                                       </span>
                                     </div>
-                                    <p className="text-2xl font-bold text-[#397ff1]">
-                                      ₱
-                                      {parseFloat(
-                                        booking.platform_commission_amount || 0
-                                      ).toFixed(2)}
-                                    </p>
-                                  </div>
 
-                                  {/* Creator Payout */}
-                                  <div className="bg-white rounded-lg p-4">
-                                    <div className="flex justify-between items-center mb-2">
-                                      <span className="text-sm font-medium text-black/70">
-                                        Your Payout
+                                    <div className="flex justify-between items-center py-2 bg-gray-50 rounded-lg px-3 mt-3">
+                                      <span className="text-black/70 font-medium">
+                                        Payment Status
                                       </span>
-                                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
-                                        {100 - booking.platform_commission_rate}
-                                        %
+                                      <span className="font-medium text-black/80">
+                                        {booking.payment_status || "N/A"}
                                       </span>
                                     </div>
-                                    <p className="text-2xl font-bold text-green-700">
-                                      ₱
-                                      {parseFloat(
-                                        booking.creator_payout_amount || 0
-                                      ).toFixed(2)}
-                                    </p>
                                   </div>
                                 </div>
-                              </div>
+                              )}
 
-                              {/* Payment Summary */}
-                              <div>
-                                <h4 className="font-semibold mb-3">
-                                  Payment Details
-                                </h4>
+                              {/* Optional: show a tiny label when it does NOT require payment */}
+                              {!requiresPayment && (
+                                <div className="text-sm text-black/50">
 
-                                <div className="space-y-2 text-sm">
-                                  <div className="flex justify-between py-2 border-b border-gray-100">
-                                    <span className="text-black/60">
-                                      Prepaid / Online Paid:
-                                    </span>
-                                    <span className="font-medium text-black/80">
-                                      ₱
-                                      {parseFloat(
-                                        booking.creator_prepaid_amount || 0
-                                      ).toFixed(2)}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex justify-between py-2 border-b border-gray-100">
-                                    <span className="text-black/60">
-                                      Cash to Collect Onsite:
-                                    </span>
-                                    <span className="font-medium text-black/80">
-                                      ₱
-                                      {parseFloat(
-                                        booking.creator_cash_due || 0
-                                      ).toFixed(2)}
-                                    </span>
-                                  </div>
-
-                                  <div className="flex justify-between items-center py-2 bg-gray-50 rounded-lg px-3 mt-3">
-                                    <span className="text-black/70 font-medium">
-                                      Cash Collected:
-                                    </span>
-                                    <span>
-                                      {booking.creator_cash_collected ? (
-                                        <span className="text-green-600 font-medium flex items-center gap-1">
-                                          <CheckCircle size={14} />
-                                          Yes
-                                          <span className="text-xs text-gray-500">
-                                            (
-                                            {dayjs(
-                                              booking.creator_cash_collected_at
-                                            ).format("MMM D, h:mm A")}
-                                            )
-                                          </span>
-                                        </span>
-                                      ) : (
-                                        <span className="text-red-600 font-medium flex items-center gap-1">
-                                          {/* <XCircle size={14} /> */}
-                                          Not yet
-                                        </span>
-                                      )}
-                                    </span>
-                                  </div>
                                 </div>
-                              </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -636,20 +529,17 @@ const BookingManagement = () => {
             </div>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="mt-6 flex justify-between items-center">
               <div className="text-sm text-gray-600">
                 Showing {startIndex + 1}-
-                {Math.min(startIndex + ITEMS_PER_PAGE, filteredBookings.length)}{" "}
-                of {filteredBookings.length} bookings
+                {Math.min(startIndex + ITEMS_PER_PAGE, filteredBookings.length)} of{" "}
+                {filteredBookings.length} bookings
               </div>
 
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() =>
-                    setCurrentPage((prev) => Math.max(1, prev - 1))
-                  }
+                  onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
                   className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >

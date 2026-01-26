@@ -242,7 +242,7 @@ const ExperienceManagement = () => {
                 <div className="flex justify-between items-center">
                   {/* Tab Navigation */}
                   <div className="flex bg-gray-50 rounded-lg w-fit p-2">
-                    {["All", "Active", "Inactive", "Draft", "Pending"].map(
+                    {["All", "Active", "Inactive", "Draft"].map(
                       (tab) => (
                         <button
                           key={tab}

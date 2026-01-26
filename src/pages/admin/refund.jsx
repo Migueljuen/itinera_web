@@ -289,19 +289,7 @@ const RefundManagement = () => {
                             </p>
                         </div>
 
-                        <div className="flex gap-3">
-                            <button
-                                onClick={() => {
-                                    fetchRefunds();
-                                    fetchStats();
-                                    toast.success("Refreshed");
-                                }}
-                                className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                            >
-                                <Download size={16} />
-                                Export
-                            </button>
-                        </div>
+
                     </div>
 
                     {/* Stats */}
@@ -358,8 +346,8 @@ const RefundManagement = () => {
                                             key={tab}
                                             onClick={() => setSelectedTab(tab)}
                                             className={`px-5 font-medium transition-colors py-2 rounded-lg ${selectedTab === tab
-                                                    ? "bg-white text-black/80 shadow-sm"
-                                                    : "text-black/50 hover:text-black/70"
+                                                ? "bg-white text-black/80 shadow-sm"
+                                                : "text-black/50 hover:text-black/70"
                                                 }`}
                                         >
                                             {tab}
@@ -599,8 +587,8 @@ const RefundManagement = () => {
                                             key={page}
                                             onClick={() => setCurrentPage(page)}
                                             className={`px-3 py-2 border rounded-lg ${currentPage === page
-                                                    ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
-                                                    : "border-gray-300 hover:bg-gray-50"
+                                                ? "bg-[#3A81F3] text-white cursor-pointer hover:bg-[#3A81F3]/90"
+                                                : "border-gray-300 hover:bg-gray-50"
                                                 }`}
                                         >
                                             {page}
