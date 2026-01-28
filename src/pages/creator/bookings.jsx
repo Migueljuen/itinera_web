@@ -424,10 +424,22 @@ const BookingManagement = () => {
     return !isCancelled && isPending;
   };
 
+  // Helper to check if booking has pending payment that needs attention
+  const hasPendingPayment = (booking) => {
+    const requiresPayment =
+      booking.reservation_requires_payment === 1 ||
+      booking.reservation_requires_payment === true;
+    const isPending = booking.payment_status?.toLowerCase() === "pending";
+    const isNotCancelled =
+      booking.status?.toLowerCase() !== "cancelled" &&
+      booking.status?.toLowerCase() !== "cancellationrequested";
+    return requiresPayment && isPending && isNotCancelled;
+  };
+
   return (
     <>
       <Toaster position="top-center" />
-      <div className="min-h-screen">
+      <div className="min-h-screen pb-48">
         <div className="">
           <div className="flex justify-between items-center mb-6">
             <div>
@@ -474,12 +486,17 @@ const BookingManagement = () => {
                     booking.reservation_requires_payment === true;
 
                   const isVerifying = verifyingPaymentId === booking.booking_id;
+                  const isPendingPayment = hasPendingPayment(booking);
 
                   return (
                     <div
                       key={booking.booking_id}
                       ref={(el) => (bookingRefs.current[booking.booking_id] = el)}
-                      className={`py-6 mb-4 border rounded-xl border-gray-300 bg-white transition ${isExpanded ? "ring-2 ring-blue-400" : ""
+                      className={`py-6 mb-4 border rounded-xl bg-white transition ${isExpanded
+                        ? "ring-2 ring-blue-400 border-blue-400"
+                        : isPendingPayment
+                          ? "border-amber-400 border-2"
+                          : "border-gray-300"
                         }`}
                     >
                       <div className="flex items-center justify-between px-2">
@@ -534,19 +551,28 @@ const BookingManagement = () => {
                           </div>
                         </div>
 
-                        <button
-                          onClick={() =>
-                            setExpandedBookingId(isExpanded ? null : booking.booking_id)
-                          }
-                          className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
-                        >
-                          {isExpanded ? "Less" : "More"}{" "}
-                          <ChevronDown
-                            size={16}
-                            className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
-                              }`}
-                          />
-                        </button>
+                        <div className="flex items-center gap-3">
+                          {/* Pending payment indicator badge */}
+                          {isPendingPayment && (
+                            <span className="px-2.5 py-1 text-xs font-medium bg-amber-100 text-amber-700 rounded-full">
+                              Payment Pending
+                            </span>
+                          )}
+
+                          <button
+                            onClick={() =>
+                              setExpandedBookingId(isExpanded ? null : booking.booking_id)
+                            }
+                            className="flex items-center gap-2 px-4 rounded-md text-sm font-normal text-black/80 hover:text-black/60"
+                          >
+                            {isExpanded ? "Less" : "More"}{" "}
+                            <ChevronDown
+                              size={16}
+                              className={`transition-transform duration-300 ${isExpanded ? "rotate-180" : ""
+                                }`}
+                            />
+                          </button>
+                        </div>
                       </div>
 
                       <div

@@ -47,7 +47,7 @@ const SubscriptionPage = () => {
         if (s === "active") {
             return (
                 <span className={`${base} bg-green-50 border-green-200 text-green-700`}>
-                    <CheckCircle size={14} /> Active
+                    Active
                 </span>
             );
         }
@@ -55,7 +55,7 @@ const SubscriptionPage = () => {
         if (s === "trialing" || s === "trial") {
             return (
                 <span className={`${base} bg-blue-50 border-blue-200 text-blue-700`}>
-                    <Clock size={14} /> Trial
+                    Trial
                 </span>
             );
         }
@@ -63,7 +63,7 @@ const SubscriptionPage = () => {
         if (s === "expired" || s === "inactive") {
             return (
                 <span className={`${base} bg-gray-50 border-gray-200 text-gray-700`}>
-                    <Clock size={14} /> Expired
+                    Expired
                 </span>
             );
         }
@@ -281,11 +281,11 @@ const SubscriptionPage = () => {
                                     {/* Overview Section */}
                                     <div className="py-6 px-6">
                                         {/* ✅ Registration Indicator Banner */}
-                                        {registrationBanner?.show && (
+                                        {/* {registrationBanner?.show && (
                                             <div className={registrationBanner.className}>
                                                 {registrationBanner.text}
                                             </div>
-                                        )}
+                                        )} */}
 
                                         <div className="flex items-start justify-between gap-6">
                                             <div className="flex-1">
@@ -363,7 +363,7 @@ const SubscriptionPage = () => {
                                             </div>
 
                                             {/* Registration Payment Box */}
-                                            <div className="w-full max-w-[360px] border border-gray-300 rounded-xl p-4">
+                                            {/* <div className="w-full max-w-[360px] border border-gray-300 rounded-xl p-4">
                                                 <div className="flex items-center gap-2 text-gray-900 font-medium">
                                                     <CreditCard size={16} />
                                                     Registration Payment
@@ -453,7 +453,7 @@ const SubscriptionPage = () => {
                                                         activates/extends your subscription.
                                                     </p>
                                                 </div>
-                                            </div>
+                                            </div> */}
                                         </div>
                                     </div>
 
