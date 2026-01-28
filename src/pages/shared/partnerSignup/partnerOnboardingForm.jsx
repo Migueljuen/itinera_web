@@ -7,15 +7,9 @@ import toast, { Toaster } from "react-hot-toast";
 // Step components (Creator flow only)
 import Step00Requirements from "./steps/Step00Requirements";
 import Step01PartnerInfo from "./steps/Step01PartnerInfo";
-import Step02Verification from "./steps/Step02Verification";
-import Step03ReviewSubmit from "./steps/Step03ReviewSubmit";
+import Step02Verification from "./steps/step02Verification";
+import Step03ReviewSubmit from "./steps/step03ReviewSubmit";
 import API_URL from "../../../constants/api";
-
-// --- Creator-only flow ---
-// Step 0: Requirements
-// Step 1: Partner Info
-// Step 2: Verification (Selfie + ID + Business Permit)
-// Step 3: Review & Submit
 
 const DEFAULT_TIMEZONE =
     Intl.DateTimeFormat().resolvedOptions().timeZone || "Asia/Manila";
@@ -47,7 +41,11 @@ const PartnerOnboardingForm = () => {
 
         // verification
         id_document: null,
-        business_permit_document: null, // ✅ NEW
+        business_permit_document: null,
+
+        // ✅ NEW (Option A): registration payment
+        gcash_reference: "",
+        registration_payment_proof: null,
     });
 
     const handleNext = () => {
@@ -81,11 +79,17 @@ const PartnerOnboardingForm = () => {
             fd.append("password", formData.password);
             fd.append("timezone", formData.timezone);
 
+            // ✅ NEW: registration payment ref
+            fd.append("gcash_reference", (formData.gcash_reference || "").trim());
+
             // Files
             appendFile(fd, "profile_pic", formData.profile_pic);
             appendFile(fd, "id_document", formData.id_document);
             appendFile(fd, "selfie_document", formData.selfie_document);
-            appendFile(fd, "business_permit_document", formData.business_permit_document); // ✅ NEW
+            appendFile(fd, "business_permit_document", formData.business_permit_document);
+
+            // ✅ NEW: registration payment proof upload
+            appendFile(fd, "registration_payment_proof", formData.registration_payment_proof);
 
             console.log("=== Data being sent to backend ===");
             for (let [key, value] of fd.entries()) {
@@ -103,9 +107,10 @@ const PartnerOnboardingForm = () => {
             if (response.ok) {
                 toast.success(
                     <div className="flex flex-col gap-1">
-                        <span className="font-semibold"> Registration Successful!</span>
-                        <span className="text-sm text-gray-600">
-                            {result.message || "Your application has been submitted."}
+                        <span className="font-semibold">Registration Submitted!</span>
+                        <span className="text-sm text-gray-100/90">
+                            {result.message ||
+                                "Your application and payment proof have been submitted for verification."}
                         </span>
                     </div>,
                     {
@@ -161,7 +166,7 @@ const PartnerOnboardingForm = () => {
                     <Step00Requirements
                         formData={formData}
                         onNext={handleNext}
-                        onBack={() => navigate("/")} // Go back to home/login
+                        onBack={() => navigate("/")}
                     />
                 );
 
@@ -229,6 +234,7 @@ const PartnerOnboardingForm = () => {
                     },
                 }}
             />
+
             <LayoutGroup>
                 <AnimatePresence mode="wait">
                     <motion.div

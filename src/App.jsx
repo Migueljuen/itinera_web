@@ -15,32 +15,20 @@ import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 // Creator Pages
 import CreatorDashboard from "./pages/creator/index";
 import CreatorExperiences from "./pages/creator/activities";
+import SubscriptionPage from "./pages/creator/subscription";
 import BookingManagement from "./pages/creator/bookings";
 import EarningsManagement from "./pages/creator/earnings";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
 import ExperienceEditForm from "./pages/creator/editExperience/edit.jsx";
 import CreatorSettings from "./pages/creator/settings";
+import RefundManagement from "./pages/creator/refund.jsx";
 
-// ✅ removed Guide Pages
-// import GuideDashboard from "./pages/guide/index";
-// import GuideAvailability from "./pages/guide/availability";
-// import GuideSettings from "./pages/guide/settings";
-
-// ✅ removed Driver Pages
-// import DriverDashboard from "./pages/driver/index";
-// import DriverAvailability from "./pages/driver/availability";
-// import DriverSettings from "./pages/driver/settings";
-
-// ✅ removed Driver vehicle pages
-// import VehicleManagement from "./pages/driver/vehicle.jsx";
-// import VehicleRegistrationPage from "./pages/driver/registerVehicle/index.jsx";
 
 // Admin Pages
 import AdminDashboard from "./pages/admin/index";
 import ItineraryManagement from "./pages/admin/itinerary.jsx";
 import PartnersManagement from "./pages/admin/partner.jsx";
 import PartnerDetailScreen from "./pages/admin/partner/id.jsx";
-import RefundManagement from "./pages/admin/refund.jsx"; // ✅ ADD THIS
 
 // Shared Components
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -50,6 +38,7 @@ import VerifyOtp from "./pages/shared/verify-otp";
 import ResetPassword from "./pages/shared/reset-password";
 import PartnerOnboardingForm from "./pages/shared/partnerSignup/partnerOnboardingForm.jsx";
 import CancellationManagement from "./pages/admin/cancellation.jsx";
+import SubscriptionPlansPage from "./pages/creator/subscriptionplan.jsx";
 
 export default function App() {
   return (
@@ -179,6 +168,31 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={["Creator"]}>
                 <CreatorExperiences />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="subscription"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <SubscriptionPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="refund"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <RefundManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="subscription/plans"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <SubscriptionPlansPage />
               </ProtectedRoute>
             }
           />

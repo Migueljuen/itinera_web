@@ -22,7 +22,9 @@ function SectionCard({ title, subtitle, items }) {
         {items.map((item, idx) => (
           <div key={`${title}-${idx}`} className="flex items-baseline gap-3">
             <div className="w-2 h-2 bg-black/70 rounded-full flex-shrink-0 mt-1.5" />
-            <p className="flex-1 text-base text-black/50">{item}</p>
+            <p className="flex-1 text-base text-black/50 font-display">
+              {item}
+            </p>
           </div>
         ))}
       </div>
@@ -35,7 +37,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
   const navigate = useNavigate();
 
   const goToTerms = (e) => {
-    // prevent toggling the checkbox when clicking the link
+    // prevent toggling checkbox when clicking link
     e.preventDefault();
     e.stopPropagation();
     navigate("/Terms");
@@ -73,7 +75,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             ]}
           />
 
-          {/* ✅ NEW: Business permit requirement */}
+          {/* ✅ Business permit requirement */}
           <SectionCard
             title="3. Business permit (required)"
             subtitle="Required to list paid experiences/services"
@@ -83,9 +85,23 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             ]}
           />
 
+          {/* ✅ NEW: Registration fee + subscription rules */}
+          <SectionCard
+            title="4. Registration fee & subscription"
+            subtitle="Required to activate your partner account"
+            items={[
+              "A one-time registration fee of ₱1,299 is required for new partners.",
+              "Your registration includes 1 month of FREE subscription (30 days) after payment is confirmed.",
+              "After the free month, choose a plan to stay active:",
+              "• Basic: ~₱599/month",
+              "• Pro: ~₱999/month (includes everything in Basic, plus Pro features)",
+              "Only subscribed partners can preview their activity/listing and receive bookings from the system.",
+            ]}
+          />
+
           {/* Renumbered */}
           <SectionCard
-            title="4. Partner agreement"
+            title="5. Partner agreement"
             items={[
               "Follow local laws.",
               "No prohibited activities.",
@@ -95,7 +111,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
 
           {/* Renumbered */}
           <SectionCard
-            title="5. What you can do as a Partner"
+            title="6. What you can do as a Partner"
             subtitle="Create and manage unique travel experiences"
             items={[
               "Design custom tours and activities.",
@@ -105,7 +121,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
           />
         </div>
 
-        {/* ✅ Confirmation - updated (web version of your RN snippet) */}
+        {/* Confirmation */}
         <button
           type="button"
           onClick={() => setConfirmed((v) => !v)}
@@ -115,7 +131,6 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             className={`w-6 h-6 rounded-md flex items-center justify-center mr-3 ${confirmed ? "bg-primary" : "bg-black/10"
               }`}
           >
-            {/* Checkmark icon (inline SVG) */}
             {confirmed ? (
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +146,6 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
                 />
               </svg>
             ) : (
-              // Placeholder to match RN "remove" icon spacing
               <div className="h-4 w-4" />
             )}
           </div>
@@ -146,6 +160,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             >
               Terms of Service
             </a>
+            .
           </span>
         </button>
 
@@ -163,9 +178,7 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             type="button"
             onClick={onNext}
             disabled={!confirmed}
-            className={`flex-1 py-4 px-8 rounded-xl font-display font-semibold text-white/90 transition-colors ${confirmed
-              ? "bg-[#191313] hover:bg-[#2a2a2a]"
-              : "bg-black/40 cursor-not-allowed"
+            className={`flex-1 py-4 px-8 rounded-xl font-display font-semibold text-white/90 transition-colors ${confirmed ? "bg-[#191313] hover:bg-[#2a2a2a]" : "bg-black/40 cursor-not-allowed"
               }`}
           >
             Agree and continue

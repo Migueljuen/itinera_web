@@ -281,7 +281,7 @@ export default function CancellationManagement() {
                                     <div className="flex flex-col gap-2 min-w-[180px]">
                                         <button
                                             disabled={actingId === r.request_id || tab !== "pending"}
-                                            onClick={() => approveRequest(r.request_id, r.booking_id)}   // ✅ pass booking_id
+                                            onClick={() => approveRequest(r.request_id, r.booking_id)}
                                             className={`px-4 py-2 rounded-lg text-sm font-medium ${tab !== "pending"
                                                 ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                                 : actingId === r.request_id
@@ -314,36 +314,38 @@ export default function CancellationManagement() {
             </div>
 
             {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="mt-6 flex justify-between items-center">
-                    <div className="text-sm text-gray-600">
-                        Showing {startIndex + 1}-{Math.min(endIndex, filtered.length)} of{" "}
-                        {filtered.length} requests
+            {
+                totalPages > 1 && (
+                    <div className="mt-6 flex justify-between items-center">
+                        <div className="text-sm text-gray-600">
+                            Showing {startIndex + 1}-{Math.min(endIndex, filtered.length)} of{" "}
+                            {filtered.length} requests
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+
+                            <span className="text-sm text-gray-700 px-2">
+                                {currentPage} / {totalPages}
+                            </span>
+
+                            <button
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
                     </div>
-
-                    <div className="flex items-center gap-2">
-                        <button
-                            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                            disabled={currentPage === 1}
-                            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <ChevronLeft size={16} />
-                        </button>
-
-                        <span className="text-sm text-gray-700 px-2">
-                            {currentPage} / {totalPages}
-                        </span>
-
-                        <button
-                            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                            disabled={currentPage === totalPages}
-                            className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <ChevronRight size={16} />
-                        </button>
-                    </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

@@ -294,7 +294,7 @@ const AdminDashboard = () => {
   });
 
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col pb-48">
       {/* HEADER */}
       <header className=" pt-4 py-8 ">
         <div className="flex items-center justify-between">
@@ -377,7 +377,7 @@ const AdminDashboard = () => {
 
 
           {/* Itinerary Payments Section */}
-          <div className="bg-white p-6 rounded-2xl border-2 border-gray-300 flex flex-col flex-[0.7] h-full">
+          <div className="bg-white p-6 rounded-2xl border border-gray-300 flex flex-col flex-[0.7] h-full">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <p className="font-medium text-black/80">Itineraries</p>
@@ -480,7 +480,7 @@ const AdminDashboard = () => {
           </div>
           <div className="flex gap-2 flex-col flex-[0.3] h-full ">
             {/* New Tickets / Active Activities */}
-            <div className="bg-white  px-6 py-8 rounded-2xl border-2 border-gray-300 flex flex-col justify-between h-fit">
+            <div className="bg-white  px-6 py-8 rounded-2xl border border-gray-300 flex flex-col justify-between h-fit">
               <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
                 <div className="p-2 bg-green-50 rounded-md">
                   <PresentationChartLineIcon className="w-7 h-7 text-green-900/50" />

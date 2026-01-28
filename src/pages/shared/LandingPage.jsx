@@ -289,7 +289,7 @@ const LandingPage = () => {
         </motion.section>
 
         {/* Features Section */}
-        <motion.section
+        <section
           variants={fadeInUp}
           initial="hidden"
           whileInView="show"
@@ -363,13 +363,13 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Navigate link */}
         <div id="why" className=""></div>
 
         {/* Why us 1 */}
-        <motion.section
+        <section
           variants={fadeInUp}
           initial="hidden"
           whileInView="show"
@@ -435,7 +435,7 @@ const LandingPage = () => {
               className="w-full  cursor-pointer transition-transform drop-shadow-2xl"
             />
           </div>
-        </motion.section>
+        </section>
 
         {/* Why us 2*/}
         <motion.section
@@ -509,7 +509,7 @@ const LandingPage = () => {
         <div id="pricing" className=""></div>
 
         {/* Pricing Section */}
-        <motion.section
+        <section
           variants={fadeInUp}
           initial="hidden"
           whileInView="show"
@@ -523,31 +523,27 @@ const LandingPage = () => {
                 Simple, transparent pricing
               </h1>
               <p className="w-5/6 text-black/80 text-lg text-center">
-                Our pricing model is designed to be fair for everyone —
-                travelers explore freely based on the activities they book, and
-                partners earn sustainably.
+                Our pricing model is designed to be fair for everyone — travelers explore freely
+                based on the activities they book, and partners grow sustainably through subscriptions.
               </p>
             </div>
 
-            <div className="grid mt-8 grid-cols-1 md:grid-cols-2 gap-8 w-full md:w-3/5">
+            <div className="grid mt-8 grid-cols-1 md:grid-cols-3 gap-8 w-full md:w-4/5">
               {/* For Travelers */}
-              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8   gap-4 flex flex-col">
-                <div className="mb-6">
-                  <h3 className="text-[#1f2937] text-sm mb-4">For Travelers</h3>
+              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 gap-4 flex flex-col">
+                <div className="space-y-2 mb-8">
+                  <h3 className="text-[#1f2937] text-sm ">For Travelers</h3>
 
-                  <p className="text-[#397ff1] text-2xl font-semibold mb-4">
+                  <p className="text-[#397ff1] text-xl font-semibold ">
                     Pay only for what you join
                   </p>
-                  <p className="text-black/60 mb-4">
-                    No hidden or additional fees!
-                  </p>
+                  <p className="text-black/60  text-sm">No hidden or additional fees!</p>
                 </div>
+
                 <div className="flex-1 space-y-4 mb-8">
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">
-                      Browse various activities
-                    </span>
+                    <span className="text-black/80">Browse various activities</span>
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
@@ -557,62 +553,87 @@ const LandingPage = () => {
                   </div>
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">
-                      Book activities from our local partners
-                    </span>
+                    <span className="text-black/80">Book activities from our local partners</span>
                   </div>
                 </div>
-                <Button onClick={handleSignIn} className="w-full">
-                  Get Started
-                </Button>
+
+
               </div>
 
-              {/* For Partners */}
+              {/* Partner Tier 1 - Basic */}
               <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 gap-4 flex flex-col">
-                <div className="mb-6">
-                  <h3 className="text-[#1f2937] text-sm mb-4">For Partners</h3>
-                  <div className="text-2xl font-bold text-[#397ff1] mb-2">
-                    10%
-                  </div>
-                  <p className="text-black/60 mb-4">Service fee per booking</p>
+                <div className="space-y-2 mb-8">
+                  <h3 className="text-[#1f2937] text-sm ">For Partners</h3>
+                  <p className="text-[#397ff1] text-xl font-semibold">Basic Partner</p>
+                  <p className="text-black/60 text-sm">Subscription-based access</p>
                 </div>
 
                 <div className="flex-1 space-y-4 mb-8">
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">
-                      Set your own service rates
-                    </span>
+                    <span className="text-black/80">Accept bookings</span>
                   </div>
 
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">
-                      Transparent earnings and payouts
-                    </span>
+                    <span className="text-black/80">Listed in search results</span>
                   </div>
 
                   <div className="flex gap-3 items-start">
                     <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">
-                      Connect with travelers planning curated itineraries
-                    </span>
+                    <span className="text-black/80">Standard customer support</span>
                   </div>
                 </div>
 
-                <Button onClick={handlePartnerOnboarding} className="w-full">
-                  Become a Partner
-                </Button>
               </div>
 
+              {/* Partner Tier 2 - Pro */}
+              <div className="bg-white border-2 border-[#397ff1] rounded-2xl p-8 gap-4 flex flex-col relative">
+                {/* Optional badge */}
+                <div className="absolute -top-3 right-6 bg-[#397ff1] text-white text-xs font-semibold px-3 py-1 rounded-full">
+                  Most Popular
+                </div>
+
+                <div className="space-y-2 mb-8">
+                  <h3 className="text-[#1f2937] text-sm ">For Partners</h3>
+                  <p className="text-[#397ff1] text-xl font-semibold">Pro Partner</p>
+                  <p className="text-black/60 text-sm">Everything in Basic, plus:</p>
+                </div>
+
+                <div className="flex-1 space-y-4 mb-8">
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Featured activity placement</span>
+                  </div>
+
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Analytics</span>
+                  </div>
+
+
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Promotional badge on listings</span>
+                  </div>
+
+                  {/* If you want support to be the same, keep it. If Pro should be better, rename to Priority support */}
+                  <div className="flex gap-3 items-start">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
+                    <span className="text-black/80">Standard customer support</span>
+                  </div>
+                </div>
+
+
+              </div>
             </div>
           </div>
-        </motion.section>
+        </section>
 
         {/* Navigate link */}
         <div id="about" className=""></div>
 
-        <motion.footer
+        <footer
           variants={fadeInUp}
           initial="hidden"
           whileInView="show"
@@ -742,7 +763,7 @@ const LandingPage = () => {
               </div>
             </div>
           </div>
-        </motion.footer>
+        </footer>
       </div>
     </AnimatePresence>
   );

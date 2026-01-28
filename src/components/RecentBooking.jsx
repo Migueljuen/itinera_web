@@ -205,7 +205,7 @@ export default function RecentBooking() {
   // Loading state
   if (loading) {
     return (
-      <div className="w-full px-4 flex flex-col gap-3">
+      <div className="w-full px-4 flex flex-col">
         {[1, 2, 3].map((index) => (
           <div
             key={index}
@@ -235,7 +235,7 @@ export default function RecentBooking() {
   }
 
   return (
-    <div className="w-full px-4 flex flex-col gap-3">
+    <div className="w-full px-4 flex flex-col gap-3 ">
       {bookings.map((booking, index) => (
         <div
           key={booking.id || index}

@@ -24,6 +24,8 @@ import {
   Mail,
   CreditCard,
   DollarSign,
+  Check,
+  X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
@@ -52,6 +54,7 @@ const BookingManagement = () => {
 
   const [cancelReasonById, setCancelReasonById] = useState({});
   const [cancelSubmittingId, setCancelSubmittingId] = useState(null);
+  const [verifyingPaymentId, setVerifyingPaymentId] = useState(null);
 
   const bookingRefs = useRef({});
 
@@ -297,6 +300,107 @@ const BookingManagement = () => {
     }
   };
 
+  // Approve payment
+  const handleApprovePayment = async (booking) => {
+    const bookingId = booking.booking_id;
+
+    const confirmed = window.confirm(
+      `Approve payment of ₱${parseFloat(booking.activity_price || 0).toFixed(2)} for this booking?\n\nThis will mark the payment as verified.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setVerifyingPaymentId(bookingId);
+
+      const res = await axios.post(
+        `${API_URL}/payment/booking/${bookingId}/payment/verify`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to verify payment");
+      }
+
+      toast.success("Payment approved successfully");
+
+      // Update local state
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.booking_id === bookingId ? { ...b, payment_status: "Paid" } : b
+        )
+      );
+    } catch (err) {
+      console.error("handleApprovePayment error:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to approve payment";
+      toast.error(msg);
+    } finally {
+      setVerifyingPaymentId(null);
+    }
+  };
+
+  // Decline/Reject payment
+  const handleDeclinePayment = async (booking) => {
+    const bookingId = booking.booking_id;
+
+    const reason = window.prompt(
+      "Please provide a reason for rejecting this payment:\n\n(e.g., Invalid receipt, Amount mismatch, Unreadable image)"
+    );
+
+    if (reason === null) return; // User cancelled
+
+    if (!reason.trim()) {
+      toast.error("Rejection reason is required");
+      return;
+    }
+
+    try {
+      setVerifyingPaymentId(bookingId);
+
+      const res = await axios.post(
+        `${API_URL}/payment/booking/${bookingId}/payment/reject`,
+        { reason: reason.trim() },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to reject payment");
+      }
+
+      toast.success("Payment rejected. Traveler has been notified.");
+
+      // Update local state
+      setBookings((prev) =>
+        prev.map((b) =>
+          b.booking_id === bookingId ? { ...b, payment_status: "Unpaid" } : b
+        )
+      );
+    } catch (err) {
+      console.error("handleDeclinePayment error:", err);
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        "Failed to reject payment";
+      toast.error(msg);
+    } finally {
+      setVerifyingPaymentId(null);
+    }
+  };
+
   const toggleDropdown = (id) => {
     setOpenDropdownId(openDropdownId === id ? null : id);
   };
@@ -310,6 +414,15 @@ const BookingManagement = () => {
   });
 
   const tabCounts = getTabCounts();
+
+  // Helper to check if payment actions should be shown
+  const canShowPaymentActions = (booking) => {
+    const isCancelled =
+      booking.status?.toLowerCase() === "cancelled" ||
+      booking.status?.toLowerCase() === "cancellationrequested";
+    const isPending = booking.payment_status?.toLowerCase() === "pending";
+    return !isCancelled && isPending;
+  };
 
   return (
     <>
@@ -355,11 +468,12 @@ const BookingManagement = () => {
                 paginatedBookings.map((booking) => {
                   const isExpanded = expandedBookingId === booking.booking_id;
 
-                  // ✅ Payment should show ONLY if this booking’s experience requires payment
-                  // Backend must return booking.reservation_requires_payment (from experience.reservation_requires_payment)
+                  // Payment should show ONLY if this booking's experience requires payment
                   const requiresPayment =
                     booking.reservation_requires_payment === 1 ||
                     booking.reservation_requires_payment === true;
+
+                  const isVerifying = verifyingPaymentId === booking.booking_id;
 
                   return (
                     <div
@@ -443,9 +557,9 @@ const BookingManagement = () => {
                       >
                         <div className="border-t border-gray-200 py-12 px-12">
                           <div className="grid grid-cols-2 gap-8">
-                            <div className="flex flex-row justify-between gap-12">
+                            <div className="flex flex-row justify-between ">
                               <div>
-                                <h4 className="text-lg font-medium text-black/80 mb-4 flex items-center gap-2">
+                                <h4 className="text-base font-medium text-black/80 mb-4 flex items-center gap-2">
                                   Traveler Details
                                 </h4>
                                 <div className="space-y-3 text-sm">
@@ -464,7 +578,7 @@ const BookingManagement = () => {
                               </div>
 
                               <div>
-                                <h4 className="mb-4 font-medium text-black/80 text-lg flex items-center gap-4">
+                                <h4 className="mb-4 font-medium text-black/80 text-base flex items-center gap-4">
                                   Booking Information
                                 </h4>
 
@@ -481,34 +595,76 @@ const BookingManagement = () => {
                               </div>
                             </div>
 
-                            <div className="space-y-6">
-                              {/* ✅ Only show this section when payment is required */}
+                            <div className="space-y-6 pl-24">
+                              {/* Only show this section when payment is required */}
                               {requiresPayment && (
                                 <div>
-                                  <h4 className="text-lg mb-3">Payment Details</h4>
+                                  <h4 className="text-base mb-3">Payment Details</h4>
 
                                   <div className="space-y-2 text-sm">
+                                    {/* Paid online = activity_price */}
                                     <div className="flex justify-between py-2 border-b border-gray-100">
-                                      <span className="text-black/60">
-                                        Prepaid / Online Paid:
-                                      </span>
+                                      <span className="text-black/60">Paid Online:</span>
                                       <span className="font-medium text-black/80">
-                                        ₱
-                                        {parseFloat(
-                                          booking.creator_prepaid_amount || 0
-                                        ).toFixed(2)}
+                                        ₱{parseFloat(booking.activity_price || 0).toFixed(2)}
                                       </span>
                                     </div>
 
-                                    <div className="flex justify-between items-center py-2 bg-gray-50 rounded-lg px-3 mt-3">
-                                      <span className="text-black/70 font-medium">
-                                        Payment Status
-                                      </span>
-                                      <span className="font-medium text-black/80">
+                                    <div className="flex justify-between items-center py-2  rounded-lg mt-3">
+                                      <span className="text-black/70 font-medium">Payment Status</span>
+                                      <span className={`font-medium ${booking.payment_status?.toLowerCase() === 'paid'
+                                        ? 'text-green-600'
+                                        : booking.payment_status?.toLowerCase() === 'pending'
+                                          ? 'text-amber-600'
+                                          : 'text-black/80'
+                                        }`}>
                                         {booking.payment_status || "N/A"}
                                       </span>
                                     </div>
+
+                                    {/* Payment proof link */}
+                                    <div className="mt-3">
+                                      {booking.payment_proof ? (
+                                        <a
+                                          href={`${API_URL}/${booking.payment_proof}`}
+                                          target="_blank"
+                                          rel="noreferrer"
+                                          className="text-sm text-blue-600 hover:text-blue-800 "
+                                        >
+                                          View payment proof
+                                        </a>
+                                      ) : (
+                                        <span className="text-sm text-black/40">No payment proof uploaded</span>
+                                      )}
+                                    </div>
+
+                                    {/* Approve/Decline buttons - only show when payment is pending */}
+                                    {canShowPaymentActions(booking) && (
+                                      <div className="flex items-center gap-3 mt-4 pt-4 border-t border-gray-100">
+                                        <button
+                                          onClick={() => handleApprovePayment(booking)}
+                                          disabled={isVerifying}
+                                          className="flex items-center gap-2 px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-black/70 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                          {isVerifying ? (
+                                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                                          ) : (
+                                            <Check size={16} />
+                                          )}
+                                          Approve
+                                        </button>
+                                        <button
+                                          onClick={() => handleDeclinePayment(booking)}
+                                          disabled={isVerifying}
+                                          className="flex items-center gap-2 px-4 py-2 bg-white  text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        >
+                                          <X size={16} />
+                                          Decline
+                                        </button>
+                                      </div>
+                                    )}
                                   </div>
+
                                 </div>
                               )}
 

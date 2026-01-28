@@ -206,7 +206,7 @@ const ExperienceManagement = () => {
   };
   return (
     <>
-      <div className="min-h-screen">
+      <div className="min-h-screen pb-48">
         <div className="">
           {/* Header */}
           <div className="flex justify-between items-center mb-6">

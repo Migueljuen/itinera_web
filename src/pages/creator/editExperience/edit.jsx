@@ -293,97 +293,106 @@ const ExperienceEditForm = () => {
 
       const data = new FormData();
 
-      // Append all non-file fields
-      data.append("title", formData.title);
-      data.append("description", formData.description);
-      data.append("notes", formData.notes);
-      data.append("price", formData.price);
-      data.append("unit", formData.unit);
-      data.append("category_id", formData.category_id);
+      // ============================================
+      // STEP-AWARE DATA SENDING
+      // ============================================
 
-      // Destination fields
-      if (formData.destination_id) {
-        console.log("Sending existing destination_id:", formData.destination_id);
-        data.append("destination_id", formData.destination_id);
+      // Step 1: Basic info (title, description, notes, price, unit, category)
+      if (step === 1) {
+        data.append("title", formData.title);
+        data.append("description", formData.description);
+        data.append("notes", formData.notes || "");
+        data.append("price", formData.price);
+        data.append("price_estimate", formData.price_estimate || "");
+        data.append("unit", formData.unit);
+        data.append("category_id", formData.category_id);
       }
 
-      // Always send destination details so backend can update them
-      data.append("destination_name", formData.destination_name || "");
-      data.append("city", formData.city || "");
-      data.append(
-        "destination_description",
-        formData.destination_description || ""
-      );
-      data.append("latitude", formData.latitude || "");
-      data.append("longitude", formData.longitude || "");
+      // Step 2: Images + basic info (since this component also has title/description/price)
+      if (step === 2) {
+        data.append("title", formData.title);
+        data.append("description", formData.description);
+        data.append("notes", formData.notes || "");
+        data.append("price", formData.price);
+        data.append("price_estimate", formData.price_estimate || "");
+        data.append("unit", formData.unit);
 
-      // Flag to force update of existing destination
-      if (step === 5 && formData.destination_id) {
-        data.append("update_destination", "true");
-      }
-
-      // Add availability data
-      if (formData.availability && formData.availability.length > 0) {
-        console.log("Adding availability to FormData:", formData.availability);
-        data.append("availability", JSON.stringify(formData.availability));
-      }
-
-      // Add travel companions
-      if (formData.travel_companions && formData.travel_companions.length > 0) {
-        console.log(
-          "Adding travel_companions to FormData:",
-          formData.travel_companions
+        // Handle new image uploads
+        const newImages = formData.images.filter(
+          (img) => img.file && img.file instanceof File
         );
-        data.append(
-          "travel_companions",
-          JSON.stringify(formData.travel_companions)
-        );
+        if (newImages.length > 0) {
+          newImages.forEach((img) => {
+            data.append("images", img.file);
+          });
+        }
+
+        // Send deleted image IDs
+        if (deletedImageIds.length > 0) {
+          console.log("Sending deletedImageIds:", deletedImageIds);
+          data.append("images_to_delete", JSON.stringify(deletedImageIds));
+        }
       }
 
-      // Add tags
-      if (formData.tags && formData.tags.length > 0) {
-        console.log("Adding tags to FormData:", formData.tags);
-        data.append("tags", JSON.stringify(formData.tags));
+      // Step 3: Availability and travel companions
+      if (step === 3) {
+        if (formData.availability && formData.availability.length > 0) {
+          console.log("Adding availability to FormData:", formData.availability);
+          data.append("availability", JSON.stringify(formData.availability));
+        }
+
+        if (formData.travel_companions && formData.travel_companions.length > 0) {
+          console.log("Adding travel_companions to FormData:", formData.travel_companions);
+          data.append("travel_companions", JSON.stringify(formData.travel_companions));
+        }
+
+        if (formData.tags && formData.tags.length > 0) {
+          console.log("Adding tags to FormData:", formData.tags);
+          data.append("tags", JSON.stringify(formData.tags));
+        }
       }
 
-      // Add steps data
-      if (formData.steps && formData.steps.length > 0) {
-        console.log("Adding steps to FormData:", formData.steps);
-        const stepsToSend = formData.steps.map((step, index) => ({
-          step_id: step.step_id || null,
-          order: index + 1,
-          title: step.title,
-          description: step.description,
-        }));
-        data.append("steps", JSON.stringify(stepsToSend));
+      // Step 4: Steps and inclusions
+      if (step === 4) {
+        if (formData.steps && formData.steps.length > 0) {
+          console.log("Adding steps to FormData:", formData.steps);
+          const stepsToSend = formData.steps.map((step, index) => ({
+            step_id: step.step_id || null,
+            order: index + 1,
+            title: step.title,
+            description: step.description,
+          }));
+          data.append("steps", JSON.stringify(stepsToSend));
+        }
+
+        if (formData.inclusions && formData.inclusions.length > 0) {
+          console.log("Adding inclusions to FormData:", formData.inclusions);
+          const inclusionsToSend = formData.inclusions.map((inclusion, index) => ({
+            inclusion_id: inclusion.inclusion_id || null,
+            order: index + 1,
+            title: inclusion.title,
+          }));
+          data.append("inclusions", JSON.stringify(inclusionsToSend));
+        }
       }
 
-      // Add inclusions data
-      if (formData.inclusions && formData.inclusions.length > 0) {
-        console.log("Adding inclusions to FormData:", formData.inclusions);
-        const inclusionsToSend = formData.inclusions.map((inclusion, index) => ({
-          inclusion_id: inclusion.inclusion_id || null,
-          order: index + 1,
-          title: inclusion.title,
-        }));
-        data.append("inclusions", JSON.stringify(inclusionsToSend));
-      }
+      // Step 5: Destination
+      if (step === 5) {
+        if (formData.destination_id) {
+          console.log("Sending existing destination_id:", formData.destination_id);
+          data.append("destination_id", formData.destination_id);
+        }
 
-      // Handle new image uploads
-      const newImages = formData.images.filter(
-        (img) => img.file && img.file instanceof File
-      );
+        data.append("destination_name", formData.destination_name || "");
+        data.append("city", formData.city || "");
+        data.append("destination_description", formData.destination_description || "");
+        data.append("latitude", formData.latitude || "");
+        data.append("longitude", formData.longitude || "");
 
-      if (newImages.length > 0) {
-        newImages.forEach((img) => {
-          data.append("images", img.file);
-        });
-      }
-
-      // Send deleted image IDs
-      if (deletedImageIds.length > 0) {
-        console.log("Sending deletedImageIds:", deletedImageIds);
-        data.append("images_to_delete", JSON.stringify(deletedImageIds));
+        // Flag to force update of existing destination
+        if (formData.destination_id) {
+          data.append("update_destination", "true");
+        }
       }
 
       console.log("=== SENDING TO BACKEND ===");

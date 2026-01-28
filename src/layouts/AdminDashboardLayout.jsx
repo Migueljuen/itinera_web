@@ -1,37 +1,21 @@
 //DashboardLayout.tsx
 import React, { useState, useEffect } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import {
-  Home,
-  LayoutGrid,
-  Calendar,
-  Users,
-  Settings,
-  HelpCircle,
-  Inbox,
-  Ban,
-  LogOut,
-  X,
-  ChevronDown,
-  Plus,
-  BadgeDollarSign, // ✅ add
-} from "lucide-react";
+import { Home, LayoutGrid, LogOut, X, CreditCard } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import logoImage from "../assets/images/alt.png";
-import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
-import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import FloatingChat from "../components/FloatingChat";
 
 const AdminDashboardLayout = ({ children }) => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation();
-  const [isProjectsExpanded, setIsProjectsExpanded] = useState(true);
-  const [isTasksExpanded, setIsTasksExpanded] = useState(true);
+  const { user, logout, shouldAnimateDashboard, disableDashboardAnimation } =
+    useAuth();
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const { shouldAnimateDashboard, disableDashboardAnimation } = useAuth();
 
   const currentUser = user
     ? {
@@ -57,9 +41,7 @@ const AdminDashboardLayout = ({ children }) => {
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
-          setUnreadCount(data.count);
-        }
+        if (data.success) setUnreadCount(data.count);
       }
     } catch (error) {
       console.error("Error fetching unread count:", error);
@@ -69,8 +51,6 @@ const AdminDashboardLayout = ({ children }) => {
   // Set up polling to check for new notifications
   useEffect(() => {
     fetchUnreadCount();
-
-    // Poll every 30 seconds for new notifications
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -97,8 +77,7 @@ const AdminDashboardLayout = ({ children }) => {
     if (shouldAnimateDashboard) {
       const timer = setTimeout(() => {
         disableDashboardAnimation();
-      }, 500); // After animation duration completes
-
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [shouldAnimateDashboard, disableDashboardAnimation]);
@@ -109,110 +88,28 @@ const AdminDashboardLayout = ({ children }) => {
       label: "Home",
       icon: Home,
       path: "/admin-dashboard",
-      expandable: false,
     },
     {
       id: "partners",
       label: "Partners",
       icon: LayoutGrid,
       path: "/partners",
-      expandable: false,
     },
+    // ✅ placeholder route (create later)
     {
-      id: "itineraries",
-      label: "Itineraries",
-      icon: LayoutGrid,
-      path: "/itineraries",
-      expandable: false,
+      id: "subscriptions",
+      label: "Subscriptions",
+      icon: CreditCard,
+      path: "/subscriptions",
     },
-
-    {
-      id: "refunds",
-      label: "Refunds",
-      icon: BadgeDollarSign,
-      path: "/refunds",
-      expandable: false,
-    },
-    {
-      id: "cancellations",
-      label: "Cancellations",
-      icon: Ban,
-      path: "/cancellations",
-      expandable: false,
-    },
-
-
   ];
-
-  useEffect(() => {
-    console.log("DashboardLayout mounted");
-    console.log("Current user:", user);
-    console.log("Current location:", location.pathname);
-  }, [user, location]);
 
   const NavItem = ({ item }) => {
     const Icon = item.icon;
 
-    if (item.expandable) {
-      return (
-        <div className="relative">
-          <button
-            onClick={() => item.setExpanded(!item.isExpanded)}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-100 rounded-lg transition-colors group"
-          >
-            <div className="flex items-center gap-3">
-              <Icon size={20} className="text-primary" />
-              <span className="text-primary">{item.label}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <ChevronDown
-                size={16}
-                className={`text-gray-400 transition-transform ${item.isExpanded ? "rotate-180" : ""
-                  }`}
-              />
-            </div>
-          </button>
-
-          {item.isExpanded && (
-            <div className="relative ml-8 mt-1 space-y-1 ">
-              {/* Vertical line connecting to sub-items */}
-              <div className="absolute left-2 top-0 bottom-0 w-px bg-gray-300"></div>
-
-              {item.subItems.map((subItem, index) => (
-                <div key={subItem.path} className="relative">
-                  {/* Horizontal line connecting to each sub-item */}
-                  <div className="absolute left-2 top-1/2 w-4 h-px bg-gray-300 -translate-y-1/2"></div>
-
-                  <NavLink
-                    to={subItem.path}
-                    className={({ isActive }) =>
-                      `block px-6 py-2 text-sm rounded-lg transition-colors ml-4 whitespace-nowrap ${isActive
-                        ? "bg-gray-100 text-primary"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      }`
-                    }
-                  >
-                    {subItem.label}
-                  </NavLink>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      );
-    }
-
     return (
       <NavLink
         to={item.path}
-        onClick={() => {
-          // Refresh notification count when inbox is clicked
-          if (item.id === "messages") {
-            setTimeout(() => {
-              fetchUnreadCount();
-            }, 100);
-          }
-        }}
         className={({ isActive }) =>
           `flex items-center gap-3 px-4 py-3 rounded-lg transition-colors group relative ${isActive ? "bg-gray-100 " : " hover:bg-gray-100"
           }`
@@ -220,7 +117,6 @@ const AdminDashboardLayout = ({ children }) => {
       >
         <div className="relative">
           <Icon size={20} className="text-primary" />
-          {/* Notification Badge */}
           {item.badge > 0 && (
             <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-medium rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
               {item.badge > 99 ? "99+" : item.badge}
@@ -253,7 +149,7 @@ const AdminDashboardLayout = ({ children }) => {
 
         {/* Sidebar */}
         <aside
-          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300  z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-300 z-50 transform transition-transform duration-300 lg:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
             }`}
         >
           <div className="flex flex-col min-h-screen">
@@ -265,7 +161,7 @@ const AdminDashboardLayout = ({ children }) => {
                   alt="Itinera Logo"
                   className="w-8 cursor-pointer transition-transform"
                 />
-                <span className="text-2xl pt-1  font-medium">Itinera</span>
+                <span className="text-2xl pt-1 font-medium">Itinera</span>
               </div>
               <button
                 onClick={() => setIsSidebarOpen(false)}
@@ -284,7 +180,7 @@ const AdminDashboardLayout = ({ children }) => {
             </nav>
 
             {/* Bottom Section */}
-            <div className="p-4   space-y-1">
+            <div className="p-4 space-y-1">
               <button
                 onClick={handleLogout}
                 className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
@@ -297,8 +193,7 @@ const AdminDashboardLayout = ({ children }) => {
         </aside>
 
         {/* Main Content */}
-        <div className="lg:ml-64 min-h-screen flex flex-col bg-gray-50">
-          {/* Page Content */}
+        <div className="lg:ml-64 min-h-screen flex flex-col ">
           <main className="p-4 lg:p-8 flex-1 flex flex-col">
             {children || <Outlet />}
           </main>

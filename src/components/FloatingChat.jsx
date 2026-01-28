@@ -8,7 +8,7 @@ import socketService from '../services/socket';
 
 function FloatingChat({ currentUser }) {
     const [isOpen, setIsOpen] = useState(true);
-    const [isMinimized, setIsMinimized] = useState(false);
+    const [isMinimized, setIsMinimized] = useState(true);
     const [conversations, setConversations] = useState([]);
     const [activeConversation, setActiveConversation] = useState(null);
     const [loading, setLoading] = useState(false);

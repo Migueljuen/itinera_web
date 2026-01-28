@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useRef } from "react";
+// CreatorDashboard.jsx
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
@@ -34,30 +35,15 @@ const CreatorDashboard = () => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      console.log("=== FETCH NOTIFICATIONS DEBUG ===");
-
       try {
-        // 1. Check token
         const token =
           localStorage.getItem("token") || sessionStorage.getItem("token");
-        console.log("Token found:", !!token);
-        console.log(
-          "Token value:",
-          token ? `${token.substring(0, 20)}...` : "null"
-        );
 
         if (!token) {
-          console.error("No auth token found - setting empty notifications");
           setNotifications([]);
           return;
         }
 
-        // 2. Check API_URL
-        console.log("API_URL:", API_URL);
-        console.log("Full endpoint:", `${API_URL}/notifications`);
-
-        // 3. Make the request
-        console.log("Making fetch request...");
         const res = await fetch(`${API_URL}/notifications`, {
           method: "GET",
           headers: {
@@ -66,62 +52,25 @@ const CreatorDashboard = () => {
           },
         });
 
-        console.log("Response received:");
-        console.log("- Status:", res.status);
-        console.log("- OK:", res.ok);
-        console.log("- Status Text:", res.statusText);
-
         if (!res.ok) {
-          const errorText = await res.text();
-          console.error("Error response body:", errorText);
-          throw new Error(`HTTP error! status: ${res.status} - ${errorText}`);
+          setNotifications([]);
+          return;
         }
 
-        // 4. Parse response
-        console.log("Parsing JSON...");
         const response = await res.json();
-        console.log("Parsed response:", response);
-
-        // 5. Check response structure
-        console.log("Response.success:", response.success);
-        console.log("Response.notifications:", response.notifications);
-        console.log(
-          "Notifications length:",
-          response.notifications?.length || 0
-        );
-
-        // 6. Set notifications - FIXED: Use actual response even if empty
         if (response.success && response.notifications !== undefined) {
-          console.log(
-            "Setting notifications from API:",
-            response.notifications.length
-          );
           setNotifications(response.notifications);
         } else {
-          console.log("API response invalid, setting empty array");
           setNotifications([]);
         }
       } catch (err) {
-        console.error("=== FETCH ERROR ===");
-        console.error("Error details:", err);
-        console.error("Error message:", err.message);
-        console.error("Setting empty notifications as fallback");
         setNotifications([]);
       }
-
-      console.log("=== END FETCH DEBUG ===");
     };
 
     fetchNotifications();
   }, []);
 
-  useEffect(() => {
-    console.log("User ID:", user?.id);
-    console.log("Notifications:", notifications);
-  }, [user?.id, notifications]);
-
-
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -138,16 +87,12 @@ const CreatorDashboard = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [showNotifications]);
 
-  // Mark notifications as read
   const handleMarkAsRead = async (notificationId) => {
     try {
       const token =
         localStorage.getItem("token") || sessionStorage.getItem("token");
 
-      if (!token) {
-        console.error("No auth token found");
-        return;
-      }
+      if (!token) return;
 
       if (notificationId === "all") {
         const res = await fetch(`${API_URL}/notifications/mark-all-read`, {
@@ -188,7 +133,6 @@ const CreatorDashboard = () => {
     }
   };
 
-  // Handle attendance response update
   const handleUpdateNotification = (notificationId, responseType) => {
     setNotifications((prev) =>
       prev.map((n) =>
@@ -234,43 +178,54 @@ const CreatorDashboard = () => {
     }
   }, [user]);
 
-  const confirmedEvents = bookings.map((b) => {
-    const start = dayjs
-      .utc(b.booking_date)
-      .tz("Asia/Manila")
-      .hour(parseInt(b.start_time.split(":")[0]))
-      .minute(parseInt(b.start_time.split(":")[1]));
+  const confirmedEvents = useMemo(() => {
+    return bookings.map((b) => {
+      const start = dayjs
+        .utc(b.booking_date)
+        .tz("Asia/Manila")
+        .hour(parseInt(b.start_time.split(":")[0]))
+        .minute(parseInt(b.start_time.split(":")[1]));
 
-    const end = dayjs
-      .utc(b.booking_date)
-      .tz("Asia/Manila")
-      .hour(parseInt(b.end_time.split(":")[0]))
-      .minute(parseInt(b.end_time.split(":")[1]));
+      const end = dayjs
+        .utc(b.booking_date)
+        .tz("Asia/Manila")
+        .hour(parseInt(b.end_time.split(":")[0]))
+        .minute(parseInt(b.end_time.split(":")[1]));
 
-    return {
-      id: b.booking_id,
-      title: b.experience_title || "Upcoming",
-      start: start.toDate(),
-      end: end.toDate(),
-    };
-  });
+      return {
+        id: b.booking_id,
+        title: b.experience_title || "Upcoming",
+        start: start.toDate(),
+        end: end.toDate(),
+
+        // ✅ add guest count to the event payload
+        guest_count: b.guest_count ?? b.guestCount ?? 0,
+
+        // used to generate a stable pastel color
+        colorKey: String(
+          b.booking_id ?? b.experience_id ?? b.experience_title ?? "event"
+        ),
+      };
+    });
+  }, [bookings]);
 
   return (
-    <div className="flex flex-col ">
+    <div className="flex flex-col w-full pb-48">
       {/* HEADER */}
-      <header className="px-12 pt-4 py-8 ">
+      <header className="px-12 pt-4 py-8">
         <div className="flex items-center justify-between">
           <button className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
             <Menu size={24} />
           </button>
+
           <div className="flex-1 lg:flex-none">
             <h1 className="text-2xl font-semibold text-gray-900 capitalize">
               Hello, {user?.first_name || "Creator"}
             </h1>
           </div>
+
           <div className="flex items-center gap-4">
             <div className="flex gap-4 border-r border-gray-400 px-4">
-
               {/* Notification Bell */}
               <div className="relative" ref={notificationRef}>
                 <div
@@ -294,6 +249,7 @@ const CreatorDashboard = () => {
                     </div>
                   )}
                 </div>
+
                 {showNotifications && (
                   <NotificationDropdown
                     notifications={notifications}
@@ -304,6 +260,7 @@ const CreatorDashboard = () => {
                 )}
               </div>
             </div>
+
             {/* Profile */}
             <div className="flex items-center gap-4">
               {user?.profile_pic ? (
@@ -334,30 +291,41 @@ const CreatorDashboard = () => {
         </div>
       </header>
 
-      {/* MAIN GRID */}
-      <div className="flex flex-1 lg:flex-col xl:flex-row w-full xl:border-none gap-8">
-        {/* LEFT COLUMN */}
-        <div className="flex flex-col flex-[0.7] xl:bg-white gap-8">
-          {!isSubscribed && <SubscriptionBanner />}
-          <div className="flex-1 min-h-[600px]">
+      {/* CONTENT WRAPPER */}
+      <div className="w-full pb-10 ">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-4 items-stretch">
+          <div className="flex flex-col">
+            {!isSubscribed && (
+              <div className="h-full">
+                <div className="h-full">
+                  <SubscriptionBanner />
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="h-full w-full rounded-4xl box-border border border-gray-300 bg-white flex flex-col">
+            <div className="px-4 py-6 border-b border-gray-200">
+              <h1 className="text-xl font-semibold text-gray-900">
+                Recent Bookings
+              </h1>
+            </div>
+
+            <div className="flex-1 min-h-0 px-4 py-4 overflow-auto">
+              <RecentBooking />
+            </div>
+          </div>
+        </div>
+
+        {/* Calendar */}
+        <div className="mt-6 w-full ">
+          <div className="w-full h-[800px] rounded-4xl ">
             <CalendarView events={confirmedEvents} />
           </div>
-          {/* <div className="bg-blue-200 h-72 rounded-4xl flex-shrink-0"></div> */}
         </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="xl:bg-white flex-[0.3] lg:w-full min-w-[400px] pb-8 h-fit rounded-4xl box-border border border-gray-300 flex flex-col items-start justify-start">
-          {/* <h1 className="text-xl font-semibold p-8 text-gray-900">
-            Booking Statistic
-          </h1>
-          <BarChartTest /> */}
-          <h1 className="text-xl font-semibold p-8 text-gray-900">
-            Recent Bookings
-          </h1>
-          <RecentBooking />
-        </div>
-
       </div>
+
+      <Toaster />
     </div>
   );
 };

@@ -17,6 +17,7 @@ import {
   CarFront,
   DollarSign,
   Map,
+  Wallet,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import logoImage from "../assets/images/alt.png";
@@ -24,6 +25,7 @@ import Calendars from "../assets/icons/calendar.svg";
 import API_URL from "../constants/api";
 import { AnimatePresence, motion, LayoutGroup } from "framer-motion";
 import FloatingChat from '../components/FloatingChat';
+
 const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
@@ -78,82 +80,31 @@ const DashboardLayout = ({ children }) => {
             subItems: [{ label: "Manage Bookings", path: "/owner/bookings" }],
           },
           {
-            id: "earnings",
-            label: "Earnings",
+            id: "refunds",
+            label: "Refunds",
+            icon: Wallet,
+            path: "/owner/refund",
+            expandable: false,
+          },
+          // Subscription (replaces Earnings)
+          {
+            id: "subscription",
+            label: "Subscription",
             icon: DollarSign,
-            path: "/owner/earnings",
+            path: "/owner/subscription",
             expandable: false,
           },
+
+          // Earnings (kept for later if you want to bring it back)
+          // {
+          //   id: "earnings",
+          //   label: "Earnings",
+          //   icon: DollarSign,
+          //   path: "/owner/earnings",
+          //   expandable: false,
+          // },
         ];
 
-      case "Guide":
-        return [
-          {
-            id: "home",
-            label: "Home",
-            icon: Home,
-            path: "/owner/guide",
-            expandable: false,
-          },
-          {
-            id: "itineraries",
-            label: "Itineraries",
-            icon: Map,
-            path: "/owner/itineraries",
-            expandable: true,
-            isExpanded: isProjectsExpanded,
-            setExpanded: setIsProjectsExpanded,
-            subItems: [
-              { label: "Assigned Tours", path: "/owner/itineraries" },
-              { label: "Daily Schedule", path: "/owner/itineraries/schedule" },
-            ],
-          },
-          {
-            id: "availability",
-            label: "Availability",
-            icon: Calendar,
-            path: "/owner/availability",
-            expandable: false,
-          },
-        ];
-
-      case "Driver":
-        return [
-          {
-            id: "home",
-            label: "Home",
-            icon: Home,
-            path: "/owner/driver",
-            expandable: false,
-          },
-          {
-            id: "trips",
-            label: "Trips",
-            icon: Car,
-            path: "/owner/trips",
-            expandable: true,
-            isExpanded: isProjectsExpanded,
-            setExpanded: setIsProjectsExpanded,
-            subItems: [
-              { label: "Upcoming Trips", path: "/owner/trips" },
-              { label: "Trip History", path: "/owner/trips/history" },
-            ],
-          },
-          {
-            id: "availability",
-            label: "Availability",
-            icon: Calendar,
-            path: "/owner/driver/availability",
-            expandable: false,
-          },
-          {
-            id: "vehicle",
-            label: "My Vehicle",
-            icon: CarFront,
-            path: "/owner/driver/vehicle",
-            expandable: false,
-          },
-        ];
 
       default:
         return [];
@@ -365,7 +316,7 @@ const DashboardLayout = ({ children }) => {
               ))}
             </nav>
 
-            {/* Bottom Section */}
+            {/* Bottom Section (KEEP AT BOTTOM) */}
             <div className="p-4 space-y-1">
               <p className="pl-4 text-black/60 text-xs font-medium">SETTINGS</p>
 
@@ -380,16 +331,6 @@ const DashboardLayout = ({ children }) => {
                 </button>
               )}
 
-              {/* Render settings button for admins */}
-              {userRole === "Guide" && (
-                <button
-                  onClick={() => navigate("/owner/guide/settings")}
-                  className="flex items-center gap-3 px-4 py-3 w-full text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <Settings size={20} className="text-gray-500" />
-                  <span className="font-medium">Settings</span>
-                </button>
-              )}
 
               {/* Log out button is universal */}
               <button

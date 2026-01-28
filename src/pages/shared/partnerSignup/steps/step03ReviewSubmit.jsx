@@ -13,6 +13,7 @@ import {
   FileText,
   Camera,
   CreditCard,
+  Wallet,
 } from "lucide-react";
 
 const logoImage = new URL("../../../../assets/images/logo.png", import.meta.url)
@@ -33,15 +34,17 @@ function ReviewSection({ title, children }) {
 }
 
 function ReviewItem({ icon: Icon, label, value, isImage = false }) {
-  const hasValue = isImage ? !!value : !!value?.trim();
+  const hasValue = isImage ? !!value : !!String(value || "").trim();
 
   return (
     <div className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-b-0">
       <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
         <Icon size={16} className="text-gray-600" />
       </div>
+
       <div className="flex-1 min-w-0">
         <p className="text-sm text-black/50">{label}</p>
+
         {isImage && value ? (
           <img
             src={value}
@@ -54,6 +57,7 @@ function ReviewItem({ icon: Icon, label, value, isImage = false }) {
           </p>
         )}
       </div>
+
       {hasValue && (
         <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
           <Check size={14} className="text-green-600" />
@@ -63,7 +67,23 @@ function ReviewItem({ icon: Icon, label, value, isImage = false }) {
   );
 }
 
+// Small helper to format pesos safely
+const formatPHP = (n) => {
+  const num = Number(n);
+  if (!Number.isFinite(num)) return null;
+  return `₱${num.toLocaleString()}`;
+};
+
 const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
+  // Pricing constants (matches what you decided)
+  const REG_FEE = 1299;
+  const FREE_DAYS = 30;
+  const BASIC_MONTHLY = 599;
+  const PRO_MONTHLY = 999;
+
+  // ✅ If you later store these in formData, prefer those.
+  const paymentMethod = formData?.payment_method || "GCash";
+
   return (
     <div className="min-h-screen w-full flex font-display">
       {/* Left Sidebar */}
@@ -156,7 +176,10 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
 
       {/* Right Content */}
       <div className="flex-[0.7] overflow-y-auto">
-        <div className="max-w-2xl mx-auto px-10 py-12">
+        {/* ✅ “eat a little bit more width”:
+            max-w-2xl -> max-w-3xl
+            px-10 -> px-12 (slightly wider padding) */}
+        <div className="max-w-3xl mx-auto px-12 py-12">
           {/* Header */}
           <h1 className="text-3xl font-semibold text-gray-800">
             Review your application
@@ -199,7 +222,8 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
                 icon={Camera}
                 label="Selfie Verification"
                 value={
-                  formData.selfie_document?.uri || formData.selfie_document?.preview
+                  formData.selfie_document?.uri ||
+                  formData.selfie_document?.preview
                 }
                 isImage
               />
@@ -209,13 +233,43 @@ const Step03ReviewSubmit = ({ formData, onSubmit, onBack, isSubmitting }) => {
                 value={formData.id_document?.uri || formData.id_document?.preview}
                 isImage
               />
-              {/* ✅ NEW: Business Permit */}
               <ReviewItem
                 icon={FileText}
                 label="Business Permit"
                 value={
                   formData.business_permit_document?.uri ||
                   formData.business_permit_document?.preview
+                }
+                isImage
+              />
+            </ReviewSection>
+
+            {/* ✅ NEW: Payment / Registration (GCash) */}
+            <ReviewSection title="Registration & Payment (GCash)">
+              <ReviewItem icon={Wallet} label="Payment Method" value={paymentMethod} />
+              <ReviewItem
+                icon={FileText}
+                label="Registration Fee"
+                value={formatPHP(REG_FEE)}
+              />
+              <ReviewItem
+                icon={FileText}
+                label="Free Subscription"
+                value={`${FREE_DAYS} days included after payment confirmation`}
+              />
+              <ReviewItem
+                icon={FileText}
+                label="After 30 days (Business plans)"
+                value={`Basic: ~${formatPHP(BASIC_MONTHLY)}/month • Pro: ~${formatPHP(PRO_MONTHLY)}/month`}
+              />
+
+              {/* Optional: if you already collect proof of payment in Step02/Step03 */}
+              <ReviewItem
+                icon={FileText}
+                label="GCash Payment Proof"
+                value={
+                  formData.registration_payment_proof?.uri ||
+                  formData.registration_payment_proof?.preview
                 }
                 isImage
               />
