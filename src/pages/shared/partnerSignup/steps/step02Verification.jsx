@@ -37,7 +37,7 @@ function UploadTile({
       <div className="flex items-center justify-between">
         <div className="flex-1 pr-3">
           <h3 className="text-xl font-medium text-black/90">{doc.label}</h3>
-          {doc.helper && <p className="mt-1 text-sm text-black/50">{doc.helper}</p>}
+          {doc.helper && <p className="mt-1 text-sm text-black/70">{doc.helper}</p>}
         </div>
         {doc.required && (
           <span className="text-xs font-medium text-red-500">Required</span>
@@ -133,7 +133,7 @@ function PaymentCard({ formData, setFormData, disabled }) {
           <h3 className="text-xl font-medium text-black/90">
             Registration fee (GCash)
           </h3>
-          <p className="mt-1 text-sm text-black/50">
+          <p className="mt-1 text-sm text-black/70">
             Required for approval. Upload your proof of payment and provide your
             GCash reference number.
           </p>
@@ -144,7 +144,7 @@ function PaymentCard({ formData, setFormData, disabled }) {
               ₱{registrationFee.toLocaleString()}
             </p>
             <p>
-              <span className="font-semibold">Includes:</span> 1 month free
+              <span className="font-semibold">Includes:</span> 1 month basic
               subscription after approval
             </p>
             <p>
@@ -281,7 +281,7 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
   };
 
   const noteText =
-    "Partners must provide verification documents and proof of the one-time ₱1,299 registration fee. Admin review is required. Once approved, you will receive 1 month of free subscription, then ₱599/month (Basic) or ₱999/month (Pro).";
+    "Partners must provide verification documents and proof of the one-time ₱1,299 registration fee. Admin review is required. Once approved, you will receive 1 month of basic subscription, then ₱599/month (Basic) or ₱999/month (Pro).";
 
   return (
     <div className="min-h-screen w-full flex font-display">
@@ -370,7 +370,7 @@ const Step02Verification = ({ formData, setFormData, onNext, onBack }) => {
         <div className="max-w-2xl mx-auto px-10 py-12">
           {/* Header */}
           <h1 className="text-3xl font-semibold text-black/90">Identity verification & Payment</h1>
-          <p className="mt-2 text-sm text-black/50">
+          <p className="mt-2 text-sm text-black/70">
             Upload the documents required for{" "}
             {formData.creator_role_label || "partner"} approval.
           </p>

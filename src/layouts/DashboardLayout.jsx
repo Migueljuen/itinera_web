@@ -14,7 +14,7 @@ import {
   ChevronDown,
   Plus,
   Car,
-  CarFront,
+  Repeat,
   DollarSign,
   Map,
   Wallet,
@@ -90,19 +90,19 @@ const DashboardLayout = ({ children }) => {
           {
             id: "subscription",
             label: "Subscription",
-            icon: DollarSign,
+            icon: Repeat,
             path: "/owner/subscription",
             expandable: false,
           },
 
           // Earnings (kept for later if you want to bring it back)
-          // {
-          //   id: "earnings",
-          //   label: "Earnings",
-          //   icon: DollarSign,
-          //   path: "/owner/earnings",
-          //   expandable: false,
-          // },
+          {
+            id: "earnings",
+            label: "Earnings",
+            icon: DollarSign,
+            path: "/owner/earnings",
+            expandable: false,
+          },
         ];
 
 
@@ -195,7 +195,7 @@ const DashboardLayout = ({ children }) => {
           >
             <div className="flex items-center gap-3">
               <Icon size={20} className="text-primary" />
-              <span className="text-primary">{item.label}</span>
+              <span className="text-primary ">{item.label}</span>
             </div>
             <div className="flex items-center gap-2">
               <ChevronDown

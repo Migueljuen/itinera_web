@@ -156,7 +156,7 @@ const SubscriptionPage = () => {
 
     const goToUploadProof = () => {
         // You can handle inside that page whether it's registration or renewal
-        navigate("/owner/subscription/payment");
+        navigate("/owner/subscription/plans");
     };
 
     const formatDate = (v) => {
@@ -311,14 +311,6 @@ const SubscriptionPage = () => {
                                                         {formatDate(sub?.started_at)}
                                                     </p>
 
-                                                    <p className="text-black/60">
-                                                        <span className="font-medium text-black/80">
-                                                            Trial ends:
-                                                        </span>{" "}
-                                                        {sub?.trial_end
-                                                            ? formatDate(sub.trial_end)
-                                                            : `Includes ${PRICING.includesFreeDays} days free after registration`}
-                                                    </p>
 
                                                     <p className="text-black/60">
                                                         <span className="font-medium text-black/80">
@@ -474,7 +466,7 @@ const SubscriptionPage = () => {
                                                 {subscriptionPayments.map((p) => (
                                                     <div
                                                         key={p.subscription_payment_id}
-                                                        className="border border-gray-300 rounded-xl px-4 py-4 bg-white"
+                                                        className="border border-gray-300 rounded-xl px-4 py-4  bg-white"
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <div className="text-sm">
@@ -495,7 +487,7 @@ const SubscriptionPage = () => {
                                                                 )}
                                                             </div>
 
-                                                            <div className="flex items-center gap-3">
+                                                            <div className="flex items-center gap-12">
                                                                 <div className="text-sm text-right">
                                                                     <p className="text-black/80 font-medium">
                                                                         ₱{Number(p.amount_php || 0).toFixed(2)}
@@ -519,7 +511,7 @@ const SubscriptionPage = () => {
                                                                     className="flex items-center gap-2 px-3 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                                                                 >
                                                                     <Download size={16} />
-                                                                    Proof
+
                                                                 </button>
                                                             </div>
                                                         </div>

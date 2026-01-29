@@ -95,7 +95,7 @@ const AdminDashboardLayout = ({ children }) => {
       icon: LayoutGrid,
       path: "/partners",
     },
-    // ✅ placeholder route (create later)
+
     {
       id: "subscriptions",
       label: "Subscriptions",

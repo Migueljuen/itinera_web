@@ -269,12 +269,7 @@ const RefundManagement = () => {
                             </p>
                         </div>
 
-                        <div className="flex gap-3">
-                            <button className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                                <Download size={16} />
-                                Export
-                            </button>
-                        </div>
+
                     </div>
 
                     {/* Stats Cards */}

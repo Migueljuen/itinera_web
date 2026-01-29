@@ -22,7 +22,7 @@ function SectionCard({ title, subtitle, items }) {
         {items.map((item, idx) => (
           <div key={`${title}-${idx}`} className="flex items-baseline gap-3">
             <div className="w-2 h-2 bg-black/70 rounded-full flex-shrink-0 mt-1.5" />
-            <p className="flex-1 text-base text-black/50 font-display">
+            <p className="flex-1 text-base text-black/70 font-display">
               {item}
             </p>
           </div>
@@ -91,8 +91,8 @@ const Step00Requirements = ({ formData, onNext, onBack }) => {
             subtitle="Required to activate your partner account"
             items={[
               "A one-time registration fee of ₱1,299 is required for new partners.",
-              "Your registration includes 1 month of FREE subscription (30 days) after payment is confirmed.",
-              "After the free month, choose a plan to stay active:",
+              "Your registration includes 1 month of basic subscription (30 days) after payment is confirmed.",
+              "After the 1 month, choose a plan to stay active:",
               "• Basic: ~₱599/month",
               "• Pro: ~₱999/month (includes everything in Basic, plus Pro features)",
               "Only subscribed partners can preview their activity/listing and receive bookings from the system.",

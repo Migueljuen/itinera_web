@@ -448,12 +448,7 @@ const BookingManagement = () => {
               </h1>
               <p className="text-gray-600 mt-1">Manage your experience bookings</p>
             </div>
-            <div className="flex gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                <Download size={16} />
-                Export
-              </button>
-            </div>
+
           </div>
 
           <div className="bg-white rounded-lg">

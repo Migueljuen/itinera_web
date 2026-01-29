@@ -16,6 +16,7 @@ import AdminDashboardLayout from "./layouts/AdminDashboardLayout";
 import CreatorDashboard from "./pages/creator/index";
 import CreatorExperiences from "./pages/creator/activities";
 import SubscriptionPage from "./pages/creator/subscription";
+import SubscriptionPaymentPage from "./pages/creator/subscriptionpayment.jsx";
 import BookingManagement from "./pages/creator/bookings";
 import EarningsManagement from "./pages/creator/earnings";
 import ExperienceCreationForm from "./pages/creator/createExperience/createExperience";
@@ -27,6 +28,8 @@ import RefundManagement from "./pages/creator/refund.jsx";
 // Admin Pages
 import AdminDashboard from "./pages/admin/index";
 import ItineraryManagement from "./pages/admin/itinerary.jsx";
+import SubscriptionManagement from "./pages/admin/subscription.jsx";
+
 import PartnersManagement from "./pages/admin/partner.jsx";
 import PartnerDetailScreen from "./pages/admin/partner/id.jsx";
 
@@ -197,6 +200,15 @@ export default function App() {
             }
           />
           <Route
+            path="subscription/payment"
+            element={
+              <ProtectedRoute allowedRoles={["Creator"]}>
+                <SubscriptionPaymentPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="bookings"
             element={
               <ProtectedRoute allowedRoles={["Creator"]}>
@@ -232,10 +244,12 @@ export default function App() {
           }
         >
           <Route index path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="itineraries" element={<ItineraryManagement />} />
+
+          <Route path="subscriptions" element={<SubscriptionManagement />} />
+
           <Route path="partners" element={<PartnersManagement />} />
           <Route path="partner/:id" element={<PartnerDetailScreen />} />
-          \
+
           <Route path="refunds" element={<RefundManagement />} />
           <Route path="cancellations" element={<CancellationManagement />} />
         </Route>

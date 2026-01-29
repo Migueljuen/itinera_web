@@ -373,111 +373,9 @@ const AdminDashboard = () => {
       <div className="flex flex-1 flex-col w-full  xl:border-none gap-8  ">
         {/* Overview */}
 
-        <div className="flex gap-2 w-full h-[490px] ">
+        <div className="flex gap-2 w-full ">
 
 
-          {/* Itinerary Payments Section */}
-          <div className="bg-white p-6 rounded-2xl border border-gray-300 flex flex-col flex-[0.7] h-full">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <p className="font-medium text-black/80">Itineraries</p>
-                {pendingPayments.length > 0 && (
-                  <p className="text-xs text-[#397ff1] animate-pulse">
-                    {pendingPayments.length} pending
-                  </p>
-                )}
-              </div>
-              <button
-                onClick={() => navigate("/itineraries")}
-                className="text-sm text-[#397ff1] hover:text-[#2e6bd9] flex items-center gap-1"
-              >
-                View all
-              </button>
-            </div>
-
-            {/* Payment Cards - Add relative wrapper */}
-
-            <div className="space-y-3 h-full overflow-y-auto scrollbar-hide">
-              {loadingPayments ? (
-                <div className="flex items-center justify-center h-40">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
-                </div>
-              ) : pendingPayments.length === 0 ? (
-                <div className="flex flex-col items-center justify-end h-40 text-black/40">
-                  <p className="text-sm">No pending payments</p>
-                </div>
-              ) : (
-                pendingPayments.map((payment) => (
-                  <div
-                    key={payment.itinerary_id}
-                    onClick={() =>
-                      navigate(
-                        `/itineraries?selectedId=${payment.itinerary_id}`
-                      )
-                    }
-                    className="border border-white rounded-xl p-4 hover:border-[#397ff1] hover:shadow-sm transition-all cursor-pointer"
-                  >
-                    {/* Header Row */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        {/* ID Badge */}
-                        <div className="bg-gray-50 rounded-lg px-3 py-1">
-                          <p className="text-xs text-gray-500">ID</p>
-                          <p className="text-sm font-semibold text-gray-700">
-                            #{String(payment.itinerary_id).padStart(4, "0")}
-                          </p>
-                        </div>
-
-                        {/* Traveler Info */}
-                        <div>
-                          <p className="text-sm font-medium text-black/80">
-                            {payment.traveler_first_name}{" "}
-                            {payment.traveler_last_name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {formatDate(payment.start_date)} -{" "}
-                            {formatDate(payment.end_date)}
-                          </p>
-                        </div>
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-                        <span className="text-xs font-medium text-yellow-700 bg-yellow-50 px-2 py-1 rounded">
-                          Pending
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Amount Row */}
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-                      <div>
-                        <p className="text-xs text-gray-500">Total Amount</p>
-                        <p className="text-lg font-semibold text-black/80">
-                          ₱{parseFloat(payment.total_amount).toFixed(2)}
-                        </p>
-                      </div>
-
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">Payment Type</p>
-                        <p className="text-sm font-medium text-gray-700 capitalize">
-                          {payment.payment_type || "Full"}
-                        </p>
-                      </div>
-
-                      <div className="text-right">
-                        <p className="text-xs text-gray-500">Commission</p>
-                        <p className="text-sm font-semibold text-[#397ff1]">
-                          ₱{(parseFloat(payment.total_amount) * 0.1).toFixed(2)}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
           <div className="flex gap-2 flex-col flex-[0.3] h-full ">
             {/* New Tickets / Active Activities */}
             <div className="bg-white  px-6 py-8 rounded-2xl border border-gray-300 flex flex-col justify-between h-fit">
@@ -512,7 +410,7 @@ const AdminDashboard = () => {
         </div>
 
         {/* recent activities and chart */}
-        <div className="flex gap-4 w-full">
+        <div className="flex gap-4 w-full mt-24">
           {/* pending activities for approval */}
           <PendingApprovalSection />
         </div>

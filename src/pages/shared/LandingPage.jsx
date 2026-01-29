@@ -606,10 +606,6 @@ const LandingPage = () => {
                     <span className="text-black/80">Featured activity placement</span>
                   </div>
 
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Analytics</span>
-                  </div>
 
 
                   <div className="flex gap-3 items-start">

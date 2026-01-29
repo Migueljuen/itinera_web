@@ -201,11 +201,10 @@ const Settings = () => {
               <button
                 key={tab.name}
                 onClick={() => setActiveTab(tab.name)}
-                className={`flex items-center gap-2 px-8 font-medium transition-colors py-2 rounded-lg ${
-                  activeTab === tab.name
+                className={`flex items-center gap-2 px-8 font-medium transition-colors py-2 rounded-lg ${activeTab === tab.name
                     ? "bg-white text-black/80 shadow-sm/10"
                     : "text-black/50 hover:text-black/70"
-                }`}
+                  }`}
               >
                 <Icon size={18} />
                 {tab.name}
@@ -439,10 +438,7 @@ const Settings = () => {
                     <div className="w-1.5 h-1.5 bg-purple-600 rounded-full" />
                     Unlimited bookings
                   </li>
-                  <li className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 bg-purple-600 rounded-full" />
-                    Advanced analytics
-                  </li>
+
                   <li className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-purple-600 rounded-full" />
                     Priority support

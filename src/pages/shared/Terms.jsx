@@ -19,7 +19,7 @@ function SectionCard({ title, items }) {
                 {items.map((it, idx) => (
                     <div key={`${title}-${idx}`} className="flex items-baseline gap-3">
                         <div className="w-2 h-2 bg-black/70 rounded-full flex-shrink-0 mt-1.5" />
-                        <p className="flex-1 text-base font-display text-black/50">{it}</p>
+                        <p className="flex-1 text-base font-display text-black/70">{it}</p>
                     </div>
                 ))}
             </div>
@@ -103,8 +103,8 @@ export default function Terms() {
                         items={[
                             "New Partners are required to pay a one-time registration fee to activate their Partner account.",
                             "Registration fee: ₱1,299 (one-time).",
-                            "The registration fee includes one (1) month of free subscription access starting from activation.",
-                            "After the free month: Basic subscription is ₱599/month and Pro subscription is ₱999/month.",
+                            "The registration fee includes one (1) month of basic subscription access starting from activation.",
+                            "After the 1 month: Basic subscription is ₱599/month and Pro subscription is ₱999/month.",
                             "Only subscribed Partners can preview their activity/listing as it appears to Travelers and receive bookings through the Platform.",
                             "If a Partner’s subscription ends, their ability to receive bookings and certain Partner features may be restricted until subscription is renewed.",
                             "Subscription tiers, inclusions, and pricing may be updated with notice on the Platform.",
@@ -117,7 +117,6 @@ export default function Terms() {
                             "An itinerary may include multiple Experiences and services; each booked Experience/service is treated as a separate booking.",
                             'A booking may be "Pending" (awaiting required payment) or "Confirmed" (ready/secured).',
                             "If an Experience requires payment, the booking remains Pending until payment is completed and acknowledged in the Platform.",
-                            "If an Experience does not require payment (free reservation), the booking may be Confirmed immediately as no-payment-required.",
                             "Time slots, price, inclusions, meeting points, and policies are set by Partners and may change with notice (changes will not apply retroactively to already-confirmed bookings unless required for safety/legal reasons).",
                             "Availability and capacity limits apply per time slot/date. Attempts to book beyond capacity may be rejected or cancelled.",
                         ]}
@@ -127,7 +126,6 @@ export default function Terms() {
                         title="7. Payments and Fees"
                         items={[
                             "Payments are handled directly per booking and are not processed by the Platform unless explicitly stated in-product.",
-                            "When a booking requires payment, Travelers will be guided to complete payment using the available payment method(s) shown for that specific booking.",
                             "The Platform does not charge Travelers a platform commission per booking. The Platform earns through Partner registration and subscription fees.",
                             "Partners are responsible for setting the price of their Experiences/services and for communicating any additional requirements clearly (where applicable).",
                         ]}

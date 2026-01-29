@@ -1054,7 +1054,7 @@ const PartnerDetailScreen = () => {
                         <span className="text-black/80 font-medium">₱1,299</span>
                       </p>
                       <p className="text-sm text-black/50">
-                        Includes: 1 month free subscription after approval
+                        Includes: 1 month basic subscription after approval
                       </p>
                     </div>
                   </div>
@@ -1166,10 +1166,10 @@ const PartnerDetailScreen = () => {
                 <Clock size={24} className="text-gray-400" />
               </div>
               <p className="text-base font-medium text-black/70">
-                Approval required to activate the free subscription month
+                Approval required to activate the basic subscription month
               </p>
               <p className="text-black/50 mt-1">
-                Once approved, the partner receives 1 month free subscription.
+                Once approved, the partner receives 1 month basic subscription.
               </p>
             </div>
           )}

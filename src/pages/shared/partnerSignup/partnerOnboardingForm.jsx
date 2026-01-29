@@ -116,7 +116,7 @@ const PartnerOnboardingForm = () => {
                     {
                         duration: 4000,
                         style: {
-                            background: "#10B981",
+                            background: "#191313",
                             color: "#fff",
                             padding: "16px",
                             borderRadius: "10px",

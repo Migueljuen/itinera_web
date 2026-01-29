@@ -120,6 +120,7 @@ const ExperienceEditForm = () => {
                 availability_id: slot.availability_id,
                 start_time: slot.start_time,
                 end_time: slot.end_time,
+                max_guests: slot.max_guests || 1, // Add this line
               })),
             })
           );
@@ -445,15 +446,26 @@ const ExperienceEditForm = () => {
         setFormData((prev) => ({ ...prev, images: transformedImages }));
       }
 
-      // Update availability
+      // Update availability - preserve max_guests from response
       if (updatedAvailability && Array.isArray(updatedAvailability)) {
         console.log("Updating availability:", updatedAvailability);
+        const transformedAvailability = updatedAvailability.map((item) => ({
+          availability_id: item.availability_id,
+          experience_id: item.experience_id,
+          day_of_week: item.day_of_week,
+          time_slots: (item.time_slots || []).map((slot) => ({
+            slot_id: slot.slot_id,
+            availability_id: slot.availability_id,
+            start_time: slot.start_time,
+            end_time: slot.end_time,
+            max_guests: slot.max_guests ?? 1, // IMPORTANT: preserve max_guests
+          })),
+        }));
         setFormData((prev) => ({
           ...prev,
-          availability: updatedAvailability,
+          availability: transformedAvailability,
         }));
       }
-
       // Update travel companions
       if (updatedExperience && updatedExperience.travel_companions) {
         console.log(
