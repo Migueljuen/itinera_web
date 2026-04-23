@@ -244,9 +244,8 @@ const Signup = () => {
                     <Circle className="text-gray-400" size={14} />
                   )}
                   <span
-                    className={`text-xs ${
-                      passwordMeetsLength ? "text-green-600" : "text-gray-500"
-                    }`}
+                    className={`text-xs ${passwordMeetsLength ? "text-green-600" : "text-gray-500"
+                      }`}
                   >
                     At least 6 characters
                   </span>
@@ -258,9 +257,8 @@ const Signup = () => {
                     <Circle className="text-gray-400" size={14} />
                   )}
                   <span
-                    className={`text-xs ${
-                      passwordsMatch ? "text-green-600" : "text-gray-500"
-                    }`}
+                    className={`text-xs ${passwordsMatch ? "text-green-600" : "text-gray-500"
+                      }`}
                   >
                     Passwords match
                   </span>
@@ -295,18 +293,6 @@ const Signup = () => {
               </div>
             </div>
 
-            {/* Google Sign Up */}
-            <div className="px-6">
-              <button
-                type="button"
-                className="w-full border  flex justify-center items-center border-gray-200 py-4 h-10 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center justify-center">
-                  <img src={googleIcon} alt="Google" className="w-5 h-5" />
-                  <span className="ml-2 text-base">Continue with Google</span>
-                </div>
-              </button>
-            </div>
 
             {/* Login Link */}
             <div className="text-center pt-4">

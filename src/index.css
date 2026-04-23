@@ -8,7 +8,7 @@
 
 @theme inline {
   --font-display: "Onest", sans-serif;
-  --color-primary: #212121;
+  --color-primary: #1b1e1f;
 }
 
 .calendar .rbc-toolbar {
@@ -202,11 +202,14 @@
   border-bottom-color: #e5e7eb !important;
   border-top-color: #e5e7eb !important;
 }
+
 @keyframes pulse-text {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.4;
   }
@@ -217,12 +220,15 @@
     animation: pulse-text 2s ease-in-out infinite;
   }
 }
+
 /* Hide scrollbar but keep scroll functionality */
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE/Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE/Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }

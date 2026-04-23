@@ -186,18 +186,6 @@ function Login() {
               </div>
             </div>
 
-            {/* Google Sign In */}
-            <div className="px-6">
-              <button
-                type="button"
-                className="w-full  border border-gray-500 flex justify-center items-center  py-4 h-10 rounded-md hover:bg-gray-50 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center justify-center">
-                  <img src={googleIcon} alt="Google" className="w-5 h-5" />
-                  <span className="ml-2 text-base ">Continue with Google</span>
-                </div>
-              </button>
-            </div>
 
             {/* Sign Up Link */}
             <div className="text-center pt-4">

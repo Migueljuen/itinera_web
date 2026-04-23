@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-
+import { ChevronRight } from "lucide-react";
 // Lazy load images for better performance
 const logoImage = new URL("../../assets/images/logo.png", import.meta.url).href;
-const mockup = new URL("../../assets/images/test2.png", import.meta.url).href;
+const mockup = new URL("../../assets/images/test3.png", import.meta.url).href;
+const mockupMobile = new URL("../../assets/images/test4.png", import.meta.url).href;
 const mockup1 = new URL("../../assets/images/mockup1.png", import.meta.url)
   .href;
 const mockup2 = new URL("../../assets/images/mockup2.png", import.meta.url)
@@ -14,10 +15,13 @@ import Button from "../../components/Button";
 import {
   MapIcon,
   SparklesIcon,
-  CalendarDaysIcon,
+  CalendarIcon,
   UsersIcon,
+  PhoneIcon,
   AdjustmentsHorizontalIcon,
   EyeIcon,
+  CheckCircleIcon,
+  TagIcon,
   GlobeAltIcon,
   Cog6ToothIcon,
 } from "@heroicons/react/24/solid";
@@ -32,7 +36,7 @@ const fadeInUp = {
     opacity: 1,
     y: 0,
     transition: {
-      duration: 0.6,
+      duration: 0.3,
       ease: "easeOut",
     },
   },
@@ -138,13 +142,13 @@ const LandingPage = () => {
       <div className="min-h-screen bg-white font-display">
         {/* Header */}
         <header
-          className={`fixed top-5 w-full z-50 transition-all duration-300 will-change-transform ${scrolled ? "transform-gpu" : ""
+          className={`fixed  w-full bg-white border-b border-gray-200 z-50 transition-all duration-300 will-change-transform ${scrolled ? "transform-gpu" : ""
             }`}
         >
-          <div className="container bg-white/50 md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
-            <div className="xl:grid xl:grid-cols-3 xl:items-center md:flex md:justify-between md:items-center">
+          <div className="container md:w-[90%] lg:w-11/12 xl:w-4/5 max-w-[1440px] mx-auto rounded-full p-4 drop-shadow-xl backdrop-blur-sm">
+            <div className="grid grid-cols-2 lg:grid-cols-3 items-center">
               {/* Logo */}
-              <div className="ml-4 mb-2">
+              <div className="flex items-center">
                 <img
                   src={logoImage}
                   alt="Itinera Logo"
@@ -155,44 +159,38 @@ const LandingPage = () => {
               </div>
 
               {/* Nav Links (center column) */}
-              <nav className="flex justify-center space-x-10 text-base font-medium text-[#1f2937]">
+              <nav className="hidden lg:flex whitespace-nowrap justify-center space-x-12 text-base font-medium text-black/90">
                 <a
                   href="#features"
-                  className="hover:text-[#1f2937]/60 transition-colors"
+                  className="hover:text-primary/60 transition-colors"
                 >
                   Features
                 </a>
                 <a
                   href="#why"
-                  className="hover:text-[#1f2937]/60 transition-colors"
+                  className="hover:text-primary/60 transition-colors"
                 >
                   Why Itinera
                 </a>
                 <a
                   href="#pricing"
-                  className="hover:text-[#1f2937]/60 transition-colors"
+                  className="hover:text-primary/60 transition-colors"
                 >
                   Pricing
                 </a>
                 <a
                   href="#about"
-                  className="hover:text-[#1f2937]/60 transition-colors"
+                  className="hover:text-primary/60 transition-colors"
                 >
                   About
                 </a>
               </nav>
-
               {/* Buttons */}
-              <div className="flex justify-end space-x-4">
-                <Button
-                  bgColor="#f3f4f6"
-                  textColor="#000000"
-                  onClick={handleSignIn}
-                  hoverColor="#ffffff"
-                >
-                  Login
-                </Button>
-                <Button onClick={handleSignIn} />
+              <div className="flex justify-end items-center space-x-4 whitespace-nowrap">
+                <p className="cursor-pointer" onClick={handleSignIn}>
+                  Log in
+                </p>
+                <Button onClick={handlePartnerOnboarding}>Get started</Button>
               </div>
             </div>
           </div>
@@ -204,7 +202,7 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="relative bg-gradient-to-b from-[#54a056eb]/15 to-gray-50"
+          className="relative "
           style={{
             minHeight: "100vh",
             paddingTop: "6rem",
@@ -217,31 +215,39 @@ const LandingPage = () => {
               className="flex flex-col items-center justify-center"
               style={{ minHeight: "calc(70vh - 3rem)" }}
             >
+              <div className="rounded-full w-fit flex h-fit bg-gray-100 px-2 py-1 gap-2 items-center mb-8">
+                <div className="bg-primary/95 py-1 rounded-full h-fit text-sm px-2.5 text-[#e6ffffff]">
+                  New
+                </div>
+                <p className="text-primary text-sm font-medium">
+                  Save to calendar feature
+                </p>
+                <ChevronRight className="text-gray-600" size={20} />
+              </div>
+
               <motion.h1
-                className="text-4xl lg:text-5xl font-medium text-[#1f2937] will-change-transform"
+                className="text-5xl lg:text-7xl tracking-tight font-semibold text-primary  will-change-transform"
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   show: {
                     opacity: 1,
                     y: 0,
-                    transition: { delay: 0.2, duration: 0.6 },
+                    transition: { delay: 0.2, duration: 0.3 },
                   },
                 }}
               >
-                <span className="block">
-                  Smart itinerary planning for travelers
-                </span>
-                <span className="block">who want more.</span>
+                <span className="block">Smart</span>
+                <span className="block">itinerary planning.</span>
               </motion.h1>
 
               <motion.p
-                className="text-black/60 text-base lg:text-lg max-w-[80%] mx-auto my-8 lg:my-12"
+                className="text-primary text-lg  max-w-[80%] mx-auto my-8"
                 variants={{
                   hidden: { opacity: 0, y: 20 },
                   show: {
                     opacity: 1,
                     y: 0,
-                    transition: { delay: 0.4, duration: 0.6 },
+                    transition: { delay: 0.4, duration: 0.3 },
                   },
                 }}
               >
@@ -254,7 +260,7 @@ const LandingPage = () => {
                   show: {
                     opacity: 1,
                     y: 0,
-                    transition: { delay: 0.6, duration: 0.6 },
+                    transition: { delay: 0.6, duration: 0.3 },
                   },
                 }}
               >
@@ -264,13 +270,28 @@ const LandingPage = () => {
 
             {/* Mockup Section */}
             <div
-              className="flex items-center justify-center"
+              className="flex items-center bg-[url('assets/images/grid.png')] bg-center bg-cover bg-no-repeat justify-center"
               style={{ minHeight: "calc(50vh - 3rem)" }}
             >
               <motion.img
+                src={mockupMobile}
+                alt="mockup"
+                className="w-full max-w-4xl block lg:hidden cursor-pointer will-change-transform"
+                loading="eager"
+                decoding="async"
+                variants={{
+                  hidden: { opacity: 0, scale: 0.95 },
+                  show: {
+                    opacity: 1,
+                    scale: 1,
+                    transition: { delay: 0.8, duration: 0.8, ease: "easeOut" },
+                  },
+                }}
+              />
+              <motion.img
                 src={mockup}
                 alt="mockup"
-                className="w-4/6 max-w-4xl cursor-pointer will-change-transform"
+                className="w-full max-w-5xl hidden lg:inline cursor-pointer will-change-transform"
                 loading="eager"
                 decoding="async"
                 variants={{
@@ -300,7 +321,7 @@ const LandingPage = () => {
           <div className="flex flex-col justify-center items-center w-full">
             <div className="mb-16 flex flex-col items-center justify-center">
               <h2 className="text-[#397ff1] font-semibold">Features</h2>
-              <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold text-center">
+              <h1 className="text-primary text-5xl pt-2 pb-6 font-semibold text-center">
                 All the tools you need
               </h1>
               <p className="w-5/6 text-black/80 text-lg text-center">
@@ -311,11 +332,11 @@ const LandingPage = () => {
 
             <div className="grid mt-8 grid-cols-1 md:grid-cols-2 gap-16 w-full md:w-4/5">
               <div className="flex gap-3">
-                <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
+                <span className="bg-[#397ff1] p-2 rounded-lg size-12 flex  justify-center items-center">
                   <AdjustmentsHorizontalIcon className="h-7 w-7 text-white" />
                 </span>
                 <span className="text-black/80 w-5/6">
-                  <span className="text-[#1f2937] font-semibold">
+                  <span className="text-primary font-semibold">
                     Custom Itinerary Builder
                   </span>{" "}
                   — Create and adjust your travel plans effortlessly with
@@ -324,11 +345,11 @@ const LandingPage = () => {
               </div>
 
               <div className="flex gap-3">
-                <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
+                <span className="bg-[#397ff1] p-2 rounded-lg size-12 flex  justify-center items-center">
                   <EyeIcon className="h-7 w-7 text-white" />
                 </span>
                 <span className="text-black/80 w-5/6">
-                  <span className="text-[#1f2937] font-semibold">
+                  <span className="text-primary font-semibold">
                     Activity Discovery
                   </span>{" "}
                   — Browse authentic local activities and hidden gems
@@ -337,11 +358,11 @@ const LandingPage = () => {
               </div>
 
               <div className="flex gap-3">
-                <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
+                <span className="bg-[#397ff1] p-2 rounded-lg size-12 flex  justify-center items-center">
                   <MapIcon className="h-7 w-7 text-white" />
                 </span>
                 <span className="text-black/80 w-5/6">
-                  <span className="font-semibold text-[#1f2937]">
+                  <span className="font-semibold text-primary">
                     Admin Dashboard
                   </span>{" "}
                   — Add, manage, and track your activities while connecting
@@ -350,11 +371,11 @@ const LandingPage = () => {
               </div>
 
               <div className="flex gap-3">
-                <span className="bg-[#397ff1] p-2 rounded-lg flex items-center justify-center">
+                <span className="bg-[#397ff1] p-2 rounded-lg size-12 flex  justify-center items-center">
                   <UsersIcon className="h-7 w-7 text-white" />
                 </span>
                 <span className="text-black/80 w-5/6">
-                  <span className="font-semibold text-[#1f2937]">
+                  <span className="font-semibold text-primary">
                     Audience Reach
                   </span>{" "}
                   — Promote your offerings and connect with the right travelers
@@ -374,17 +395,17 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className=" h-dvh flex flex-row justify-center w-11/12 mx-auto "
+          className=" py-24 flex flex-col lg:flex-row justify-center w-11/12 mx-auto "
         >
           {/* Left content */}
           <div className=" flex-[0.5] flex flex-col justify-center  items-center  ">
             {/* Upper texts */}
             <div className=" h-2/6 flex flex-col justify-end ">
               <h2 className="text-[#397ff1] font-semibold">Discover more</h2>
-              <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold ">
+              <h1 className="text-primary text-5xl pt-2 pb-6 font-semibold ">
                 Personalized journeys.
               </h1>
-              <p className="w-5/6 text-black/80 text-lg">
+              <p className="w-full lg:w-5/6 text-black/80 text-lg">
                 Plan stress-free trips with tailor-made itineraries, cultural
                 gems, and flexible options designed just for your style of
                 travel.
@@ -395,7 +416,7 @@ const LandingPage = () => {
               <p className="flex gap-3">
                 <AdjustmentsHorizontalIcon className="h-7 text-[#397ff1]" />
                 <span className="text-black/80 w-5/6">
-                  <span className="text-[#1f2937] font-semibold">
+                  <span className="text-primary font-semibold">
                     Personalized itineraries
                   </span>{" "}
                   — Get curated travel plans based on your interests: food,
@@ -406,7 +427,7 @@ const LandingPage = () => {
               <p className="flex gap-3">
                 <EyeIcon className="h-7 text-[#397ff1]" />
                 <span className=" text-black/80 w-5/6">
-                  <span className="text-[#1f2937] font-semibold">
+                  <span className="text-primary font-semibold">
                     Hidden gems
                   </span>{" "}
                   — Discover local experiences beyond mainstream tours,
@@ -417,7 +438,7 @@ const LandingPage = () => {
               <p className="flex gap-3">
                 <MapIcon className="h-7 text-[#397ff1]" />
                 <span className="text-black/80 w-5/6">
-                  <span className="font-semibold text-[#1f2937]">
+                  <span className="font-semibold text-primary">
                     Flexible plans
                   </span>{" "}
                   — Rearrange, adapt, and customize your schedule anytime during
@@ -428,7 +449,7 @@ const LandingPage = () => {
           </div>
 
           {/* Mockup */}
-          <div className=" flex-[0.3] flex justify-center items-center">
+          <div className=" flex-[0.3] mt-24 lg:mt-0 flex justify-center items-center">
             <img
               src={mockup1}
               alt="mockup1"
@@ -443,14 +464,14 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className=" h-dvh flex flex-row justify-center   w-11/12 mx-auto "
+          className=" py-24 flex flex-col-reverse lg:flex-row justify-center   w-11/12 mx-auto "
         >
           {/* Mockup */}
-          <div className="flex-[0.6] flex justify-center items-center relative">
+          <div className="flex-1  mt-24 flex justify-center items-center relative">
             <img
               src={mockup2}
               alt="Mockup"
-              className="absolute object-contain cursor-pointer transition-transform drop-shadow-2xl -left-[25%] scale-115"
+              className="static  lg:mt-0 lg:absolute object-contain cursor-pointer transition-transform drop-shadow-2xl -left-[25%] scale-115"
             />
           </div>
           {/* Right content */}
@@ -458,13 +479,13 @@ const LandingPage = () => {
             {/* Upper texts */}
             <div className=" h-2/6 flex flex-col justify-end ">
               <h2 className="text-[#397ff1] font-semibold">For storytellers</h2>
-              <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold ">
+              <h1 className="text-primary text-5xl pt-2 pb-6 font-semibold ">
                 Share authentic activities.
               </h1>
-              <p className="w-10/12 text-black/80 text-lg">
-                Bring your knowledge of local culture, food, and traditions to
+              <p className="w-full lg:w-10/12 text-black/80 text-lg">
+                Bring your knowledge of local culture to
                 life by listing activities on Itinera. Manage your offerings
-                with ease and connect with travelers who value authenticity.
+                with ease and connect with travelers.
               </p>
             </div>
             {/* Lower texts */}
@@ -472,7 +493,7 @@ const LandingPage = () => {
               <p className="flex gap-3 w-10/12">
                 <GlobeAltIcon className="h-7 text-[#397ff1]" />
                 <span className="text-black/80 ">
-                  <span className="text-[#1f2937] font-semibold">
+                  <span className="text-primary font-semibold">
                     Share your activities.
                   </span>{" "}
                   — Showcase unique activities and cultural insights that
@@ -483,7 +504,7 @@ const LandingPage = () => {
               <p className="flex gap-3 w-10/12">
                 <Cog6ToothIcon className="h-7 text-[#397ff1]" />
                 <span className=" text-black/80 ">
-                  <span className="text-[#1f2937] font-semibold">
+                  <span className="text-primary font-semibold">
                     Manage with ease
                   </span>{" "}
                   — Add, update, and organize your offerings in a simple,
@@ -494,7 +515,7 @@ const LandingPage = () => {
               <p className="flex gap-3 w-10/12">
                 <UsersIcon className="h-7 text-[#397ff1]" />
                 <span className="text-black/80">
-                  <span className="font-semibold text-[#1f2937]">
+                  <span className="font-semibold text-primary">
                     Reach the right audience.
                   </span>{" "}
                   — Connect directly with travelers seeking authentic
@@ -514,113 +535,116 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className="py-24 flex justify-center w-11/12 mx-auto"
+          className="py-24 flex  justify-center w-11/12 mx-auto"
         >
           <div className="flex flex-col justify-center items-center w-full">
             <div className="mb-16 flex flex-col items-center justify-center">
               <h2 className="text-[#397ff1] font-semibold">Pricing</h2>
-              <h1 className="text-[#1f2937] text-5xl pt-2 pb-6 font-semibold text-center">
-                Simple, transparent pricing
+              <h1 className="text-primary text-5xl pt-2 tracking-tight pb-6 font-semibold text-center">
+                Transparent pricing
               </h1>
-              <p className="w-5/6 text-black/80 text-lg text-center">
-                Our pricing model is designed to be fair for everyone — travelers explore freely
-                based on the activities they book, and partners grow sustainably through subscriptions.
+              <p className="w-4/6 text-primary text-lg text-center">
+                Our pricing model is designed to be fair for everyone —
+                grow sustainably through subscriptions.
               </p>
             </div>
 
-            <div className="grid mt-8 grid-cols-1 md:grid-cols-3 gap-8 w-full md:w-4/5">
-              {/* For Travelers */}
-              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 gap-4 flex flex-col">
-                <div className="space-y-2 mb-8">
-                  <h3 className="text-[#1f2937] text-sm ">For Travelers</h3>
+            <div className="mt-8 flex flex-col lg:flex-row gap-4">
 
-                  <p className="text-[#397ff1] text-xl font-semibold ">
-                    Pay only for what you join
-                  </p>
-                  <p className="text-black/60  text-sm">No hidden or additional fees!</p>
-                </div>
-
-                <div className="flex-1 space-y-4 mb-8">
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Browse various activities</span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">
-                      Create custom or system generated itineraries
-                    </span>
-                  </div>
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Book activities from our local partners</span>
-                  </div>
-                </div>
-
-
-              </div>
 
               {/* Partner Tier 1 - Basic */}
-              <div className="bg-white border-2 border-gray-200 rounded-2xl p-8 gap-4 flex flex-col">
-                <div className="space-y-2 mb-8">
-                  <h3 className="text-[#1f2937] text-sm ">For Partners</h3>
-                  <p className="text-[#397ff1] text-xl font-semibold">Basic Partner</p>
-                  <p className="text-black/60 text-sm">Subscription-based access</p>
+              <div className="bg-white border border-gray-200 rounded-2xl  p-6 py-8 w-sm gap-4 flex flex-col">
+                <div className="space-y-2 mb-4">
+
+                  <p className="text-primary text-2xl font-semibold">
+                    Basic
+                  </p>
+                  <p className="text-black/70 font-light text-sm">
+                    Subscription-based access
+                  </p>
+                </div>
+                <div className="border-y border-gray-200 py-4 mb-4">
+                  <p className="text-black/70 font-light text-sm">
+                    <span className="text-primary text-lg font-medium">₱599 </span> per month
+                  </p>
+                </div>
+                <div className="flex-1 space-y-4 ">
+                  <div className="flex gap-3 items-center">
+                    <CalendarIcon className="h-5 w-5 text-black/70 flex-shrink-0" />
+                    <span className="text-black/70 text-sm">Accept bookings</span>
+                  </div>
+
+                  <div className="flex gap-3 items-center">
+                    <SparklesIcon className="h-5 w-5 text-black/70 flex-shrink-0" />
+                    <span className="text-black/70 text-sm">
+                      Listed in search results
+                    </span>
+                  </div>
+
+                  <div className="flex gap-3 items-center">
+                    <PhoneIcon className="h-5 w-5 text-black/70  flex-shrink-0" />
+                    <span className="text-black/70 text-sm">
+                      Standard customer support
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex-1 space-y-4 mb-8">
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Accept bookings</span>
-                  </div>
-
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Listed in search results</span>
-                  </div>
-
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Standard customer support</span>
-                  </div>
-                </div>
-
+                <p className="text-primary text-sm bg-gray-200 text-center py-2 rounded-full mt-24 cursor-pointer hover:bg-gray-100 hover:text-primary/80">Start with Basic</p>
               </div>
 
               {/* Partner Tier 2 - Pro */}
-              <div className="bg-white border-2 border-[#397ff1] rounded-2xl p-8 gap-4 flex flex-col relative">
+              <div className="bg-white border border-[#397ff1] rounded-2xl p-6 py-8 w-sm gap-4 flex flex-col relative">
                 {/* Optional badge */}
                 <div className="absolute -top-3 right-6 bg-[#397ff1] text-white text-xs font-semibold px-3 py-1 rounded-full">
                   Most Popular
                 </div>
 
-                <div className="space-y-2 mb-8">
-                  <h3 className="text-[#1f2937] text-sm ">For Partners</h3>
-                  <p className="text-[#397ff1] text-xl font-semibold">Pro Partner</p>
-                  <p className="text-black/60 text-sm">Everything in Basic, plus:</p>
+                <div className="space-y-2 mb-4">
+                  <p className="text-[#397ff1] text-2xl font-semibold">
+                    Pro
+                  </p>
+                  <p className="text-black/70 font-light text-sm">
+                    For serious partners
+                  </p>
                 </div>
 
-                <div className="flex-1 space-y-4 mb-8">
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Featured activity placement</span>
+                <div className="border-y border-gray-200 py-4 mb-4">
+                  <p className="text-black/70 font-light text-sm">
+                    <span className="text-[#397ff1] text-lg font-medium">₱999 </span> per month
+                  </p>
+                </div>
+
+                <div className="flex-1 space-y-4">
+                  <div className="flex gap-3 items-center">
+                    <CheckCircleIcon className="h-5 w-5 text-[#397ff1] flex-shrink-0" />
+                    <span className="text-black/70 text-sm">Everything in Basic</span>
                   </div>
 
-
-
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Promotional badge on listings</span>
+                  <div className="flex gap-3 items-center">
+                    <SparklesIcon className="h-5 w-5 text-[#397ff1] flex-shrink-0" />
+                    <span className="text-black/70 text-sm">
+                      Featured activity placement
+                    </span>
                   </div>
 
-                  {/* If you want support to be the same, keep it. If Pro should be better, rename to Priority support */}
-                  <div className="flex gap-3 items-start">
-                    <SparklesIcon className="h-5 w-5 text-[#397ff1] mt-1 flex-shrink-0" />
-                    <span className="text-black/80">Standard customer support</span>
+                  <div className="flex gap-3 items-center">
+                    <TagIcon className="h-5 w-5 text-[#397ff1] flex-shrink-0" />
+                    <span className="text-black/70 text-sm">
+                      Promotional badge on listings
+                    </span>
+                  </div>
+
+                  <div className="flex gap-3 items-center">
+                    <PhoneIcon className="h-5 w-5 text-[#397ff1] flex-shrink-0" />
+                    <span className="text-black/70 text-sm">
+                      Priority customer support
+                    </span>
                   </div>
                 </div>
 
-
+                <p className="text-white text-sm bg-[#397ff1] text-center py-2 rounded-full mt-24 cursor-pointer hover:bg-[#2e6cd4]">
+                  Upgrade to Pro
+                </p>
               </div>
             </div>
           </div>
@@ -634,18 +658,21 @@ const LandingPage = () => {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.3 }}
-          className=" py-24  bg-gradient-to-b from-gray-50 to-[#54a056eb]/15"
+          className="  bg-gray-50 py-24 border-t border-gray-200"
         >
           <div className="w-11/12 mx-auto max-w-[1440px]">
             {/* Main footer content */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-16 mb-16">
               {/* Brand section */}
               <div className="lg:col-span-2 ">
+                <p className="text-2xl font-bold text-primary mb-4">
+                  Itinera
+                </p>
                 <p className="text-black/60  leading-relaxed mb-8 max-w-md">
                   Turn your next trip into a hassle-free experience with
                   personalized itineraries and authentic local discoveries.
                 </p>
-                <div className="flex space-x-4">
+                {/* <div className="flex space-x-4">
                   <div className="w-10 h-10 bg-[#397ff1] rounded-lg flex items-center justify-center cursor-pointer hover:bg-[#397ff1]/80 transition-colors">
                     <svg
                       className="w-5 h-5 text-white"
@@ -673,7 +700,7 @@ const LandingPage = () => {
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                     </svg>
                   </div>
-                </div>
+                </div> */}
               </div>
 
               {/* Footer links */}
@@ -681,14 +708,14 @@ const LandingPage = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                   {footerSections.map((section, index) => (
                     <div key={index}>
-                      <h5 className="font-semibold text-[#1f2937] text-lg mb-6">
+                      <h5 className="font-semibold text-primary text-lg mb-6">
                         {section.title}
                       </h5>
                       <div className="space-y-4">
                         {section.links.map((link, linkIndex) => (
                           <Link
                             key={linkIndex}
-                            className="block text-black/80 hover:text-[#397ff1] transition-colors duration-300 text-base"
+                            className="block text-black/60 hover:text-[#397ff1] transition-colors duration-300 text-base"
                             to={
                               link === "About Us"
                                 ? "/about"
@@ -710,9 +737,9 @@ const LandingPage = () => {
             </div>
 
             {/* Newsletter section */}
-            <div className=" p-8 lg:p-12 mb-16">
+            <div className=" p-8 lg:p-12 mb-16 hidden">
               <div className="text-center">
-                <h3 className="text-[#1f2937] text-2xl lg:text-3xl font-semibold mb-4">
+                <h3 className="text-primary text-2xl lg:text-3xl font-semibold mb-4">
                   Stay updated with travel insights
                 </h3>
                 <p className="text-black/80 text-lg mb-8 max-w-2xl mx-auto">

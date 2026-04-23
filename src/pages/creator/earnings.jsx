@@ -381,16 +381,16 @@ const EarningsManagement = () => {
                                                                     <div className="col-span-2 text-right font-medium text-black/80">{formatCurrency(booking.activity_price)}</div>
                                                                     <div className="col-span-2 flex justify-center gap-2">
                                                                         <span className={`inline-block px-2 py-1 rounded-full text-xs ${booking.status === 'Completed' ? 'bg-green-100 text-green-700'
-                                                                                : booking.status === 'Confirmed' ? 'bg-blue-100 text-blue-700'
-                                                                                    : booking.status === 'Ongoing' ? 'bg-yellow-100 text-yellow-700'
-                                                                                        : booking.status === 'Cancelled' ? 'bg-red-100 text-red-600'
-                                                                                            : 'bg-gray-100 text-gray-600'
+                                                                            : booking.status === 'Confirmed' ? 'bg-blue-100 text-blue-700'
+                                                                                : booking.status === 'Ongoing' ? 'bg-yellow-100 text-yellow-700'
+                                                                                    : booking.status === 'Cancelled' ? 'bg-red-100 text-red-600'
+                                                                                        : 'bg-gray-100 text-gray-600'
                                                                             }`}>
                                                                             {booking.status}
                                                                         </span>
                                                                         <span className={`inline-block px-2 py-1 rounded-full text-xs ${booking.payment_status === 'Paid' ? 'bg-green-100 text-green-700'
-                                                                                : booking.payment_status === 'Pending' ? 'bg-yellow-100 text-yellow-700'
-                                                                                    : 'bg-gray-100 text-gray-600'
+                                                                            : booking.payment_status === 'Pending' ? 'bg-yellow-100 text-yellow-700'
+                                                                                : 'bg-gray-100 text-gray-600'
                                                                             }`}>
                                                                             {booking.payment_status}
                                                                         </span>
